@@ -1,11 +1,18 @@
+import 'package:adoptapp/usuario.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'mascota.dart';
+import 'package:adoptapp/mascota.dart';
 
 final databaseReference = FirebaseDatabase.instance.ref();
 
 DatabaseReference saveMascota(Mascota mascota) {
   var id = databaseReference.child('mascotas/').push();
   id.set(mascota.toJson());
+  return id;
+}
+
+DatabaseReference saveUsuario(Usuario usuario) {
+  var id = databaseReference.child('usuarios/').push();
+  id.set(usuario.toJson());
   return id;
 }
 

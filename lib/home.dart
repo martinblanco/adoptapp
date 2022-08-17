@@ -1,11 +1,9 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
 import 'package:flutter/material.dart';
 import 'package:adoptapp/petRegister.dart';
 import 'package:adoptapp/profileMenu.dart';
 import 'package:adoptapp/petItem.dart';
-import 'database.dart';
-import 'mascota.dart';
+import 'package:adoptapp/database.dart';
+import 'package:adoptapp/mascota.dart';
 
 class PetGrid extends StatefulWidget {
   const PetGrid({Key? key}) : super(key: key);

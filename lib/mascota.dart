@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class Mascota {
+  String user;
   String nombre;
   String edad;
   String sexo; //Hembra Macho
@@ -18,7 +19,7 @@ class Mascota {
   late DatabaseReference _id;
 
   Mascota(this.nombre, this.edad, this.sexo, this.size, this.descripcion,
-      this.raza);
+      this.raza, this.user);
 
   void likeMascota(User user) {
     if (usersLiked.contains(user.uid)) {
@@ -41,6 +42,7 @@ class Mascota {
       'size': size,
       'descripcion': descripcion,
       'raza': raza,
+      'usuario': user,
       'usersLiked': usersLiked.toList()
     };
   }
@@ -54,6 +56,7 @@ Mascota createMascota(record) {
     'size': '',
     'descripcion': '',
     'raza': '',
+    'usuario': '',
     'usersLiked': [],
   };
 
@@ -65,7 +68,8 @@ Mascota createMascota(record) {
       attributes['sexo'],
       attributes['size'],
       attributes['descripcion'],
-      attributes['raza']);
+      attributes['raza'],
+      attributes['usuario']);
 
   mascota.usersLiked = Set.from(attributes['usersLiked']);
 

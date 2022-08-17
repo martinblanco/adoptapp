@@ -1,5 +1,7 @@
+import 'package:adoptapp/usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:adoptapp/database.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -10,8 +12,10 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  List<Usuario> usuarios = [];
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
   bool _success = false;
   late String _userEmail;
@@ -27,11 +31,20 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             TextFormField(
+              controller: _nombreController,
+              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
+              validator: (String? value) {
+                if (value!.isEmpty) {
+                  return 'Ingresa un nombre de usuario';
+                }
+              },
+            ),
+            TextFormField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email'),
               validator: (String? value) {
                 if (value!.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Ingresa un Mail';
                 }
               },
             ),
@@ -40,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
               decoration: InputDecoration(labelText: 'Password'),
               validator: (String? value) {
                 if (value!.isEmpty) {
-                  return 'Please enter some text';
+                  return 'Ingresa una contraseña';
                 }
               },
             ),
@@ -83,8 +96,18 @@ class _RegisterPageState extends State<RegisterPage> {
         _success = true;
         _userEmail = user.email!;
       });
+      newUsuario(user, _nombreController.text);
     } else {
       _success = false;
     }
+  }
+
+  void newUsuario(User user, String nombreUsuario) {
+    // ignore: unnecessary_new
+    var usuario = new Usuario(user.email!, nombreUsuario, "false", user.uid);
+    usuario.setId(saveUsuario(usuario));
+    this.setState(() {
+      usuarios.add(usuario);
+    });
   }
 }

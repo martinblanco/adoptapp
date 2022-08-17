@@ -1,11 +1,9 @@
-// ignore_for_file: deprecated_member_use, avoid_unnecessary_containers, prefer_const_constructors, duplicate_ignore, body_might_complete_normally_nullable, unnecessary_new
-
 import 'package:flutter/material.dart';
 import 'package:adoptapp/googlepage.dart';
 import 'package:adoptapp/registerPage.dart';
 import 'package:adoptapp/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'mascota.dart';
+import 'package:adoptapp/mascota.dart';
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 

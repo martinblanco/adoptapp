@@ -1,8 +1,7 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
 import 'package:flutter/material.dart';
-import 'database.dart';
-import 'mascota.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:adoptapp/database.dart';
+import 'package:adoptapp/mascota.dart';
 
 class RegisterPet extends StatefulWidget {
   final String title = 'Registration';
@@ -13,7 +12,10 @@ class RegisterPet extends StatefulWidget {
 class _RegisterPetState extends State<RegisterPet> {
   List<Mascota> mascotas = [];
   void newMascota(String text) {
-    var mascota = new Mascota(text, text, text, text, text, text);
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? user = _auth.currentUser;
+    print(user);
+    var mascota = new Mascota(text, text, text, text, text, text, user!.uid);
     mascota.setId(saveMascota(mascota));
     this.setState(() {
       mascotas.add(mascota);
@@ -23,7 +25,7 @@ class _RegisterPetState extends State<RegisterPet> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
-  late bool _success;
+  late bool _success = false;
   late String _userEmail;
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class _RegisterPetState extends State<RegisterPet> {
             buildBotton('Agregar Mascota'),
             Container(
               alignment: Alignment.center,
-              child: Text(_success == null
+              child: Text(_success == false
                   ? ''
                   : (_success
                       ? 'Successfully registered' + _userEmail

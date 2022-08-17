@@ -1,7 +1,5 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
 import 'package:flutter/material.dart';
-import 'mascota.dart';
+import 'package:adoptapp/mascota.dart';
 
 class ItemTile extends StatelessWidget {
   final int itemNo;
