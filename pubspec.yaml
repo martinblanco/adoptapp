@@ -16,6 +16,7 @@ dependencies:
   firebase_database: ^9.0.0
   auth_buttons: ^2.0.4
   meta: ^1.7.0
+  font_awesome_flutter: ^10.2.1 
   
 
   cupertino_icons: ^1.0.2

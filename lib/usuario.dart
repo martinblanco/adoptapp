@@ -5,12 +5,11 @@ class Usuario {
   String mail;
   String userName;
   String isRefugio;
-  String uid;
   late List<Mascota> mascotas = [];
   // ignore: unused_field
   late DatabaseReference _id;
 
-  Usuario(this.mail, this.userName, this.isRefugio, this.uid);
+  Usuario(this.mail, this.userName, this.isRefugio);
 
   void setId(DatabaseReference id) {
     _id = id;
@@ -21,7 +20,6 @@ class Usuario {
       'nombre': userName,
       'mail': mail,
       'isRefugio': isRefugio,
-      'uid': uid,
       'mascotas': mascotas.toList()
     };
   }
@@ -32,15 +30,13 @@ Usuario createUsuario(record) {
     'nombre': '',
     'mail': '',
     'isRefugio': '',
-    'uid': '',
     'mascotas': [],
   };
 
   record.forEach((key, value) => {attributes[key] = value});
 
-  Usuario usuario = Usuario(attributes['nombre'], attributes['mail'],
-      attributes['isRefugio'], attributes['uid']);
-
+  Usuario usuario = Usuario(
+      attributes['nombre'], attributes['mail'], attributes['isRefugio']);
   usuario.mascotas = List.from(attributes['mascotas']);
 
   return usuario;

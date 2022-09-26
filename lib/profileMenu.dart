@@ -1,6 +1,10 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
+import 'package:adoptapp/usuario.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+final user = FirebaseAuth.instance.currentUser;
 
 class menuPerfil extends StatefulWidget {
   @override
@@ -8,16 +12,29 @@ class menuPerfil extends StatefulWidget {
 }
 
 class _menuPerfilState extends State<menuPerfil> {
+  getUser() {
+    if (user != null) {
+      final name = user!.displayName;
+      final email = user!.email;
+      final photoUrl = user!.photoURL;
+      final emailVerified = user!.emailVerified;
+      final uid = user!.uid;
+      Usuario usuario = new Usuario(email!, name!, "false");
+      return usuario;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    Usuario usuario = getUser();
     return new Drawer(
       child: ListView(
         // Remove padding
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            accountName: Text('Oflutter.com'),
-            accountEmail: Text('example@gmail.com'),
+            accountName: Text(usuario.userName),
+            accountEmail: Text(usuario.mail),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.network(

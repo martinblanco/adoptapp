@@ -91,6 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
       password: _passswordController.text,
     );
     User? user = userCredential.user;
+    user?.updateDisplayName(_nombreController.text);
     if (user != null) {
       setState(() {
         _success = true;
@@ -104,7 +105,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void newUsuario(User user, String nombreUsuario) {
     // ignore: unnecessary_new
-    var usuario = new Usuario(user.email!, nombreUsuario, "false", user.uid);
+    var usuario = new Usuario(user.email!, nombreUsuario, "false");
     usuario.setId(saveUsuario(usuario));
     this.setState(() {
       usuarios.add(usuario);

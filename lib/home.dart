@@ -1,9 +1,13 @@
+import 'package:adoptapp/filters.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/petRegister.dart';
 import 'package:adoptapp/profileMenu.dart';
 import 'package:adoptapp/petItem.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/mascota.dart';
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class PetGrid extends StatefulWidget {
   const PetGrid({Key? key}) : super(key: key);
@@ -45,10 +49,7 @@ class _PetGridState extends State<PetGrid> {
         ),
       ),
       RegisterPet(),
-      Text(
-        'Index 1: Business',
-        style: optionStyle,
-      ),
+      FiltrosPage(),
       Text(
         'Index 2: School',
         style: optionStyle,
@@ -63,6 +64,7 @@ class _PetGridState extends State<PetGrid> {
 
   @override
   Widget build(BuildContext context) {
+    //getUsuario(_auth.currentUser!.uid);
     updateMascotas();
     return Scaffold(
         appBar: AppBar(

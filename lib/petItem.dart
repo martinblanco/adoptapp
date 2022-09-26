@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:adoptapp/mascota.dart';
 
+import 'mascotaCard.dart';
+
 class ItemTile extends StatelessWidget {
   final int itemNo;
 
@@ -21,7 +23,15 @@ class ItemTile extends StatelessWidget {
             margin: EdgeInsets.all(2.0),
             child: ListTile(
               tileColor: Colors.deepOrange,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        SinglePage(mascota: _mascota),
+                  ),
+                );
+              },
               leading: Container(
                   decoration: BoxDecoration(
                       color: Colors.red,
@@ -32,7 +42,7 @@ class ItemTile extends StatelessWidget {
                   width: 20,
                   height: 20,
                   child: Icon(
-                    Icons.heart_broken,
+                    Icons.favorite,
                     size: 10,
                     color: Colors.white,
                   )),
