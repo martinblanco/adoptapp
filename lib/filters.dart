@@ -42,6 +42,14 @@ class _FiltrosPageState extends State<FiltrosPage> {
             CustomCard(
               children: [
                 Text(
+                  'Fecha de publicacion',
+                ),
+                DropDownDos(),
+              ],
+            ),
+            CustomCard(
+              children: [
+                Text(
                   'Animal',
                 ),
                 SizedBox(
@@ -52,14 +60,40 @@ class _FiltrosPageState extends State<FiltrosPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       FaIcon(FontAwesomeIcons.dog),
-                      Text('Perros'),
+                      Text('Perro'),
                     ],
                   ),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       FaIcon(FontAwesomeIcons.cat),
-                      Text('Gatos'),
+                      Text('Gato'),
+                    ],
+                  ),
+                ])
+              ],
+            ),
+            CustomCard(
+              children: [
+                Text(
+                  'Sexo',
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                TransactionToggle(children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(FontAwesomeIcons.venus),
+                      Text('Hembra'),
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      FaIcon(FontAwesomeIcons.mars),
+                      Text('Macho'),
                     ],
                   ),
                 ])
@@ -114,13 +148,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
             ),
             CustomCard(children: [
               CheckBoxList(
-                children: [
-                  'Sale',
-                  'Credit',
-                  'Refund',
-                  'Loan',
-                  'Direct Material'
-                ],
+                children: ['Cachorro', 'Raza', 'Vacunado', 'Transito'],
               ),
             ]),
           ],
@@ -190,7 +218,7 @@ class DropDown extends StatefulWidget {
 }
 
 class _DropDownState extends State<DropDown> {
-  String dropdownValue = 'Newest First';
+  String dropdownValue = 'Mas cercano';
   @override
   Widget build(BuildContext context) {
     return DropdownButton(
@@ -202,6 +230,37 @@ class _DropDownState extends State<DropDown> {
       },
       isExpanded: true,
       items: ['Mas cercano', 'Mas reciente']
+          .map((e) => DropdownMenuItem(
+                child: Text(e),
+                value: e,
+              ))
+          .toList(),
+      underline: Container(
+        height: 3,
+        color: Colors.teal,
+      ),
+    );
+  }
+}
+
+class DropDownDos extends StatefulWidget {
+  @override
+  _DropDownStates createState() => _DropDownStates();
+}
+
+class _DropDownStates extends State<DropDownDos> {
+  String dropdownValue = 'Todo';
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton(
+      value: dropdownValue,
+      onChanged: (String? value) {
+        setState(() {
+          dropdownValue = value!;
+        });
+      },
+      isExpanded: true,
+      items: ['Todo', 'Ultimas 24hs', 'Ultimos 7 dias', 'Ultimos 30 dias']
           .map((e) => DropdownMenuItem(
                 child: Text(e),
                 value: e,

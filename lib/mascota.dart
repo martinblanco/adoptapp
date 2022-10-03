@@ -7,6 +7,8 @@ class Mascota {
   String edad;
   String sexo; //Hembra Macho
   String size; //Pequeño Mediano Grande Nose
+  String fotoPrincippal =
+      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg";
   bool isCachorro = false;
   bool isRaza = false;
   bool isTransito = false;

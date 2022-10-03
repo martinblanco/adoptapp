@@ -3,14 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:adoptapp/loginPage.dart';
 
 void main() async {
-  print('-- main');
-
   WidgetsFlutterBinding.ensureInitialized();
-  print('-- WidgetsFlutterBinding.ensureInitialized');
-
   await Firebase.initializeApp();
 
-  runApp(new MaterialApp(
+  runApp(MaterialApp(
     home: MyApp(),
   ));
 }
