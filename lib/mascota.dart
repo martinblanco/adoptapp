@@ -7,7 +7,7 @@ class Mascota {
   String edad;
   String sexo; //Hembra Macho
   String size; //Pequeño Mediano Grande Nose
-  String fotoPrincippal =
+  String fotoPerfil =
       "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg";
   bool isCachorro = false;
   bool isRaza = false;
@@ -21,7 +21,7 @@ class Mascota {
   late DatabaseReference _id;
 
   Mascota(this.nombre, this.edad, this.sexo, this.size, this.descripcion,
-      this.raza, this.user);
+      this.raza, this.user, this.fotoPerfil);
 
   void likeMascota(User user) {
     if (usersLiked.contains(user.uid)) {
@@ -45,6 +45,7 @@ class Mascota {
       'descripcion': descripcion,
       'raza': raza,
       'usuario': user,
+      'foto': fotoPerfil,
       'usersLiked': usersLiked.toList()
     };
   }
@@ -59,6 +60,7 @@ Mascota createMascota(record) {
     'descripcion': '',
     'raza': '',
     'usuario': '',
+    'foto': '',
     'usersLiked': [],
   };
 
@@ -71,7 +73,8 @@ Mascota createMascota(record) {
       attributes['size'],
       attributes['descripcion'],
       attributes['raza'],
-      attributes['usuario']);
+      attributes['usuario'],
+      attributes['foto']);
 
   mascota.usersLiked = Set.from(attributes['usersLiked']);
 

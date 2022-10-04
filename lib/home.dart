@@ -27,11 +27,6 @@ class _PetGridState extends State<PetGrid> {
     getAllMascotas().then((mascotas) => {
           setState(() {
             this.mascotas = mascotas;
-            this.mascotas.add(mascotas[0]);
-            this.mascotas.add(mascotas[0]);
-            this.mascotas.add(mascotas[0]);
-            this.mascotas.add(mascotas[0]);
-            this.mascotas.add(mascotas[0]);
           })
         });
   }
@@ -174,7 +169,7 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
                           decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               image: DecorationImage(
-                                  image: NetworkImage(item.fotoPrincippal),
+                                  image: NetworkImage(item.fotoPerfil),
                                   fit: BoxFit.cover,
                                   opacity: 0.5),
                               gradient: LinearGradient(

@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/mascota.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPet extends StatefulWidget {
   final String title = 'Registration';
@@ -11,11 +14,14 @@ class RegisterPet extends StatefulWidget {
 
 class _RegisterPetState extends State<RegisterPet> {
   List<Mascota> mascotas = [];
-  void newMascota(String text) {
+  late File imagen;
+  late String url;
+  Future<void> newMascota(String text) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
     print(user);
-    var mascota = new Mascota(text, text, text, text, text, text, user!.uid);
+    var mascota =
+        new Mascota(text, text, text, text, text, text, user!.uid, url);
     mascota.setId(saveMascota(mascota));
     this.setState(() {
       mascotas.add(mascota);
@@ -23,6 +29,7 @@ class _RegisterPetState extends State<RegisterPet> {
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
   late bool _success = false;
@@ -38,6 +45,10 @@ class _RegisterPetState extends State<RegisterPet> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
+            ElevatedButton(
+              onPressed: getImage,
+              child: Text("FOTO"),
+            ),
             buildTextField('Nomre'),
             buildTextField('Edad'),
             buildTextField('Tamaño'),
@@ -78,7 +89,7 @@ class _RegisterPetState extends State<RegisterPet> {
       ),
       child: Text(label),
       onPressed: () {
-        newMascota(_emailController.text);
+        uploadImage();
       });
 
   void dispose() {
@@ -87,20 +98,43 @@ class _RegisterPetState extends State<RegisterPet> {
     super.dispose();
   }
 
-  void _register() async {
-    //   final UserCredential userCredential =
-    //       await _auth.createUserWithEmailAndPassword(
-    //     email: _emailController.text,
-    //     password: _passswordController.text,
-    //   );
-    //   User? user = userCredential.user;
-    //   if (user != null) {
-    //     setState(() {
-    //       _success = true;
-    //       _userEmail = user.email!;
-    //     });
-    //   } else {
-    //     _success = false;
-    //   }
+  void uploadImage() async {
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference postImageRef = storage.ref().child("mascotas");
+    var timeKey = new DateTime.now();
+    final UploadTask uploadTask =
+        postImageRef.child(timeKey.toString() + ".jpg").putFile(imagen);
+
+    var imageUrl = await (await uploadTask).ref.getDownloadURL();
+    url = imageUrl.toString();
+    print(url);
+    newMascota(_emailController.text);
+    // saveToDataBase(url);
+  }
+
+  // void saveToDataBase(String url) {
+  //   var dbTmeKey = new DateTime.now();
+  //   var formatDate = new DateFormat('MMM d, yyyy');
+  //   var formatTime = new DateFormat('EEEE, hh:mm aaa');
+  //   String date = formatDate.format(dbTmeKey);
+  //   String time = formatTime.format(dbTmeKey);
+  //   DatabaseReference ref = FirebaseDatabase.instance.ref();
+  // }
+
+  Future getImage() async {
+    var tempImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      imagen = File(tempImage!.path);
+    });
+  }
+
+  bool validateAndSave() {
+    final form = formkey.currentState;
+    if (form!.validate()) {
+      form.save();
+      return true;
+    } else {
+      return false;
+    }
   }
 }

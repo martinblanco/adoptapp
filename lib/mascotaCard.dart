@@ -30,7 +30,7 @@ class _SinglePageState extends State<SinglePage> {
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height * 0.35,
               child: Image.network(
-                "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg",
+                widget.mascota.fotoPerfil,
                 fit: BoxFit.cover,
               ),
             ),
