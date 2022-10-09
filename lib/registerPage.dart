@@ -57,10 +57,12 @@ class _RegisterPageState extends State<RegisterPage> {
                 }
               },
             ),
-            FlatButton(
+            TextButton(
                 child: Text('Register'),
-                color: Colors.deepPurple,
-                textColor: Colors.white,
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () {
                   _register();
                 }),

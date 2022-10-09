@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_new
+
 import 'package:flutter/material.dart';
 import 'package:adoptapp/googlepage.dart';
 import 'package:adoptapp/registerPage.dart';
@@ -95,11 +97,15 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         new Padding(padding: new EdgeInsets.only(top: 30.0)),
-                        new RaisedButton(
-                          color: Colors.blue,
-                          shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(30.0)),
-                          padding: new EdgeInsets.all(16.0),
+                        new ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue, // background
+                              foregroundColor: Colors.white,
+                              shape: new RoundedRectangleBorder(
+                                  borderRadius:
+                                      new BorderRadius.circular(30.0)),
+                              padding: new EdgeInsets.all(16.0) // foreground
+                              ),
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
@@ -118,11 +124,15 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         // ignore: prefer_const_constructors
                         Divider(),
-                        new RaisedButton(
-                          color: Colors.blue,
-                          shape: new RoundedRectangleBorder(
-                              borderRadius: new BorderRadius.circular(30.0)),
-                          padding: new EdgeInsets.all(16.0),
+                        new ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue, // background
+                              foregroundColor: Colors.white,
+                              shape: new RoundedRectangleBorder(
+                                  borderRadius:
+                                      new BorderRadius.circular(30.0)),
+                              padding: new EdgeInsets.all(16.0) // foreground
+                              ),
                           child: new Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[

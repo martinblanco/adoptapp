@@ -14,7 +14,16 @@ class _FiltrosPageState extends State<FiltrosPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Filtros'),
-        leading: Icon(Icons.cancel),
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+            size: 20.0,
+          ),
+        ),
         backgroundColor: Colors.teal,
         actions: [
           TextButton(
