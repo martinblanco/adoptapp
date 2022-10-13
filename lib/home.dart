@@ -41,17 +41,20 @@ class _PetGridState extends State<PetGrid> {
   List<Widget> _list() {
     List<Widget> _widgetOptions = <Widget>[
       ItemTile(context, mascotas),
-      RegisterPet(),
       Text(
-        'Index 2: School',
+        'SOON',
         style: optionStyle,
       ),
       Text(
-        'Index 2: School',
+        'SOON',
         style: optionStyle,
       ),
       Text(
-        'Index 3: Settings',
+        'SOON',
+        style: optionStyle,
+      ),
+      Text(
+        'SOON',
         style: optionStyle,
       ),
     ];
@@ -63,51 +66,65 @@ class _PetGridState extends State<PetGrid> {
     //getUsuario(_auth.currentUser!.uid);
     updateMascotas();
     return Scaffold(
-        appBar: AppBar(
+      appBar: AppBar(
           title: Text("ADOPTAPP"),
           backgroundColor: Colors.orange,
           actions: [
-            ElevatedButton(
-              child: const Icon(
-                Icons.add_box_outlined,
-                color: Colors.white,
-                size: 20.0,
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.add_box_outlined),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) => RegisterPet(),
+                    ),
+                  );
+                },
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               ),
-              onPressed: () {},
-            )
-          ],
-        ),
-        body: Center(
-          child: _list().elementAt(_selectedIndex),
-        ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-              backgroundColor: Colors.red,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.volunteer_activism),
-              label: 'Veterinarias',
-              backgroundColor: Colors.green,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.info),
-              label: 'Informacion',
-              backgroundColor: Colors.purple,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.house_siding),
-              label: 'Refugios',
-              backgroundColor: Colors.pink,
+            Builder(
+              builder: (context) => IconButton(
+                icon: Icon(Icons.menu),
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
+                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
+              ),
             ),
           ],
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.amber[800],
-          onTap: _onItemTapped,
-        ),
-        endDrawer: menuPerfil());
+          automaticallyImplyLeading: false),
+      body: Center(
+        child: _list().elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.red,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.volunteer_activism),
+            label: 'Veterinarias',
+            backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info),
+            label: 'Informacion',
+            backgroundColor: Colors.purple,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.house_siding),
+            label: 'Refugios',
+            backgroundColor: Colors.pink,
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      endDrawer: menuPerfil(),
+    );
   }
 }
 
@@ -157,7 +174,6 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
                                       FiltrosPage(),
                                 ),
                               );
-                              ;
                             })),
                     SizedBox(
                       height: 15,
