@@ -42,7 +42,10 @@ class _PetGridState extends State<PetGrid> {
     List<Widget> _widgetOptions = <Widget>[
       ItemTile(context, mascotas),
       RegisterPet(),
-      FiltrosPage(),
+      Text(
+        'Index 2: School',
+        style: optionStyle,
+      ),
       Text(
         'Index 2: School',
         style: optionStyle,
@@ -63,6 +66,16 @@ class _PetGridState extends State<PetGrid> {
         appBar: AppBar(
           title: Text("ADOPTAPP"),
           backgroundColor: Colors.orange,
+          actions: [
+            ElevatedButton(
+              child: const Icon(
+                Icons.add_box_outlined,
+                color: Colors.white,
+                size: 20.0,
+              ),
+              onPressed: () {},
+            )
+          ],
         ),
         body: Center(
           child: _list().elementAt(_selectedIndex),
