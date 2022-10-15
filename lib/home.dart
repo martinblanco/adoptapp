@@ -1,10 +1,12 @@
 import 'package:adoptapp/filters.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/petRegister.dart';
 import 'package:adoptapp/profileMenu.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/mascota.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'mascotaCard.dart';
 
@@ -186,58 +188,98 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
               height: 20,
             ),
             Expanded(
-                child: GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-              children: mascotas
-                  .map((item) => Card(
-                        color: Colors.transparent,
-                        elevation: 0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              image: DecorationImage(
-                                  image: NetworkImage(item.fotoPerfil),
-                                  fit: BoxFit.cover,
-                                  opacity: 0.5),
-                              gradient: LinearGradient(
-                                  begin: Alignment.bottomRight,
-                                  colors: [
-                                    Colors.black.withOpacity(1),
-                                    Colors.black.withOpacity(1),
-                                  ])),
-                          child: Transform.translate(
-                            offset: Offset(60, -60),
-                            child: Container(
-                                margin: EdgeInsets.symmetric(
-                                    horizontal: 70, vertical: 70),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(40),
-                                    color: Colors.white),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.favorite,
-                                    size: 15,
+                child: SmartRefresher(
+                    enablePullDown: true,
+                    enablePullUp: true,
+                    header: ClassicHeader(),
+                    footer: CustomFooter(
+                      builder: (BuildContext context, LoadStatus? mode) {
+                        Widget body;
+                        if (mode == LoadStatus.idle) {
+                          body = Text("pull up load");
+                        } else if (mode == LoadStatus.loading) {
+                          body = CupertinoActivityIndicator();
+                        } else if (mode == LoadStatus.failed) {
+                          body = Text("Load Failed!Click retry!");
+                        } else if (mode == LoadStatus.canLoading) {
+                          body = Text("release to load more");
+                        } else {
+                          body = Text("No more Data");
+                        }
+                        return Container(
+                          height: 55.0,
+                          child: Center(child: body),
+                        );
+                      },
+                    ),
+                    controller: _refreshController,
+                    onRefresh: _onRefresh,
+                    onLoading: _onLoading,
+                    child: GridView.count(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                      children: mascotas
+                          .map((item) => Card(
+                                color: Colors.transparent,
+                                elevation: 0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(20),
+                                      image: DecorationImage(
+                                          image: NetworkImage(item.fotoPerfil),
+                                          fit: BoxFit.cover,
+                                          opacity: 0.5),
+                                      gradient: LinearGradient(
+                                          begin: Alignment.bottomRight,
+                                          colors: [
+                                            Colors.black.withOpacity(1),
+                                            Colors.black.withOpacity(1),
+                                          ])),
+                                  child: Transform.translate(
+                                    offset: Offset(60, -60),
+                                    child: Container(
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 70, vertical: 70),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(40),
+                                            color: Colors.white),
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.favorite,
+                                            size: 15,
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (BuildContext
+                                                        context) =>
+                                                    SinglePage(mascota: item),
+                                              ),
+                                            );
+                                          },
+                                        )),
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            SinglePage(mascota: item),
-                                      ),
-                                    );
-                                  },
-                                )),
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            ))
+                                ),
+                              ))
+                          .toList(),
+                    )))
           ],
         ),
       ),
     ),
   );
+}
+
+RefreshController _refreshController = RefreshController(initialRefresh: false);
+void _onRefresh() async {
+  await Future.delayed(Duration(milliseconds: 1000));
+  _refreshController.refreshCompleted();
+}
+
+void _onLoading() async {
+  await Future.delayed(Duration(milliseconds: 1000));
+  _refreshController.loadComplete();
 }
