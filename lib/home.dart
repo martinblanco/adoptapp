@@ -225,42 +225,85 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
                                 elevation: 0,
                                 child: Container(
                                   decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20),
-                                      image: DecorationImage(
-                                          image: NetworkImage(item.fotoPerfil),
-                                          fit: BoxFit.cover,
-                                          opacity: 0.5),
-                                      gradient: LinearGradient(
-                                          begin: Alignment.bottomRight,
-                                          colors: [
-                                            Colors.black.withOpacity(1),
-                                            Colors.black.withOpacity(1),
-                                          ])),
-                                  child: Transform.translate(
-                                    offset: Offset(60, -60),
-                                    child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 70, vertical: 70),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(40),
-                                            color: Colors.white),
-                                        child: IconButton(
-                                          icon: Icon(
-                                            Icons.favorite,
-                                            size: 15,
-                                          ),
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (BuildContext
-                                                        context) =>
-                                                    SinglePage(mascota: item),
+                                    borderRadius: BorderRadius.circular(20),
+                                    image: DecorationImage(
+                                        image: NetworkImage(item.fotoPerfil),
+                                        fit: BoxFit.cover,
+                                        opacity: 0.7),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black12,
+                                          spreadRadius: 0.5),
+                                    ],
+                                    gradient: LinearGradient(
+                                      colors: [Colors.black12, Colors.black87],
+                                      begin: Alignment.center,
+                                      stops: [0.4, 1],
+                                      end: Alignment.bottomCenter,
+                                    ),
+                                  ),
+                                  child: Stack(
+                                    children: [
+                                      Transform.translate(
+                                        offset: Offset(60, -60),
+                                        child: Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 40, vertical: 40),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(40),
+                                                color: Colors.white),
+                                            child: IconButton(
+                                              icon: Icon(
+                                                Icons.favorite,
+                                                size: 15,
                                               ),
-                                            );
-                                          },
-                                        )),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        SinglePage(
+                                                            mascota: item),
+                                                  ),
+                                                );
+                                              },
+                                            )),
+                                      ),
+                                      Positioned(
+                                        right: 10,
+                                        left: 10,
+                                        bottom: 10,
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.all(8),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Text(
+                                                    '${item.nombre}, 2',
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ))
