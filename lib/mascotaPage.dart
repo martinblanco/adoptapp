@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:adoptapp/mascota.dart';
+import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
 
 class SinglePage extends StatefulWidget {

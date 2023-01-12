@@ -1,14 +1,16 @@
 import 'package:adoptapp/filters.dart';
+import 'package:adoptapp/widget/filtroPanel.dart';
+import 'package:adoptapp/widget/mascotaCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/petRegister.dart';
-import 'package:adoptapp/profileMenu.dart';
+import 'package:adoptapp/widget/profileMenu.dart';
 import 'package:adoptapp/database.dart';
-import 'package:adoptapp/mascota.dart';
+import 'package:adoptapp/entity/mascota.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'mascotaCard.dart';
+import 'mascotaPage.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -139,51 +141,7 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
         padding: EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
-            Container(
-              width: double.infinity,
-              height: 55,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20), color: Colors.amber),
-              child: Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    gradient:
-                        LinearGradient(begin: Alignment.bottomRight, colors: [
-                      Colors.black.withOpacity(.4),
-                      Colors.black.withOpacity(.2),
-                    ])),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Container(
-                        height: 25,
-                        margin: const EdgeInsets.symmetric(horizontal: 40),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Colors.white),
-                        child: TextButton(
-                            style: TextButton.styleFrom(
-                              primary: Colors.black,
-                              backgroundColor: Colors.white,
-                              textStyle: const TextStyle(fontSize: 10),
-                            ),
-                            child: Text("Filtros"),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      FiltrosPage(),
-                                ),
-                              );
-                            })),
-                    SizedBox(
-                      height: 15,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            filtroPanel(),
             SizedBox(
               height: 20,
             ),
@@ -220,93 +178,7 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
                       crossAxisSpacing: 10,
                       mainAxisSpacing: 10,
                       children: mascotas
-                          .map((item) => Card(
-                                color: Colors.transparent,
-                                elevation: 0,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(20),
-                                    image: DecorationImage(
-                                        image: NetworkImage(item.fotoPerfil),
-                                        fit: BoxFit.cover,
-                                        opacity: 0.7),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.black12,
-                                          spreadRadius: 0.5),
-                                    ],
-                                    gradient: LinearGradient(
-                                      colors: [Colors.black12, Colors.black87],
-                                      begin: Alignment.center,
-                                      stops: [0.4, 1],
-                                      end: Alignment.bottomCenter,
-                                    ),
-                                  ),
-                                  child: Stack(
-                                    children: [
-                                      Transform.translate(
-                                        offset: Offset(60, -60),
-                                        child: Container(
-                                            margin: EdgeInsets.symmetric(
-                                                horizontal: 40, vertical: 40),
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(40),
-                                                color: Colors.white),
-                                            child: IconButton(
-                                              icon: Icon(
-                                                Icons.favorite,
-                                                size: 15,
-                                              ),
-                                              onPressed: () {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        SinglePage(
-                                                            mascota: item),
-                                                  ),
-                                                );
-                                              },
-                                            )),
-                                      ),
-                                      Positioned(
-                                        right: 10,
-                                        left: 10,
-                                        bottom: 10,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.end,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.all(8),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Text(
-                                                    '${item.nombre}, 2',
-                                                    style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontSize: 18,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ))
+                          .map((item) => mascotaCard(mascota: item))
                           .toList(),
                     )))
           ],

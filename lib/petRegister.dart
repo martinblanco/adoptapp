@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adoptapp/database.dart';
-import 'package:adoptapp/mascota.dart';
+import 'package:adoptapp/entity/mascota.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterPet extends StatefulWidget {
