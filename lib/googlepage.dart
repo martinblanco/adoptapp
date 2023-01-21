@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert' show json;
-
-import 'package:firebase_auth/firebase_auth.dart';
 import "package:http/http.dart" as http;
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';

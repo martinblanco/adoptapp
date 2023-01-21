@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
-import 'package:adoptapp/mascotaPage.dart';
+import 'package:adoptapp/page/mascotaPage.dart';
 import 'package:flutter/material.dart';
 import '../entity/mascota.dart';
 

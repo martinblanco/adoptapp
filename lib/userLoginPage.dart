@@ -1,9 +1,9 @@
 // ignore_for_file: unnecessary_new
 
 import 'package:flutter/material.dart';
-import 'package:adoptapp/googlepage.dart';
-import 'package:adoptapp/registerPage.dart';
-import 'package:adoptapp/home.dart';
+import 'package:adoptapp/googlePage.dart';
+import 'package:adoptapp/userRegisterPage.dart';
+import 'package:adoptapp/homePage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:adoptapp/entity/mascota.dart';
 

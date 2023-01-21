@@ -1,9 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_new
 
-import 'package:adoptapp/filters.dart';
-import 'package:adoptapp/mascotaPage.dart';
+import 'package:adoptapp/page/filtroBusquedaPage.dart';
 import 'package:flutter/material.dart';
-import '../entity/mascota.dart';
 
 class filtroPanel extends StatefulWidget {
   @override

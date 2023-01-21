@@ -1,16 +1,13 @@
-import 'package:adoptapp/filters.dart';
-import 'package:adoptapp/widget/filtroPanel.dart';
+import 'package:adoptapp/widget/filtroBusquedaPanel.dart';
 import 'package:adoptapp/widget/mascotaCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:adoptapp/petRegister.dart';
-import 'package:adoptapp/widget/profileMenu.dart';
+import 'package:adoptapp/page/mascotaRegisterPage.dart';
+import 'package:adoptapp/widget/perfilMenu.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
-
-import 'mascotaPage.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
