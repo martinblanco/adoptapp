@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import '../entity/mascota.dart';
 
 class mascotaCard extends StatefulWidget {
-  Mascota mascota;
+  final Mascota mascota;
+  final int? index;
 
-  mascotaCard({
-    Key? key,
-    required this.mascota,
-  }) : super(key: key);
+  mascotaCard({required this.mascota, required this.index});
 
   @override
   _mascotaCardState createState() => new _mascotaCardState();
@@ -19,75 +17,159 @@ class mascotaCard extends StatefulWidget {
 class _mascotaCardState extends State<mascotaCard> {
   @override
   Widget build(BuildContext context) {
-    return new Card(
-      color: Colors.transparent,
-      elevation: 0,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => mascotaPage(mascota: widget.mascota)),
+        );
+      },
       child: Container(
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
-              image: NetworkImage(widget.mascota.fotoPerfil),
-              fit: BoxFit.cover,
-              opacity: 0.7),
-          boxShadow: [
-            BoxShadow(color: Colors.black12, spreadRadius: 0.5),
-          ],
-          gradient: LinearGradient(
-            colors: [Colors.black12, Colors.black87],
-            begin: Alignment.center,
-            stops: [0.4, 1],
-            end: Alignment.bottomCenter,
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          border: Border.all(
+            color: Colors.orange,
+            width: 1,
           ),
         ),
-        child: Stack(
-          children: [
-            Transform.translate(
-              offset: Offset(60, -60),
-              child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 40, vertical: 40),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      color: Colors.white),
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.favorite,
-                      size: 15,
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              SinglePage(mascota: widget.mascota),
-                        ),
-                      );
-                    },
-                  )),
-            ),
-            Positioned(
-              right: 10,
-              left: 10,
-              bottom: 10,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        margin: EdgeInsets.only(
+            right: widget.index != null ? 16 : 0,
+            left: widget.index == 0 ? 16 : 0,
+            bottom: 16),
+        width: 220,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              child: Stack(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${widget.mascota.nombre}, 2',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                  Hero(
+                    tag: widget.mascota.fotoPerfil,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.orange,
+                          width: 1,
                         ),
-                      ],
+                        image: DecorationImage(
+                          image: NetworkImage(widget.mascota.fotoPerfil),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
                     ),
+                  ),
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.orange,
+                            width: 1,
+                          ),
+                          shape: BoxShape.circle,
+                          color: widget.mascota.isRaza
+                              ? Colors.red[400]
+                              : Colors.white,
+                        ),
+                        child: Icon(
+                          Icons.favorite,
+                          size: 16,
+                          color: widget.mascota.isRaza
+                              ? Colors.white
+                              : Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: widget.mascota.descripcion == "Adoption"
+                          ? Colors.orange[100]
+                          : widget.mascota.descripcion == "Disappear"
+                              ? Colors.red[100]
+                              : Colors.blue[100],
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(10),
+                      ),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Text(
+                      widget.mascota.descripcion,
+                      style: TextStyle(
+                        color: widget.mascota.descripcion == "Adoption"
+                            ? Colors.orange
+                            : widget.mascota.descripcion == "Disappear"
+                                ? Colors.red
+                                : Colors.blue,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    widget.mascota.nombre,
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.location_on,
+                        color: Colors.grey[600],
+                        size: 18,
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        widget.mascota.descripcion,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 4,
+                      ),
+                      Text(
+                        "(" + "2" + "km)",
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

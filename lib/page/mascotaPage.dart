@@ -1,8 +1,8 @@
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
 
-class SinglePage extends StatefulWidget {
-  SinglePage({
+class mascotaPage extends StatefulWidget {
+  mascotaPage({
     Key? key,
     required this.mascota,
   }) : super(key: key);
@@ -10,10 +10,10 @@ class SinglePage extends StatefulWidget {
   Mascota mascota;
 
   @override
-  State<SinglePage> createState() => _SinglePageState();
+  State<mascotaPage> createState() => _MascotaPageState();
 }
 
-class _SinglePageState extends State<SinglePage> {
+class _MascotaPageState extends State<mascotaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

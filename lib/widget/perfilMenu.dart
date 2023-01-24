@@ -7,26 +7,16 @@ import 'package:flutter/material.dart';
 final user = FirebaseAuth.instance.currentUser;
 
 class menuPerfil extends StatefulWidget {
+  menuPerfil(User? this.currentUser);
+  User? currentUser;
   @override
   _menuPerfilState createState() => new _menuPerfilState();
 }
 
 class _menuPerfilState extends State<menuPerfil> {
-  getUser() {
-    if (user != null) {
-      final name = user!.displayName;
-      final email = user!.email;
-      final photoUrl = user!.photoURL;
-      final emailVerified = user!.emailVerified;
-      final uid = user!.uid;
-      Usuario usuario = new Usuario(email!, name!, "false");
-      return usuario;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    Usuario usuario = getUser();
+    Usuario usuario = new Usuario("email?", "asd", "false");
     return new Drawer(
       child: ListView(
         // Remove padding
@@ -47,10 +37,6 @@ class _menuPerfilState extends State<menuPerfil> {
             ),
             decoration: BoxDecoration(
               color: Colors.orange,
-              image: DecorationImage(
-                  fit: BoxFit.fill,
-                  image: NetworkImage(
-                      'https://oflutter.com/wp-content/uploads/2021/02/profile-bg3.jpg')),
             ),
           ),
           ListTile(
@@ -62,15 +48,6 @@ class _menuPerfilState extends State<menuPerfil> {
             leading: Icon(Icons.messenger_sharp),
             title: Text('Chats'),
             onTap: () => null,
-          ),
-          ListTile(
-            leading: Icon(Icons.share),
-            title: Text('Share'),
-            onTap: () => null,
-          ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Request'),
           ),
           Divider(),
           ListTile(

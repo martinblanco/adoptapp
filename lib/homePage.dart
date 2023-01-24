@@ -1,12 +1,12 @@
 import 'package:adoptapp/widget/filtroBusquedaPanel.dart';
 import 'package:adoptapp/widget/mascotaCard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/page/mascotaRegisterPage.dart';
 import 'package:adoptapp/widget/perfilMenu.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,15 +41,11 @@ class _PetGridState extends State<PetGrid> {
 
   List<Widget> _list() {
     List<Widget> _widgetOptions = <Widget>[
+      Text(
+        'SOON',
+        style: optionStyle,
+      ),
       ItemTile(context, mascotas),
-      Text(
-        'SOON',
-        style: optionStyle,
-      ),
-      Text(
-        'SOON',
-        style: optionStyle,
-      ),
       Text(
         'SOON',
         style: optionStyle,
@@ -100,19 +96,14 @@ class _PetGridState extends State<PetGrid> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.volunteer_activism),
+            label: 'Salud',
             backgroundColor: Colors.red,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.volunteer_activism),
-            label: 'Veterinarias',
+            icon: Icon(Icons.pets),
+            label: 'Mascotas',
             backgroundColor: Colors.green,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.info),
-            label: 'Informacion',
-            backgroundColor: Colors.purple,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.house_siding),
@@ -121,10 +112,10 @@ class _PetGridState extends State<PetGrid> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
+        selectedItemColor: Colors.orange,
         onTap: _onItemTapped,
       ),
-      endDrawer: menuPerfil(),
+      endDrawer: menuPerfil(_auth.currentUser),
     );
   }
 }
@@ -143,41 +134,18 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
               height: 20,
             ),
             Expanded(
-                child: SmartRefresher(
-                    enablePullDown: true,
-                    enablePullUp: true,
-                    header: ClassicHeader(),
-                    footer: CustomFooter(
-                      builder: (BuildContext context, LoadStatus? mode) {
-                        Widget body;
-                        if (mode == LoadStatus.idle) {
-                          body = Text("pull up load");
-                        } else if (mode == LoadStatus.loading) {
-                          body = CupertinoActivityIndicator();
-                        } else if (mode == LoadStatus.failed) {
-                          body = Text("Load Failed!Click retry!");
-                        } else if (mode == LoadStatus.canLoading) {
-                          body = Text("release to load more");
-                        } else {
-                          body = Text("No more Data");
-                        }
-                        return Container(
-                          height: 55.0,
-                          child: Center(child: body),
-                        );
-                      },
-                    ),
-                    controller: _refreshController,
-                    onRefresh: _onRefresh,
-                    onLoading: _onLoading,
-                    child: GridView.count(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                      children: mascotas
-                          .map((item) => mascotaCard(mascota: item))
-                          .toList(),
-                    )))
+                child: GridView.count(
+              physics: BouncingScrollPhysics(),
+              childAspectRatio: 1 / 1.55,
+              crossAxisCount: 2,
+              crossAxisSpacing: 15,
+              children: mascotas
+                  .map((item) => mascotaCard(
+                        mascota: item,
+                        index: null,
+                      ))
+                  .toList(),
+            ))
           ],
         ),
       ),
