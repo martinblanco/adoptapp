@@ -20,8 +20,8 @@ class _RegisterPetState extends State<RegisterPet> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
     print(user);
-    var mascota =
-        new Mascota(text, text, text, text, text, text, user!.uid, url);
+    var mascota = new Mascota(text, Animal.perro, text, Sexo.hembra,
+        Size.mediano, text, text, user!.uid, url);
     mascota.setId(saveMascota(mascota));
     this.setState(() {
       mascotas.add(mascota);

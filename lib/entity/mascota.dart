@@ -1,14 +1,21 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
+enum Animal { gato, perro }
+
+enum Size { chico, mediano, grande, normal }
+
+enum Sexo { hembra, macho }
+
 class Mascota {
   String user;
+  Animal animal;
   String nombre;
   String edad;
-  String sexo; //Hembra Macho
-  String size; //Pequeño Mediano Grande Nose
+  Sexo sexo;
+  Size size;
   String fotoPerfil =
-      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg";
+      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg"; //tddo imagen default
   bool isCachorro = false;
   bool isRaza = false;
   bool isTransito = false;
@@ -17,11 +24,10 @@ class Mascota {
   String descripcion;
   List<String> requisitos = [];
   Set usersLiked = {};
-  // ignore: unused_field
   late DatabaseReference _id;
 
-  Mascota(this.nombre, this.edad, this.sexo, this.size, this.descripcion,
-      this.raza, this.user, this.fotoPerfil);
+  Mascota(this.nombre, this.animal, this.edad, this.sexo, this.size,
+      this.descripcion, this.raza, this.user, this.fotoPerfil);
 
   void likeMascota(User user) {
     if (usersLiked.contains(user.uid)) {
@@ -39,6 +45,7 @@ class Mascota {
   Map<String, dynamic> toJson() {
     return {
       'nombre': nombre,
+      'animal': animal,
       'edad': edad,
       'sexo': sexo,
       'size': size,
@@ -54,6 +61,7 @@ class Mascota {
 Mascota createMascota(record) {
   Map<String, dynamic> attributes = {
     'nombre': '',
+    'animal': '',
     'edad': '',
     'sexo': '',
     'size': '',
@@ -68,6 +76,7 @@ Mascota createMascota(record) {
 
   Mascota mascota = Mascota(
       attributes['nombre'],
+      attributes['animal'],
       attributes['edad'],
       attributes['sexo'],
       attributes['size'],
