@@ -1,9 +1,13 @@
 import 'dart:io';
+import 'package:adoptapp/page/filtroBusquedaPage.dart';
+import 'package:adoptapp/widget/CustonCardWidget.dart';
+import 'package:adoptapp/widget/selectorWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
 class RegisterPet extends StatefulWidget {
@@ -16,68 +20,67 @@ class _RegisterPetState extends State<RegisterPet> {
   List<Mascota> mascotas = [];
   late File imagen;
   late String url;
-  Future<void> newMascota(String text) async {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final User? user = _auth.currentUser;
-    print(user);
-    var mascota = new Mascota(text, Animal.perro, text, Sexo.hembra,
-        Size.mediano, text, text, user!.uid, url);
-    mascota.setId(saveMascota(mascota));
-    this.setState(() {
-      mascotas.add(mascota);
-    });
-  }
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
-  late bool _success = false;
+  late final bool _success = false;
   late String _userEmail;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(""),
       ),
       body: Form(
         key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(
-              onPressed: getImage,
-              child: Text("FOTO"),
-            ),
-            buildTextField('Nomre'),
-            buildTextField('Edad'),
-            buildTextField('Tamaño'),
-            buildTextField('Descripcion'),
-            buildBotton('Agregar Mascota'),
-            Container(
-              alignment: Alignment.center,
-              child: Text(_success == false
-                  ? ''
-                  : (_success
-                      ? 'Successfully registered' + _userEmail
-                      : 'Registration failed')),
-            )
-          ],
-        ),
+        child: ListView(children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: getImage,
+                child: Text("FOTO"),
+              ),
+              buildTextField('Nombre'),
+              buildTextField('Descripcion'),
+              selectorDouble("Animal", "Perro", FontAwesomeIcons.dog, "Gato",
+                  FontAwesomeIcons.cat),
+              selectorDouble("Sexo", "Hembra", FontAwesomeIcons.venus, "Macho",
+                  FontAwesomeIcons.mars),
+              selectorTriple("Temaño", "Chico", FontAwesomeIcons.s, "Mediano",
+                  FontAwesomeIcons.m, "Grande", FontAwesomeIcons.l),
+              buildBotton('Agregar Mascota'),
+              Container(
+                alignment: Alignment.center,
+                child: Text(_success == false
+                    ? ''
+                    : (_success
+                        ? 'Successfully registered' + _userEmail
+                        : 'Registration failed')),
+              )
+            ],
+          )
+        ]),
       ),
     );
   }
 
-  Widget buildTextField(String label) => TextFormField(
+  Widget buildTextField(String label) => Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextFormField(
+        focusNode: FocusNode(),
         controller: _emailController,
-        maxLength: 10,
-        decoration: InputDecoration(labelText: label),
+        decoration: InputDecoration(
+            border: const OutlineInputBorder(), labelText: label),
         validator: (String? value) {
           if (value!.isEmpty) {
             return 'Este campo no puede estar vacio';
           }
+          return null;
         },
-      );
+      ));
 
   Widget buildBotton(String label) => TextButton(
       style: TextButton.styleFrom(
@@ -110,6 +113,17 @@ class _RegisterPetState extends State<RegisterPet> {
     print(url);
     newMascota(_emailController.text);
     // saveToDataBase(url);
+  }
+
+  Future<void> newMascota(String text) async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final User? user = _auth.currentUser;
+    var mascota = Mascota(text, Animal.perro, text, Sexo.hembra, Size.mediano,
+        text, text, user!.uid, url);
+    mascota.setId(saveMascota(mascota));
+    setState(() {
+      mascotas.add(mascota);
+    });
   }
 
   // void saveToDataBase(String url) {

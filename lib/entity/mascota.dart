@@ -76,10 +76,14 @@ Mascota createMascota(record) {
 
   Mascota mascota = Mascota(
       attributes['nombre'],
-      attributes['animal'],
+      attributes['animal'] == "gato" ? Animal.gato : Animal.perro,
       attributes['edad'],
-      attributes['sexo'],
-      attributes['size'],
+      attributes['sexo'] == "hembra" ? Sexo.hembra : Sexo.macho,
+      attributes['size'] == "chico"
+          ? Size.chico
+          : attributes['size'] == "mediano"
+              ? Size.mediano
+              : Size.grande,
       attributes['descripcion'],
       attributes['raza'],
       attributes['usuario'],

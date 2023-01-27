@@ -34,7 +34,7 @@ class _mascotaCardState extends State<mascotaCard> {
           ),
           border: Border.all(
             color: Colors.orange,
-            width: 1,
+            width: 1.5,
           ),
         ),
         margin: EdgeInsets.only(
@@ -80,16 +80,12 @@ class _mascotaCardState extends State<mascotaCard> {
                             width: 1,
                           ),
                           shape: BoxShape.circle,
-                          color: widget.mascota.isRaza
-                              ? Colors.red[400]
-                              : Colors.white,
+                          color: Colors.white,
                         ),
                         child: Icon(
                           Icons.favorite,
                           size: 16,
-                          color: widget.mascota.isRaza
-                              ? Colors.white
-                              : Colors.grey,
+                          color: Colors.red,
                         ),
                       ),
                     ),
@@ -102,31 +98,50 @@ class _mascotaCardState extends State<mascotaCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      color: widget.mascota.descripcion == "Adoption"
-                          ? Colors.orange[100]
-                          : widget.mascota.descripcion == "Disappear"
-                              ? Colors.red[100]
-                              : Colors.blue[100],
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: Text(
-                      widget.mascota.descripcion,
-                      style: TextStyle(
-                        color: widget.mascota.descripcion == "Adoption"
-                            ? Colors.orange
-                            : widget.mascota.descripcion == "Disappear"
-                                ? Colors.red
-                                : Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
+                  Row(children: [
+                    Padding(
+                        padding: EdgeInsets.all(1),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.orange,
+                                width: 1,
+                              ),
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Icon(
+                                (widget.mascota.sexo == Sexo.hembra
+                                    ? Icons.female
+                                    : widget.mascota.sexo == Sexo.macho
+                                        ? Icons.male
+                                        : Icons.pets),
+                                color: Colors.orange,
+                                size: 16))),
+                    Padding(
+                        padding: EdgeInsets.all(1),
+                        child: Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.orange,
+                                width: 1,
+                              ),
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Text(
+                              (widget.mascota.size == Size.chico
+                                  ? "S"
+                                  : widget.mascota.size == Size.mediano
+                                      ? "M"
+                                      : "L"),
+                              style: TextStyle(color: Colors.orange),
+                            ))),
+                  ]),
                   SizedBox(
                     height: 8,
                   ),
@@ -152,7 +167,7 @@ class _mascotaCardState extends State<mascotaCard> {
                         width: 4,
                       ),
                       Text(
-                        widget.mascota.descripcion,
+                        "CULO",
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -162,7 +177,7 @@ class _mascotaCardState extends State<mascotaCard> {
                         width: 4,
                       ),
                       Text(
-                        "(" + "2" + "km)",
+                        "(2km)",
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,

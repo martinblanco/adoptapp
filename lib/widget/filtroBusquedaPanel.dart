@@ -26,27 +26,82 @@ class _filtroPanelState extends State<filtroPanel> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            Container(
-                height: 25,
-                margin: const EdgeInsets.symmetric(horizontal: 40),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white),
-                child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.black,
-                      backgroundColor: Colors.white,
-                      textStyle: const TextStyle(fontSize: 10),
-                    ),
-                    child: Text("Filtros"),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => FiltrosPage(),
+            Row(
+              children: [
+                Container(
+                    height: 25,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                          backgroundColor: Colors.white,
+                          textStyle: const TextStyle(fontSize: 10),
                         ),
-                      );
-                    })),
+                        child: Icon(
+                          Icons.list,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => FiltrosPage(),
+                            ),
+                          );
+                        })),
+                Container(
+                    height: 25,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                          backgroundColor: Colors.white,
+                          textStyle: const TextStyle(fontSize: 10),
+                        ),
+                        child: Icon(
+                          Icons.pets,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => FiltrosPage(),
+                            ),
+                          );
+                        })),
+                Container(
+                    height: 25,
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.white),
+                    child: TextButton(
+                        style: TextButton.styleFrom(
+                          primary: Colors.black,
+                          backgroundColor: Colors.white,
+                          textStyle: const TextStyle(fontSize: 10),
+                        ),
+                        child: Icon(
+                          Icons.pets,
+                          size: 15,
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => FiltrosPage(),
+                            ),
+                          );
+                        }))
+              ],
+            ),
             SizedBox(
               height: 15,
             ),

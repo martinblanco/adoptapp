@@ -1,3 +1,5 @@
+import 'package:adoptapp/widget/CustonCardWidget.dart';
+import 'package:adoptapp/widget/selectorWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -56,130 +58,18 @@ class _FiltrosPageState extends State<FiltrosPage> {
                 DropDownDos(),
               ],
             ),
-            CustomCard(
-              children: [
-                Text(
-                  'Animal',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TransactionToggle(children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(FontAwesomeIcons.dog),
-                      Text('Perro'),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(FontAwesomeIcons.cat),
-                      Text('Gato'),
-                    ],
-                  ),
-                ])
-              ],
-            ),
-            CustomCard(
-              children: [
-                Text(
-                  'Sexo',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TransactionToggle(children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(FontAwesomeIcons.venus),
-                      Text('Hembra'),
-                    ],
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      FaIcon(FontAwesomeIcons.mars),
-                      Text('Macho'),
-                    ],
-                  ),
-                ])
-              ],
-            ),
-            CustomCard(
-              children: [
-                Text(
-                  'Tamaño',
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                TransactionToggle(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.recommend,
-                          color: Colors.green,
-                          size: 30,
-                        ),
-                        Text('Pequeño'),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.thumb_down,
-                          color: Colors.yellow[800],
-                          size: 30,
-                        ),
-                        Text('Mediano'),
-                      ],
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FaIcon(
-                          Icons.media_bluetooth_off,
-                          color: Colors.red[600],
-                          size: 30,
-                        ),
-                        Text('Grande'),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
+            selectorDouble("Animal", "Perro", FontAwesomeIcons.dog, "Gato",
+                FontAwesomeIcons.cat),
+            selectorDouble("Sexo", "Hembra", FontAwesomeIcons.venus, "Macho",
+                FontAwesomeIcons.mars),
+            selectorTriple("Temaño", "Chico", FontAwesomeIcons.s, "Mediano",
+                FontAwesomeIcons.m, "Grande", FontAwesomeIcons.l),
             CustomCard(children: [
               CheckBoxList(
                 children: ['Cachorro', 'Raza', 'Vacunado', 'Transito'],
               ),
             ]),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class CustomCard extends StatelessWidget {
-  CustomCard({this.children});
-
-  final children;
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 10,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: children,
         ),
       ),
     );
@@ -278,58 +168,6 @@ class _DropDownStates extends State<DropDownDos> {
       underline: Container(
         height: 3,
         color: Colors.teal,
-      ),
-    );
-  }
-}
-
-class TransactionToggle extends StatefulWidget {
-  TransactionToggle({required this.children}) {
-    _isSelected = List.generate(children.length, (index) => false);
-  }
-  final List<Widget> children;
-  late final List<bool> _isSelected;
-  @override
-  _TransactionToggleState createState() => _TransactionToggleState();
-}
-
-class _TransactionToggleState extends State<TransactionToggle> {
-  @override
-  Widget build(BuildContext context) {
-    var children = widget.children;
-    var _isSelected = widget._isSelected;
-    return Center(
-      child: ToggleButtons(
-        children: children,
-        textStyle: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.w500,
-        ),
-        onPressed: (int index) {
-          setState(() {
-            for (int buttonIndex = 0;
-                buttonIndex < _isSelected.length;
-                buttonIndex++) {
-              if (buttonIndex == index) {
-                if (!_isSelected[index]) _isSelected[buttonIndex] = true;
-              } else {
-                _isSelected[buttonIndex] = false;
-              }
-            }
-          });
-        },
-        isSelected: _isSelected,
-        borderRadius: BorderRadius.circular(30),
-        selectedColor: Colors.white,
-        fillColor: Colors.teal,
-        borderColor: Colors.teal,
-        selectedBorderColor: Colors.teal,
-        borderWidth: 2,
-        splashColor: Colors.teal[100],
-        constraints: BoxConstraints.expand(
-            width:
-                MediaQuery.of(context).size.width / (1.2 * _isSelected.length),
-            height: 60),
       ),
     );
   }
