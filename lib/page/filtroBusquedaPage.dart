@@ -1,9 +1,13 @@
-import 'package:adoptapp/widget/CustonCardWidget.dart';
-import 'package:adoptapp/widget/selectorWidget.dart';
+import 'package:adoptapp/widget/custonCardWidget.dart';
+import 'package:adoptapp/widget/selectorCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../entity/mascota.dart';
+
 class FiltrosPage extends StatefulWidget {
+  late SelectorCard animal;
+
   @override
   _FiltrosPageState createState() => _FiltrosPageState();
 }
@@ -28,7 +32,10 @@ class _FiltrosPageState extends State<FiltrosPage> {
         actions: [
           TextButton(
             child: const Text('LIMPIAR'),
-            onPressed: () {},
+            onPressed: () {
+              print(widget.animal.selected());
+              print(Animal.values[widget.animal.selected()].name);
+            },
           ),
           TextButton(
             child: const Text('APLICAR'),
@@ -56,7 +63,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
                 DropDownDos(),
               ],
             ),
-            SelectorCard(
+            widget.animal = SelectorCard(
                 title: "Animal",
                 texts: const ["Perro", "Gato"],
                 icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),

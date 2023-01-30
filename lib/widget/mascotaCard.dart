@@ -113,9 +113,9 @@ class _mascotaCardState extends State<mascotaCard> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: Icon(
-                                (widget.mascota.sexo == Sexo.hembra
+                                (widget.mascota.sexo == Sexo.hembra.name
                                     ? Icons.female
-                                    : widget.mascota.sexo == Sexo.macho
+                                    : widget.mascota.sexo == Sexo.macho.name
                                         ? Icons.male
                                         : Icons.pets),
                                 color: Colors.white,
@@ -134,9 +134,9 @@ class _mascotaCardState extends State<mascotaCard> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: Text(
-                              (widget.mascota.size == Size.chico
+                              (widget.mascota.size == Size.chico.name
                                   ? "S"
-                                  : widget.mascota.size == Size.mediano
+                                  : widget.mascota.size == Size.mediano.name
                                       ? "M"
                                       : "L"),
                               style: TextStyle(color: Colors.white),

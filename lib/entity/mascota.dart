@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 
-enum Animal { gato, perro }
+enum Animal { perro, gato }
 
 enum Size { chico, mediano, grande, normal }
 
@@ -9,11 +9,11 @@ enum Sexo { hembra, macho }
 
 class Mascota {
   String user;
-  Animal animal;
+  String animal;
   String nombre;
   String edad;
-  Sexo sexo;
-  Size size;
+  String sexo;
+  String size;
   String fotoPerfil =
       "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg"; //tddo imagen default
   bool isCachorro = false;
@@ -76,14 +76,10 @@ Mascota createMascota(record) {
 
   Mascota mascota = Mascota(
       attributes['nombre'],
-      attributes['animal'] == "gato" ? Animal.gato : Animal.perro,
+      attributes['animal'],
       attributes['edad'],
-      attributes['sexo'] == "hembra" ? Sexo.hembra : Sexo.macho,
-      attributes['size'] == "chico"
-          ? Size.chico
-          : attributes['size'] == "mediano"
-              ? Size.mediano
-              : Size.grande,
+      attributes['sexo'],
+      attributes['size'],
       attributes['descripcion'],
       attributes['raza'],
       attributes['usuario'],

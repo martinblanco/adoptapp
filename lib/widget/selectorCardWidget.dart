@@ -26,6 +26,10 @@ class SelectorCard extends StatefulWidget {
   List<Widget> children = [];
   late final List<bool> _isSelected;
 
+  int selected() {
+    return indexSelected;
+  }
+
   @override
   _SelectorCardState createState() => _SelectorCardState();
 }

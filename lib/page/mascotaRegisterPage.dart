@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:adoptapp/widget/selectorWidget.dart';
+import 'package:adoptapp/widget/selectorCardWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,6 +10,9 @@ import 'package:image_picker/image_picker.dart';
 
 class RegisterPet extends StatefulWidget {
   final String title = 'Registration';
+  late SelectorCard animal;
+  late SelectorCard sexo;
+  late SelectorCard size;
 
   State<StatefulWidget> createState() => _RegisterPetState();
 }
@@ -24,8 +27,6 @@ class _RegisterPetState extends State<RegisterPet> {
   final TextEditingController _passswordController = TextEditingController();
   late final bool _success = false;
   late String _userEmail;
-
-  var hola;
 
   @override
   Widget build(BuildContext context) {
@@ -45,15 +46,15 @@ class _RegisterPetState extends State<RegisterPet> {
               ),
               buildTextField('Nombre'),
               buildTextField('Descripcion'),
-              SelectorCard(
+              widget.animal = SelectorCard(
                   title: "Animal",
                   texts: const ["Perro", "Gato"],
                   icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),
-              SelectorCard(
+              widget.sexo = SelectorCard(
                   title: "Sexo",
                   texts: const ["Hembra", "Macho"],
                   icons: const [FontAwesomeIcons.venus, FontAwesomeIcons.mars]),
-              SelectorCard(title: "Tamaño", texts: const [
+              widget.size = SelectorCard(title: "Tamaño", texts: const [
                 "Chico",
                 "Mediano",
                 "Grande"
@@ -115,7 +116,6 @@ class _RegisterPetState extends State<RegisterPet> {
   void uploadImage() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference postImageRef = storage.ref().child("mascotas");
-
     var timeKey = new DateTime.now();
     final UploadTask uploadTask =
         postImageRef.child(timeKey.toString() + ".jpg").putFile(imagen);
@@ -130,8 +130,16 @@ class _RegisterPetState extends State<RegisterPet> {
   Future<void> newMascota(String text) async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
-    var mascota = Mascota(text, Animal.perro, text, Sexo.hembra, Size.mediano,
-        text, text, user!.uid, url);
+    var mascota = Mascota(
+        text,
+        Animal.values[widget.animal.selected()].name,
+        text,
+        Sexo.values[widget.sexo.selected()].name,
+        Size.values[widget.size.selected()].name,
+        text,
+        text,
+        user!.uid,
+        url);
     mascota.setId(saveMascota(mascota));
     setState(() {
       mascotas.add(mascota);
