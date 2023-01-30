@@ -6,7 +6,6 @@ class Usuario {
   String userName;
   String isRefugio;
   late List<Mascota> mascotas = [];
-  // ignore: unused_field
   late DatabaseReference _id;
 
   Usuario(this.mail, this.userName, this.isRefugio);

@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:adoptapp/page/filtroBusquedaPage.dart';
-import 'package:adoptapp/widget/CustonCardWidget.dart';
 import 'package:adoptapp/widget/selectorWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,6 +25,8 @@ class _RegisterPetState extends State<RegisterPet> {
   late final bool _success = false;
   late String _userEmail;
 
+  var hola;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,12 +45,23 @@ class _RegisterPetState extends State<RegisterPet> {
               ),
               buildTextField('Nombre'),
               buildTextField('Descripcion'),
-              selectorDouble("Animal", "Perro", FontAwesomeIcons.dog, "Gato",
-                  FontAwesomeIcons.cat),
-              selectorDouble("Sexo", "Hembra", FontAwesomeIcons.venus, "Macho",
-                  FontAwesomeIcons.mars),
-              selectorTriple("Temaño", "Chico", FontAwesomeIcons.s, "Mediano",
-                  FontAwesomeIcons.m, "Grande", FontAwesomeIcons.l),
+              SelectorCard(
+                  title: "Animal",
+                  texts: const ["Perro", "Gato"],
+                  icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),
+              SelectorCard(
+                  title: "Sexo",
+                  texts: const ["Hembra", "Macho"],
+                  icons: const [FontAwesomeIcons.venus, FontAwesomeIcons.mars]),
+              SelectorCard(title: "Tamaño", texts: const [
+                "Chico",
+                "Mediano",
+                "Grande"
+              ], icons: const [
+                FontAwesomeIcons.s,
+                FontAwesomeIcons.m,
+                FontAwesomeIcons.l
+              ]),
               buildBotton('Agregar Mascota'),
               Container(
                 alignment: Alignment.center,
@@ -104,6 +115,7 @@ class _RegisterPetState extends State<RegisterPet> {
   void uploadImage() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference postImageRef = storage.ref().child("mascotas");
+
     var timeKey = new DateTime.now();
     final UploadTask uploadTask =
         postImageRef.child(timeKey.toString() + ".jpg").putFile(imagen);

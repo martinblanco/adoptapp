@@ -11,11 +11,9 @@ class FiltrosPage extends StatefulWidget {
 class _FiltrosPageState extends State<FiltrosPage> {
   @override
   Widget build(BuildContext context) {
-    // List of widgets in the drawer
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('Filtros'),
+        title: const Text('Filtros'),
         leading: GestureDetector(
           onTap: () {
             Navigator.pop(context);
@@ -29,11 +27,11 @@ class _FiltrosPageState extends State<FiltrosPage> {
         backgroundColor: Colors.teal,
         actions: [
           TextButton(
-            child: Text('LIMPIAR'),
+            child: const Text('LIMPIAR'),
             onPressed: () {},
           ),
           TextButton(
-            child: Text('APLICAR'),
+            child: const Text('APLICAR'),
             onPressed: () {},
           )
         ],
@@ -44,7 +42,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
           children: [
             CustomCard(
               children: [
-                Text(
+                const Text(
                   'Ordenar por',
                 ),
                 DropDown(),
@@ -52,21 +50,32 @@ class _FiltrosPageState extends State<FiltrosPage> {
             ),
             CustomCard(
               children: [
-                Text(
+                const Text(
                   'Fecha de publicacion',
                 ),
                 DropDownDos(),
               ],
             ),
-            selectorDouble("Animal", "Perro", FontAwesomeIcons.dog, "Gato",
-                FontAwesomeIcons.cat),
-            selectorDouble("Sexo", "Hembra", FontAwesomeIcons.venus, "Macho",
-                FontAwesomeIcons.mars),
-            selectorTriple("Temaño", "Chico", FontAwesomeIcons.s, "Mediano",
-                FontAwesomeIcons.m, "Grande", FontAwesomeIcons.l),
+            SelectorCard(
+                title: "Animal",
+                texts: const ["Perro", "Gato"],
+                icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),
+            SelectorCard(
+                title: "Sexo",
+                texts: const ["Hembra", "Macho"],
+                icons: const [FontAwesomeIcons.venus, FontAwesomeIcons.mars]),
+            SelectorCard(title: "Tamaño", texts: const [
+              "Chico",
+              "Mediano",
+              "Grande"
+            ], icons: const [
+              FontAwesomeIcons.s,
+              FontAwesomeIcons.m,
+              FontAwesomeIcons.l
+            ]),
             CustomCard(children: [
               CheckBoxList(
-                children: ['Cachorro', 'Raza', 'Vacunado', 'Transito'],
+                children: const ['Cachorro', 'Raza', 'Vacunado', 'Transito'],
               ),
             ]),
           ],

@@ -107,7 +107,7 @@ class _mascotaCardState extends State<mascotaCard> {
                                 color: Colors.orange,
                                 width: 1,
                               ),
-                              color: Colors.white,
+                              color: Colors.orange,
                               shape: BoxShape.circle,
                             ),
                             padding: EdgeInsets.symmetric(
@@ -118,7 +118,7 @@ class _mascotaCardState extends State<mascotaCard> {
                                     : widget.mascota.sexo == Sexo.macho
                                         ? Icons.male
                                         : Icons.pets),
-                                color: Colors.orange,
+                                color: Colors.white,
                                 size: 16))),
                     Padding(
                         padding: EdgeInsets.all(1),
@@ -128,7 +128,7 @@ class _mascotaCardState extends State<mascotaCard> {
                                 color: Colors.orange,
                                 width: 1,
                               ),
-                              color: Colors.white,
+                              color: Colors.orange,
                               shape: BoxShape.circle,
                             ),
                             padding: EdgeInsets.symmetric(
@@ -139,7 +139,7 @@ class _mascotaCardState extends State<mascotaCard> {
                                   : widget.mascota.size == Size.mediano
                                       ? "M"
                                       : "L"),
-                              style: TextStyle(color: Colors.orange),
+                              style: TextStyle(color: Colors.white),
                             ))),
                   ]),
                   SizedBox(
