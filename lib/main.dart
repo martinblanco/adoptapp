@@ -1,6 +1,6 @@
+import 'package:adoptapp/userLoginPage%20copy.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:adoptapp/userLoginPage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Firebase Auth',
-      home: LoginPage(title: 'Firebase Auth'),
+      home: SignInOne(),
     );
   }
 }
