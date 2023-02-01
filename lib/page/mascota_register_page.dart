@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:adoptapp/widget/selectorCardWidget.dart';
+import 'package:adoptapp/widget/selector_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,6 +14,9 @@ class RegisterPet extends StatefulWidget {
   late SelectorCard sexo;
   late SelectorCard size;
 
+  RegisterPet({Key? key}) : super(key: key);
+
+  @override
   State<StatefulWidget> createState() => _RegisterPetState();
 }
 
@@ -42,7 +45,7 @@ class _RegisterPetState extends State<RegisterPet> {
             children: <Widget>[
               ElevatedButton(
                 onPressed: getImage,
-                child: Text("FOTO"),
+                child: const Text("FOTO"),
               ),
               buildTextField('Nombre'),
               buildTextField('Descripcion'),
@@ -96,17 +99,18 @@ class _RegisterPetState extends State<RegisterPet> {
 
   Widget buildBotton(String label) => TextButton(
       style: TextButton.styleFrom(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        primary: Colors.white,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         backgroundColor: Colors.orangeAccent,
         textStyle: const TextStyle(fontSize: 10),
-        shape: StadiumBorder(),
+        shape: const StadiumBorder(),
       ),
       child: Text(label),
       onPressed: () {
         uploadImage();
       });
 
+  @override
   void dispose() {
     _emailController.dispose();
     _passswordController.dispose();
@@ -116,13 +120,12 @@ class _RegisterPetState extends State<RegisterPet> {
   void uploadImage() async {
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference postImageRef = storage.ref().child("mascotas");
-    var timeKey = new DateTime.now();
+    var timeKey = DateTime.now();
     final UploadTask uploadTask =
         postImageRef.child(timeKey.toString() + ".jpg").putFile(imagen);
 
     var imageUrl = await (await uploadTask).ref.getDownloadURL();
     url = imageUrl.toString();
-    print(url);
     newMascota(_emailController.text);
     // saveToDataBase(url);
   }

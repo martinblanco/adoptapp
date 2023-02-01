@@ -24,7 +24,6 @@ class Mascota {
   String descripcion;
   List<String> requisitos = [];
   Set usersLiked = {};
-  late DatabaseReference _id;
 
   Mascota(this.nombre, this.animal, this.edad, this.sexo, this.size,
       this.descripcion, this.raza, this.user, this.fotoPerfil);
@@ -38,9 +37,7 @@ class Mascota {
     //this.update();
   }
 
-  void setId(DatabaseReference id) {
-    _id = id;
-  }
+  void setId(DatabaseReference id) {}
 
   Map<String, dynamic> toJson() {
     return {

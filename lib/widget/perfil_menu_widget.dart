@@ -1,25 +1,22 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
 import 'package:adoptapp/entity/usuario.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 final user = FirebaseAuth.instance.currentUser;
 
-class menuPerfil extends StatefulWidget {
-  menuPerfil(User? this.currentUser);
+class MenuPerfil extends StatefulWidget {
+  MenuPerfil(this.currentUser, {Key? key}) : super(key: key);
   User? currentUser;
   @override
-  _menuPerfilState createState() => new _menuPerfilState();
+  _MenuPerfilState createState() => _MenuPerfilState();
 }
 
-class _menuPerfilState extends State<menuPerfil> {
+class _MenuPerfilState extends State<MenuPerfil> {
   @override
   Widget build(BuildContext context) {
-    Usuario usuario = new Usuario("email?", "asd", "false");
-    return new Drawer(
+    Usuario usuario = Usuario("email?", "asd", "false");
+    return Drawer(
       child: ListView(
-        // Remove padding
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
@@ -35,36 +32,36 @@ class _menuPerfilState extends State<menuPerfil> {
                 ),
               ),
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.orange,
             ),
           ),
           ListTile(
-            leading: Icon(Icons.favorite),
-            title: Text('Favorites'),
-            onTap: () => null,
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorites'),
+            onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.messenger_sharp),
-            title: Text('Chats'),
-            onTap: () => null,
+            leading: const Icon(Icons.messenger_sharp),
+            title: const Text('Chats'),
+            onTap: () {},
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () => null,
+            leading: const Icon(Icons.settings),
+            title: const Text('Settings'),
+            onTap: () {},
           ),
           ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Policies'),
-            onTap: () => null,
+            leading: const Icon(Icons.description),
+            title: const Text('Policies'),
+            onTap: () {},
           ),
-          Divider(),
+          const Divider(),
           ListTile(
-            title: Text('Exit'),
-            leading: Icon(Icons.exit_to_app),
-            onTap: () => null,
+            title: const Text('Exit'),
+            leading: const Icon(Icons.exit_to_app),
+            onTap: () {},
           ),
         ],
       ),

@@ -1,8 +1,8 @@
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
 
-class mascotaPage extends StatefulWidget {
-  mascotaPage({
+class MascotaPage extends StatefulWidget {
+  MascotaPage({
     Key? key,
     required this.mascota,
   }) : super(key: key);
@@ -10,17 +10,17 @@ class mascotaPage extends StatefulWidget {
   Mascota mascota;
 
   @override
-  State<mascotaPage> createState() => _MascotaPageState();
+  State<MascotaPage> createState() => _MascotaPageState();
 }
 
-class _MascotaPageState extends State<mascotaPage> {
+class _MascotaPageState extends State<MascotaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        brightness: Brightness.light,
+        //brightness: Brightness.light,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: GestureDetector(
@@ -34,7 +34,7 @@ class _MascotaPageState extends State<mascotaPage> {
         ),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 16),
+            padding: const EdgeInsets.only(right: 16),
             child: Icon(
               Icons.more_horiz,
               color: Colors.grey[800],
@@ -56,7 +56,7 @@ class _MascotaPageState extends State<mascotaPage> {
                         image: NetworkImage(widget.mascota.fotoPerfil),
                         fit: BoxFit.cover,
                       ),
-                      borderRadius: BorderRadius.only(
+                      borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(25),
                         bottomRight: Radius.circular(25),
                       ),
@@ -72,7 +72,7 @@ class _MascotaPageState extends State<mascotaPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -87,7 +87,7 @@ class _MascotaPageState extends State<mascotaPage> {
                               fontSize: 24,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 8,
                           ),
                           Row(
@@ -97,7 +97,7 @@ class _MascotaPageState extends State<mascotaPage> {
                                 color: Colors.grey[600],
                                 size: 20,
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 4,
                               ),
                               Text(
@@ -107,7 +107,7 @@ class _MascotaPageState extends State<mascotaPage> {
                                   fontSize: 14,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 4,
                               ),
                               Text(
@@ -143,7 +143,7 @@ class _MascotaPageState extends State<mascotaPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   child: Row(
                     children: [
                       buildPetFeature("4 months", "Age"),
@@ -153,7 +153,7 @@ class _MascotaPageState extends State<mascotaPage> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     "Pet Story",
                     style: TextStyle(
@@ -163,11 +163,11 @@ class _MascotaPageState extends State<mascotaPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
                     "Maine Coon cats are known for their intelligence and playfulness, as well as their size. One of the largest breeds of domestic cats, they are lovingly referreds.",
                     style: TextStyle(
@@ -176,12 +176,12 @@ class _MascotaPageState extends State<mascotaPage> {
                     ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16,
                 ),
                 Padding(
-                  padding:
-                      EdgeInsets.only(right: 16, left: 16, top: 16, bottom: 24),
+                  padding: const EdgeInsets.only(
+                      right: 16, left: 16, top: 16, bottom: 24),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -189,7 +189,7 @@ class _MascotaPageState extends State<mascotaPage> {
                         children: [
                           //UserAvatar(),
 
-                          SizedBox(
+                          const SizedBox(
                             width: 12,
                           ),
 
@@ -204,7 +204,7 @@ class _MascotaPageState extends State<mascotaPage> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 4,
                               ),
                               Text(
@@ -219,10 +219,10 @@ class _MascotaPageState extends State<mascotaPage> {
                         ],
                       ),
                       Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 20),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
+                          borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
                           boxShadow: [
@@ -230,12 +230,12 @@ class _MascotaPageState extends State<mascotaPage> {
                               color: Colors.blue[300]!.withOpacity(0.5),
                               spreadRadius: 3,
                               blurRadius: 5,
-                              offset: Offset(0, 0),
+                              offset: const Offset(0, 0),
                             ),
                           ],
                           color: Colors.blue[300],
                         ),
-                        child: Text(
+                        child: const Text(
                           "Contact Me",
                           style: TextStyle(
                             fontSize: 16,
@@ -260,14 +260,14 @@ buildPetFeature(String value, String feature) {
   return Expanded(
     child: Container(
       height: 70,
-      padding: EdgeInsets.all(12),
-      margin: EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.blue,
           width: 1,
         ),
-        borderRadius: BorderRadius.all(
+        borderRadius: const BorderRadius.all(
           Radius.circular(10),
         ),
       ),
@@ -281,7 +281,7 @@ buildPetFeature(String value, String feature) {
               fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 4,
           ),
           Text(

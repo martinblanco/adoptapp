@@ -1,26 +1,29 @@
-// ignore_for_file: unnecessary_new
-
-import 'package:adoptapp/googlePage.dart';
-import 'package:adoptapp/userRegisterPage.dart';
-import 'package:flutter/gestures.dart';
+import 'package:adoptapp/google_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:adoptapp/homePage.dart';
+import 'package:adoptapp/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:adoptapp/entity/usuario.dart';
+import 'package:adoptapp/database.dart';
 
-final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class SignInOne extends StatefulWidget {
-  const SignInOne({Key? key}) : super(key: key);
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _SignInOnePageState createState() => _SignInOnePageState();
+  _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _SignInOnePageState extends State<SignInOne> {
+class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passswordController = TextEditingController();
+  final TextEditingController _passswordConfirmerController =
+      TextEditingController();
+  List<Usuario> usuarios = [];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _nombreController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -49,42 +52,25 @@ class _SignInOnePageState extends State<SignInOne> {
                       SizedBox(
                         height: size.height * 0.03,
                       ),
-                      SizedBox(
-                        height: size.height * 0.03,
-                      ),
                       emailTextField(size, _emailController),
                       SizedBox(
                         height: size.height * 0.02,
                       ),
-                      passwordTextField(size, _passwordController),
+                      passwordTextField(size, _passswordController),
+                      passwordTextField(size, _passswordConfirmerController),
                       SizedBox(
                         height: size.height * 0.03,
                       ),
-                      signInButton(
-                          size, _emailController, _passwordController, context),
+                      signInButton(size, _emailController, _passswordController,
+                          context),
                       SizedBox(
                         height: size.height * 0.02,
                       ),
-                      signInWithText(),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      SignInOneSocialButton(context, size,
-                          'assets/logos/apple_logo.svg', 'Sign in with Apple'),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      SignInOneSocialButton(
+                      signInOneSocialButton(
                           context,
                           size,
                           'assets/logos/google_logo.svg',
                           'Sign in with Google'),
-                      SizedBox(
-                        height: size.height * 0.03,
-                      ),
-                      Center(
-                        child: footerText(),
-                      )
                     ],
                   ),
                 ),
@@ -129,7 +115,7 @@ class _SignInOnePageState extends State<SignInOne> {
         },
         style: GoogleFonts.inter(
           fontSize: 16.0,
-          color: Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
         ),
         cursorColor: const Color(0xFF15224F),
         decoration: InputDecoration(
@@ -137,7 +123,7 @@ class _SignInOnePageState extends State<SignInOne> {
             labelText: 'Email',
             labelStyle: GoogleFonts.inter(
               fontSize: 12.0,
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: const Color.fromARGB(255, 255, 255, 255),
             ),
             border: InputBorder.none),
       ),
@@ -154,7 +140,7 @@ class _SignInOnePageState extends State<SignInOne> {
         borderRadius: BorderRadius.circular(8.0),
         border: Border.all(
           width: 1.0,
-          color: Color(0xFFFF9000),
+          color: const Color(0xFFFF9000),
         ),
       ),
       child: TextFormField(
@@ -167,7 +153,7 @@ class _SignInOnePageState extends State<SignInOne> {
         },
         style: GoogleFonts.inter(
           fontSize: 16.0,
-          color: Color.fromARGB(255, 255, 255, 255),
+          color: const Color.fromARGB(255, 255, 255, 255),
         ),
         maxLines: 1,
         obscureText: true,
@@ -181,7 +167,7 @@ class _SignInOnePageState extends State<SignInOne> {
             labelText: 'Password',
             labelStyle: GoogleFonts.inter(
               fontSize: 12.0,
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: const Color.fromARGB(255, 255, 255, 255),
             ),
             suffixIcon: const Icon(Icons.remove_red_eye, color: Colors.orange),
             border: InputBorder.none),
@@ -193,7 +179,7 @@ class _SignInOnePageState extends State<SignInOne> {
       TextEditingController passwordController, BuildContext context) {
     return ElevatedButton(
         onPressed: () {
-          signInWithEmail(emailController, passwordController, context);
+          _register();
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.orange,
@@ -217,6 +203,35 @@ class _SignInOnePageState extends State<SignInOne> {
         ));
   }
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passswordController.dispose();
+    super.dispose();
+  }
+
+  void _register() async {
+    final UserCredential userCredential =
+        await _auth.createUserWithEmailAndPassword(
+      email: _emailController.text,
+      password: _passswordController.text,
+    );
+    User? user = userCredential.user;
+    user?.updateDisplayName(_nombreController.text);
+    if (user != null) {
+      setState(() {});
+      newUsuario(user, _nombreController.text);
+    } else {}
+  }
+
+  void newUsuario(User user, String nombreUsuario) {
+    var usuario = Usuario(user.email!, nombreUsuario, "false");
+    usuario.setId(saveUsuario(usuario));
+    setState(() {
+      usuarios.add(usuario);
+    });
+  }
+
   Widget signInWithText() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -230,7 +245,7 @@ class _SignInOnePageState extends State<SignInOne> {
           'Or Sign in with',
           style: GoogleFonts.inter(
             fontSize: 12.0,
-            color: Color.fromARGB(255, 255, 255, 255),
+            color: const Color.fromARGB(255, 255, 255, 255),
           ),
           textAlign: TextAlign.center,
         ),
@@ -241,40 +256,9 @@ class _SignInOnePageState extends State<SignInOne> {
       ],
     );
   }
-
-  //sign up text here
-  Widget footerText() {
-    return Text.rich(
-      TextSpan(
-        style: GoogleFonts.inter(
-          fontSize: 12.0,
-          color: Color.fromARGB(255, 255, 255, 255),
-        ),
-        children: [
-          const TextSpan(
-            text: 'Don’t have an account ?',
-          ),
-          const TextSpan(
-            text: ' ',
-            style: TextStyle(
-              color: Color.fromARGB(255, 255, 255, 255),
-            ),
-          ),
-          TextSpan(
-              text: 'Sign up',
-              style: const TextStyle(
-                color: Color.fromARGB(255, 62, 0, 119),
-                fontWeight: FontWeight.w700,
-              ),
-              recognizer: TapGestureRecognizer()
-                ..onTap = () => _pushPage(context, RegisterPage())),
-        ],
-      ),
-    );
-  }
 }
 
-SignInOneSocialButton(
+signInOneSocialButton(
     BuildContext context, Size size, String iconPath, String text) {
   return ElevatedButton(
       onPressed: () => _pushPage(context, SignInDemo()),
@@ -300,7 +284,7 @@ SignInOneSocialButton(
                 text,
                 style: GoogleFonts.inter(
                   fontSize: 16.0,
-                  color: Color.fromARGB(255, 255, 255, 255),
+                  color: const Color.fromARGB(255, 255, 255, 255),
                 ),
               ),
             ),
@@ -311,27 +295,20 @@ SignInOneSocialButton(
 
 void signInWithEmail(TextEditingController _emailController,
     TextEditingController _passwordController, BuildContext context) async {
-  // marked async
   final FirebaseAuth _auth = FirebaseAuth.instance;
   UserCredential userCredential;
   try {
     userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text, password: _passwordController.text);
-    User? user = userCredential.user;
   } catch (e) {
-    print(e.toString());
+    null;
   } finally {
     userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text, password: _passwordController.text);
     User? user = userCredential.user;
     if (user != null) {
-      // sign in successful!
       _pushPage(context, const PetGrid());
-    } else {
-      // sign in unsuccessful
-      print('sign in Not');
-      // ex: prompt the user to try again
-    }
+    } else {}
   }
 }
 

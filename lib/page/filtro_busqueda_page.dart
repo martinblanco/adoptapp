@@ -1,5 +1,5 @@
-import 'package:adoptapp/widget/custonCardWidget.dart';
-import 'package:adoptapp/widget/selectorCardWidget.dart';
+import 'package:adoptapp/widget/custon_card_widget.dart';
+import 'package:adoptapp/widget/selector_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -7,6 +7,8 @@ import '../entity/mascota.dart';
 
 class FiltrosPage extends StatefulWidget {
   late SelectorCard animal;
+
+  FiltrosPage({Key? key}) : super(key: key);
 
   @override
   _FiltrosPageState createState() => _FiltrosPageState();
@@ -32,10 +34,7 @@ class _FiltrosPageState extends State<FiltrosPage> {
         actions: [
           TextButton(
             child: const Text('LIMPIAR'),
-            onPressed: () {
-              print(widget.animal.selected());
-              print(Animal.values[widget.animal.selected()].name);
-            },
+            onPressed: () {},
           ),
           TextButton(
             child: const Text('APLICAR'),
@@ -93,11 +92,10 @@ class _FiltrosPageState extends State<FiltrosPage> {
 }
 
 class CheckBoxList extends StatefulWidget {
-  CheckBoxList({required this.children}) {
-    this.values = List.generate(children.length, (index) => false);
+  CheckBoxList({Key? key, required this.children}) : super(key: key) {
+    values = List.generate(children.length, (index) => false);
   }
   final List<String> children;
-  // final int count;
   late final List<bool> values;
   @override
   _CheckBoxListState createState() => _CheckBoxListState();
@@ -128,6 +126,8 @@ class _CheckBoxListState extends State<CheckBoxList> {
 }
 
 class DropDown extends StatefulWidget {
+  const DropDown({Key? key}) : super(key: key);
+
   @override
   _DropDownState createState() => _DropDownState();
 }
@@ -159,6 +159,8 @@ class _DropDownState extends State<DropDown> {
 }
 
 class DropDownDos extends StatefulWidget {
+  const DropDownDos({Key? key}) : super(key: key);
+
   @override
   _DropDownStates createState() => _DropDownStates();
 }

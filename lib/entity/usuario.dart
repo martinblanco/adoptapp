@@ -6,13 +6,10 @@ class Usuario {
   String userName;
   String isRefugio;
   late List<Mascota> mascotas = [];
-  late DatabaseReference _id;
 
   Usuario(this.mail, this.userName, this.isRefugio);
 
-  void setId(DatabaseReference id) {
-    _id = id;
-  }
+  void setId(DatabaseReference id) {}
 
   Map<String, dynamic> toJson() {
     return {

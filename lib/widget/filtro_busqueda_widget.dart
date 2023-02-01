@@ -1,17 +1,15 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
-import 'package:adoptapp/page/filtroBusquedaPage.dart';
+import 'package:adoptapp/page/filtro_busqueda_page.dart';
 import 'package:flutter/material.dart';
 
-class filtroPanel extends StatefulWidget {
+class FiltroPanel extends StatefulWidget {
   @override
-  _filtroPanelState createState() => new _filtroPanelState();
+  _FiltroPanelState createState() => _FiltroPanelState();
 }
 
-class _filtroPanelState extends State<filtroPanel> {
+class _FiltroPanelState extends State<FiltroPanel> {
   @override
   Widget build(BuildContext context) {
-    return new Container(
+    return Container(
       width: double.infinity,
       height: 55,
       decoration: BoxDecoration(
@@ -36,11 +34,11 @@ class _filtroPanelState extends State<filtroPanel> {
                         color: Colors.white),
                     child: TextButton(
                         style: TextButton.styleFrom(
-                          primary: Colors.black,
+                          foregroundColor: Colors.black,
                           backgroundColor: Colors.white,
                           textStyle: const TextStyle(fontSize: 10),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.list,
                           size: 15,
                         ),
@@ -60,11 +58,11 @@ class _filtroPanelState extends State<filtroPanel> {
                         color: Colors.white),
                     child: TextButton(
                         style: TextButton.styleFrom(
-                          primary: Colors.black,
+                          foregroundColor: Colors.black,
                           backgroundColor: Colors.white,
                           textStyle: const TextStyle(fontSize: 10),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.pets,
                           size: 15,
                         ),
@@ -84,11 +82,11 @@ class _filtroPanelState extends State<filtroPanel> {
                         color: Colors.white),
                     child: TextButton(
                         style: TextButton.styleFrom(
-                          primary: Colors.black,
+                          foregroundColor: Colors.black,
                           backgroundColor: Colors.white,
                           textStyle: const TextStyle(fontSize: 10),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.pets,
                           size: 15,
                         ),
@@ -102,7 +100,7 @@ class _filtroPanelState extends State<filtroPanel> {
                         }))
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 15,
             ),
           ],

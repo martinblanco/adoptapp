@@ -1,13 +1,11 @@
-import 'package:adoptapp/widget/filtroBusquedaPanel.dart';
-import 'package:adoptapp/widget/mascotaCard.dart';
+import 'package:adoptapp/widget/filtro_busqueda_widget.dart';
+import 'package:adoptapp/widget/mascota_card.dart';
+import 'package:adoptapp/widget/perfil_menu_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:adoptapp/page/mascotaRegisterPage.dart';
-import 'package:adoptapp/widget/perfilMenu.dart';
+import 'package:adoptapp/page/mascota_register_page.dart';
 import 'package:adoptapp/database.dart';
 import 'package:adoptapp/entity/mascota.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -15,7 +13,7 @@ class PetGrid extends StatefulWidget {
   const PetGrid({Key? key}) : super(key: key);
 
   @override
-  _PetGridState createState() => new _PetGridState();
+  _PetGridState createState() => _PetGridState();
 }
 
 class _PetGridState extends State<PetGrid> {
@@ -41,16 +39,16 @@ class _PetGridState extends State<PetGrid> {
 
   List<Widget> _list() {
     List<Widget> _widgetOptions = <Widget>[
-      Text(
+      const Text(
         'SOON',
         style: optionStyle,
       ),
       ItemTile(context, mascotas),
-      Text(
+      const Text(
         'SOON',
         style: optionStyle,
       ),
-      Text(
+      const Text(
         'SOON',
         style: optionStyle,
       ),
@@ -60,16 +58,15 @@ class _PetGridState extends State<PetGrid> {
 
   @override
   Widget build(BuildContext context) {
-    //getUsuario(_auth.currentUser!.uid);
     updateMascotas();
     return Scaffold(
       appBar: AppBar(
-          title: Text("ADOPTAPP"),
+          title: const Text("ADOPTAPP"),
           backgroundColor: Colors.orange,
           actions: [
             Builder(
               builder: (context) => IconButton(
-                icon: Icon(Icons.add_box_outlined),
+                icon: const Icon(Icons.add_box_outlined),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -83,7 +80,7 @@ class _PetGridState extends State<PetGrid> {
             ),
             Builder(
               builder: (context) => IconButton(
-                icon: Icon(Icons.menu),
+                icon: const Icon(Icons.menu),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
                 tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
               ),
@@ -115,7 +112,7 @@ class _PetGridState extends State<PetGrid> {
         selectedItemColor: Colors.orange,
         onTap: _onItemTapped,
       ),
-      endDrawer: menuPerfil(_auth.currentUser),
+      endDrawer: MenuPerfil(_auth.currentUser),
     );
   }
 }
@@ -126,21 +123,21 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
     backgroundColor: Colors.white,
     body: SafeArea(
       child: Container(
-        padding: EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           children: <Widget>[
-            filtroPanel(),
-            SizedBox(
+            FiltroPanel(),
+            const SizedBox(
               height: 20,
             ),
             Expanded(
                 child: GridView.count(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               childAspectRatio: 1 / 1.55,
               crossAxisCount: 2,
               crossAxisSpacing: 15,
               children: mascotas
-                  .map((item) => mascotaCard(
+                  .map((item) => MascotaCard(
                         mascota: item,
                         index: null,
                       ))
@@ -151,15 +148,4 @@ Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
       ),
     ),
   );
-}
-
-RefreshController _refreshController = RefreshController(initialRefresh: false);
-void _onRefresh() async {
-  await Future.delayed(Duration(milliseconds: 1000));
-  _refreshController.refreshCompleted();
-}
-
-void _onLoading() async {
-  await Future.delayed(Duration(milliseconds: 1000));
-  _refreshController.loadComplete();
 }

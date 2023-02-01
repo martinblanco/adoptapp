@@ -1,20 +1,19 @@
-// ignore_for_file: prefer_const_constructors, unnecessary_new
-
-import 'package:adoptapp/page/mascotaPage.dart';
+import 'package:adoptapp/page/mascota_page.dart';
 import 'package:flutter/material.dart';
 import '../entity/mascota.dart';
 
-class mascotaCard extends StatefulWidget {
+class MascotaCard extends StatefulWidget {
   final Mascota mascota;
   final int? index;
 
-  mascotaCard({required this.mascota, required this.index});
+  const MascotaCard({Key? key, required this.mascota, required this.index})
+      : super(key: key);
 
   @override
-  _mascotaCardState createState() => new _mascotaCardState();
+  _MascotaCardState createState() => _MascotaCardState();
 }
 
-class _mascotaCardState extends State<mascotaCard> {
+class _MascotaCardState extends State<MascotaCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -22,13 +21,13 @@ class _mascotaCardState extends State<mascotaCard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => mascotaPage(mascota: widget.mascota)),
+              builder: (context) => MascotaPage(mascota: widget.mascota)),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.only(
+          borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
@@ -60,7 +59,7 @@ class _mascotaCardState extends State<mascotaCard> {
                           image: NetworkImage(widget.mascota.fotoPerfil),
                           fit: BoxFit.cover,
                         ),
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20),
                         ),
@@ -70,7 +69,7 @@ class _mascotaCardState extends State<mascotaCard> {
                   Align(
                     alignment: Alignment.topRight,
                     child: Padding(
-                      padding: EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(12),
                       child: Container(
                         height: 30,
                         width: 30,
@@ -82,7 +81,7 @@ class _mascotaCardState extends State<mascotaCard> {
                           shape: BoxShape.circle,
                           color: Colors.white,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.favorite,
                           size: 16,
                           color: Colors.red,
@@ -94,13 +93,13 @@ class _mascotaCardState extends State<mascotaCard> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(children: [
                     Padding(
-                        padding: EdgeInsets.all(1),
+                        padding: const EdgeInsets.all(1),
                         child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -110,7 +109,7 @@ class _mascotaCardState extends State<mascotaCard> {
                               color: Colors.orange,
                               shape: BoxShape.circle,
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: Icon(
                                 (widget.mascota.sexo == Sexo.hembra.name
@@ -121,7 +120,7 @@ class _mascotaCardState extends State<mascotaCard> {
                                 color: Colors.white,
                                 size: 16))),
                     Padding(
-                        padding: EdgeInsets.all(1),
+                        padding: const EdgeInsets.all(1),
                         child: Container(
                             decoration: BoxDecoration(
                               border: Border.all(
@@ -131,7 +130,7 @@ class _mascotaCardState extends State<mascotaCard> {
                               color: Colors.orange,
                               shape: BoxShape.circle,
                             ),
-                            padding: EdgeInsets.symmetric(
+                            padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             child: Text(
                               (widget.mascota.size == Size.chico.name
@@ -139,10 +138,10 @@ class _mascotaCardState extends State<mascotaCard> {
                                   : widget.mascota.size == Size.mediano.name
                                       ? "M"
                                       : "L"),
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ))),
                   ]),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Text(
@@ -153,7 +152,7 @@ class _mascotaCardState extends State<mascotaCard> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 8,
                   ),
                   Row(
@@ -163,7 +162,7 @@ class _mascotaCardState extends State<mascotaCard> {
                         color: Colors.grey[600],
                         size: 18,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       Text(
@@ -173,7 +172,7 @@ class _mascotaCardState extends State<mascotaCard> {
                           fontSize: 12,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 4,
                       ),
                       Text(

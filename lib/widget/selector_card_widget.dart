@@ -4,7 +4,8 @@ int indexSelected = -1;
 
 class SelectorCard extends StatefulWidget {
   SelectorCard(
-      {required this.title, required this.texts, required this.icons}) {
+      {Key? key, required this.title, required this.texts, required this.icons})
+      : super(key: key) {
     _isSelected = List.generate(texts.length, (index) => false);
     for (int i = 0; i < texts.length; i++) {
       children.add(Column(
@@ -50,7 +51,7 @@ class _SelectorCardState extends State<SelectorCard> {
             Center(
               child: ToggleButtons(
                 children: widget.children,
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w500,
                 ),
