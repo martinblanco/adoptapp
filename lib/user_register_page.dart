@@ -29,6 +29,15 @@ class _RegisterPageState extends State<RegisterPage> {
     final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+      ),
       body: Form(
           key: _formKey,
           child: Stack(
@@ -66,11 +75,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                         height: size.height * 0.02,
                       ),
+                      signInWithText(),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
                       signInOneSocialButton(
                           context,
                           size,
                           'assets/logos/google_logo.svg',
-                          'Sign in with Google'),
+                          'Sign Up with Google'),
                     ],
                   ),
                 ),
@@ -191,7 +204,7 @@ class _RegisterPageState extends State<RegisterPage> {
           alignment: Alignment.center,
           height: size.height / 11,
           child: Text(
-            'Sign in',
+            'Sign up',
             style: GoogleFonts.inter(
               fontSize: 16.0,
               color: Colors.white,
@@ -242,7 +255,7 @@ class _RegisterPageState extends State<RegisterPage> {
           width: 16,
         ),
         Text(
-          'Or Sign in with',
+          'Or Sing Up with',
           style: GoogleFonts.inter(
             fontSize: 12.0,
             color: const Color.fromARGB(255, 255, 255, 255),
@@ -261,7 +274,7 @@ class _RegisterPageState extends State<RegisterPage> {
 signInOneSocialButton(
     BuildContext context, Size size, String iconPath, String text) {
   return ElevatedButton(
-      onPressed: () => _pushPage(context, SignInDemo()),
+      onPressed: () => _pushPage(context, const SignInDemo()),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
