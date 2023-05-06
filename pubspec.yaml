@@ -22,6 +22,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_storage: ^10.3.10
   pull_to_refresh: ^2.0.0
+  email_validator: '^2.1.16'
 
 dev_dependencies:
   flutter_test:
@@ -37,3 +38,4 @@ flutter:
   assets:
     - assets/images/
     - assets/logos/
+    - assets/provincias.json

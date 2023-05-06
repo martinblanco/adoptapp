@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/material.dart';
 
 enum Animal { perro, gato }
 
@@ -14,8 +15,6 @@ class Mascota {
   String edad;
   String sexo;
   String size;
-  String fotoPerfil =
-      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg"; //tddo imagen default
   bool isCachorro = false;
   bool isRaza = false;
   bool isTransito = false;
@@ -24,6 +23,8 @@ class Mascota {
   String descripcion;
   List<String> requisitos = [];
   Set usersLiked = {};
+  String fotoPerfil =
+      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg"; //tddo imagen default
 
   Mascota(this.nombre, this.animal, this.edad, this.sexo, this.size,
       this.descripcion, this.raza, this.user, this.fotoPerfil);
@@ -52,6 +53,25 @@ class Mascota {
       'foto': fotoPerfil,
       'usersLiked': usersLiked.toList()
     };
+  }
+
+  static const Map<String, IconData> _sexoIconMap = {
+    "hembra": Icons.female,
+    "macho": Icons.male,
+  };
+
+  static IconData getSexoIcon(String sexo) {
+    return _sexoIconMap[sexo] ?? Icons.pets;
+  }
+
+  static const Map<String, String> _sizeIconMap = {
+    "chico": "S",
+    "mediano": "M",
+    "grande": "L",
+  };
+
+  static String getSizeIcon(String size) {
+    return _sizeIconMap[size] ?? "";
   }
 }
 

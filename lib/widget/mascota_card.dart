@@ -4,10 +4,8 @@ import '../entity/mascota.dart';
 
 class MascotaCard extends StatefulWidget {
   final Mascota mascota;
-  final int? index;
 
-  const MascotaCard({Key? key, required this.mascota, required this.index})
-      : super(key: key);
+  const MascotaCard({Key? key, required this.mascota}) : super(key: key);
 
   @override
   _MascotaCardState createState() => _MascotaCardState();
@@ -16,6 +14,15 @@ class MascotaCard extends StatefulWidget {
 class _MascotaCardState extends State<MascotaCard> {
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final String imageUrl = widget.mascota.fotoPerfil;
+    final screenWidth = mediaQuery.size.width;
+    final screenHeight = mediaQuery.size.height;
+    final scale = screenWidth / 375; // 375 is the reference screen width
+    final baseFontSize = 16;
+    final int scaledFontSize = (baseFontSize * scale).round();
+    double width = MediaQuery.of(context).size.width;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -36,11 +43,8 @@ class _MascotaCardState extends State<MascotaCard> {
             width: 1.5,
           ),
         ),
-        margin: EdgeInsets.only(
-            right: widget.index != null ? 16 : 0,
-            left: widget.index == 0 ? 16 : 0,
-            bottom: 16),
-        width: 220,
+        margin: const EdgeInsets.only(right: 0, left: 0, bottom: 16),
+        width: width * 0.5,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -48,149 +52,124 @@ class _MascotaCardState extends State<MascotaCard> {
               child: Stack(
                 children: [
                   Hero(
-                    tag: widget.mascota.fotoPerfil,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.orange,
-                          width: 1,
-                        ),
-                        image: DecorationImage(
-                          image: NetworkImage(widget.mascota.fotoPerfil),
-                          fit: BoxFit.cover,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
+                    tag: imageUrl,
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20),
                       ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
                       child: Container(
-                        height: 30,
-                        width: 30,
                         decoration: BoxDecoration(
                           border: Border.all(
                             color: Colors.orange,
                             width: 1,
                           ),
-                          shape: BoxShape.circle,
-                          color: Colors.white,
                         ),
-                        child: const Icon(
-                          Icons.favorite,
-                          size: 16,
-                          color: Colors.red,
+                        child: Image.network(
+                          imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
                         ),
                       ),
                     ),
                   ),
+                  buildHeartIcon(),
                 ],
               ),
             ),
+            const SizedBox(height: 5),
+            _buildIcons(widget.mascota),
+            const SizedBox(height: 5),
             Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(children: [
-                    Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.orange,
-                                width: 1,
-                              ),
-                              color: Colors.orange,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            child: Icon(
-                                (widget.mascota.sexo == Sexo.hembra.name
-                                    ? Icons.female
-                                    : widget.mascota.sexo == Sexo.macho.name
-                                        ? Icons.male
-                                        : Icons.pets),
-                                color: Colors.white,
-                                size: 16))),
-                    Padding(
-                        padding: const EdgeInsets.all(1),
-                        child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Colors.orange,
-                                width: 1,
-                              ),
-                              color: Colors.orange,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            child: Text(
-                              (widget.mascota.size == Size.chico.name
-                                  ? "S"
-                                  : widget.mascota.size == Size.mediano.name
-                                      ? "M"
-                                      : "L"),
-                              style: const TextStyle(color: Colors.white),
-                            ))),
-                  ]),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Text(
-                    widget.mascota.nombre,
-                    style: TextStyle(
-                      color: Colors.grey[800],
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        color: Colors.grey[600],
-                        size: 18,
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "CULO",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 4,
-                      ),
-                      Text(
-                        "(2km)",
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('${widget.mascota.nombre}'),
+                  ],
+                ),
               ),
             ),
+            const SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Edad: ${widget.mascota.edad}'),
+                    Text('Raza: ${widget.mascota.raza}'),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 5),
           ],
         ),
       ),
     );
   }
+}
+
+// Método para construir el icono del corazón
+Widget buildHeartIcon() {
+  return Align(
+    alignment: Alignment.topRight,
+    child: Padding(
+      padding: const EdgeInsets.all(1),
+      child: ElevatedButton(
+        onPressed: () {
+          // acción a realizar cuando se presiona el botón
+        },
+        style: ElevatedButton.styleFrom(
+          shape: CircleBorder(),
+          padding: EdgeInsets.all(1),
+          primary: false ? Colors.orange : Colors.white,
+          side: BorderSide(width: 1, color: Colors.orange),
+        ),
+        child: Container(
+          height: 30,
+          width: 30,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.favorite,
+            size: 16,
+            color: false ? Colors.white : Colors.red,
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+_buildIcons(Mascota mascota) {
+  final iconData = Mascota.getSexoIcon(mascota.sexo);
+  final sizeText = Mascota.getSizeIcon(mascota.size);
+
+  return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(children: [
+        _buildIcon(Icon(iconData, color: Colors.white, size: 16)),
+        const SizedBox(width: 5),
+        _buildIcon(Text(sizeText, style: const TextStyle(color: Colors.white)))
+      ]));
+}
+
+Widget _buildIcon<T extends Widget>(T icon) {
+  return CircleAvatar(
+    backgroundColor: Colors.orange,
+    radius: 12,
+    child: icon,
+  );
 }
