@@ -2,6 +2,8 @@ import 'package:adoptapp/entity/usuario.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../page/profile_pege.dart';
+
 final user = FirebaseAuth.instance.currentUser;
 
 class MenuPerfil extends StatefulWidget {
@@ -37,13 +39,20 @@ class _MenuPerfilState extends State<MenuPerfil> {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.favorite),
-            title: const Text('Favorites'),
-            onTap: () {},
+            leading: const Icon(Icons.person),
+            title: const Text('Perfil'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => DoctorsInfo(user!.uid),
+                ),
+              );
+            },
           ),
           ListTile(
-            leading: const Icon(Icons.messenger_sharp),
-            title: const Text('Chats'),
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorites'),
             onTap: () {},
           ),
           const Divider(),

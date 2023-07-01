@@ -28,3 +28,20 @@ Future<List<Mascota>> getAllMascotas() async {
   }
   return mascotas;
 }
+
+Future<List<Mascota>> getAllMascotasOfUsurario(String uid) async {
+  DataSnapshot dataSnapshot = await databaseReference
+      .child('mascotas/')
+      .orderByChild('usuario')
+      .equalTo(uid)
+      .get();
+  List<Mascota> mascotas = [];
+
+  if (dataSnapshot.value != null) {
+    for (DataSnapshot child in dataSnapshot.children) {
+      Mascota mascota = createMascota(child.value);
+      mascotas.add(mascota);
+    }
+  }
+  return mascotas;
+}

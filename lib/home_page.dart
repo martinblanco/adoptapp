@@ -27,11 +27,18 @@ class _PetGridState extends State<PetGrid> {
     updateMascotas();
     return Scaffold(
       appBar: AppBar(
-          title: const Text("ADOPTAPP"),
-          backgroundColor: Colors.orange,
+          title: const Text(
+            'ADOPTAPP',
+            style: TextStyle(
+              color: Colors.orange,
+            ),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.white,
           actions: [
             Builder(
               builder: (context) => IconButton(
+                color: Colors.orange,
                 icon: const Icon(Icons.add_box_outlined),
                 onPressed: () {
                   Navigator.push(
@@ -46,6 +53,7 @@ class _PetGridState extends State<PetGrid> {
             ),
             Builder(
               builder: (context) => IconButton(
+                color: Colors.orange,
                 icon: const Icon(Icons.menu),
                 onPressed: () => Scaffold.of(context).openEndDrawer(),
                 tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
