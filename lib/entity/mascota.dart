@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum Animal { perro, gato }
 
-enum Size { chico, mediano, grande, normal }
+enum Size { chico, mediano, grande }
 
 enum Sexo { hembra, macho }
 

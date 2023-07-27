@@ -1,8 +1,8 @@
 import 'package:adoptapp/google_page.dart';
+import 'package:adoptapp/page/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:adoptapp/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:adoptapp/entity/usuario.dart';
 import 'package:adoptapp/database.dart';
@@ -320,7 +320,7 @@ void signInWithEmail(TextEditingController _emailController,
         email: _emailController.text, password: _passwordController.text);
     User? user = userCredential.user;
     if (user != null) {
-      _pushPage(context, const PetGrid());
+      _pushPage(context, const HomePage());
     } else {}
   }
 }

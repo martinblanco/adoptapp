@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:adoptapp/home_page.dart';
+import 'package:adoptapp/page/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -227,7 +227,7 @@ class _SignInOnePageState extends State<SignInOne> {
                                         password: _passwordController.text);
                                 User? user = userCredential.user;
                                 if (user != null) {
-                                  _pushPage(context, const PetGrid());
+                                  _pushPage(context, const HomePage());
                                 } else {}
                               }
                             }

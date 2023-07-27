@@ -1,5 +1,4 @@
-import 'package:adoptapp/widget/filtro_busqueda_widget.dart';
-import 'package:adoptapp/widget/mascota_card.dart';
+import 'package:adoptapp/widget/mascota_grid_widget.dart';
 import 'package:adoptapp/widget/perfil_menu_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,18 +8,16 @@ import 'package:adoptapp/entity/mascota.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
-class PetGrid extends StatefulWidget {
-  const PetGrid({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  _PetGridState createState() => _PetGridState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _PetGridState extends State<PetGrid> {
+class _HomePageState extends State<HomePage> {
   List<Mascota> mascotas = [];
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +62,7 @@ class _PetGridState extends State<PetGrid> {
         child: _list().elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
+        items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.local_hospital),
             label: 'Salud',
@@ -98,70 +95,19 @@ class _PetGridState extends State<PetGrid> {
 
   void _onItemTapped(int index) {
     setState(() {
-      updateMascotas();
+      if (index == 1) {
+        updateMascotas();
+      }
       _selectedIndex = index;
     });
   }
 
   List<Widget> _list() {
     List<Widget> _widgetOptions = <Widget>[
-      const Text(
-        'SOON',
-        style: optionStyle,
-      ),
-      ItemTile(context, mascotas),
-      const Text(
-        'SOON',
-        style: optionStyle,
-      ),
+      const Text('SOON'),
+      MascotasGrid(mascotas: mascotas),
+      const Text('SOON'),
     ];
     return _widgetOptions;
-  }
-
-  @override
-  Widget ItemTile(BuildContext context, List<Mascota> mascotas) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(5.0),
-          child: Column(
-            children: <Widget>[
-              FiltroPanel(),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.01,
-              ),
-              Expanded(
-                child: RefreshIndicator(
-                  backgroundColor: Colors.orange,
-                  color: Colors.white,
-                  onRefresh: _refresh, // Replace with your refresh function
-                  child: Scrollbar(
-                    child: GridView.builder(
-                      key: Key('MascotaGridView'),
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 15,
-                        childAspectRatio: MediaQuery.of(context).size.width /
-                            MediaQuery.of(context).size.height *
-                            1.55,
-                      ),
-                      itemCount: mascotas.length,
-                      itemBuilder: (BuildContext context, int index) =>
-                          MascotaCard(mascota: mascotas[index]),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _refresh() {
-    return Future.delayed(Duration(seconds: 1));
   }
 }

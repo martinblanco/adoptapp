@@ -1,23 +1,35 @@
 import 'dart:convert';
-
 import 'package:adoptapp/page/filtro_busqueda_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
 import '../entity/provincia.dart';
 
 class FiltroPanel extends StatefulWidget {
+  const FiltroPanel({Key? key}) : super(key: key);
+
   @override
   _FiltroPanelState createState() => _FiltroPanelState();
 }
 
 class _FiltroPanelState extends State<FiltroPanel> {
   List<Provincia> provincias = [];
-  bool isSelectedPerros = false;
-  bool isSelectedGatos = false;
-  Provincia selectedProvincia =
-      new Provincia(nombre: 'Ciudad de Buenos Aires', tipo: 'tipo');
+  bool isSelectedPerros = true;
+  bool isSelectedGatos = true;
+  Provincia selectedProvincia = Provincia(nombre: 'Ciudad de Buenos Aires');
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarProvincias();
+  }
+
+  Future<void> _cargarProvincias() async {
+    provincias = json
+        .decode(await rootBundle.loadString('assets/jsons/provincias.json'))
+        .map((e) => Provincia.fromJson(e))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +51,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 IconButton(
-                  icon: Icon(Icons.filter_list),
+                  icon: const Icon(Icons.filter_list),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -68,8 +80,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
 
   _filtroPerros() {
     return FilterChip(
-        avatar: Icon(FontAwesomeIcons.dog),
-        label: Text('Perros'),
+        label: const Icon(FontAwesomeIcons.dog),
         selected: isSelectedPerros,
         backgroundColor: Colors.blue,
         selectedColor: Colors.red,
@@ -80,8 +91,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
 
   _filtroGatos() {
     return FilterChip(
-        avatar: Icon(FontAwesomeIcons.cat),
-        label: Text('Gatos'),
+        label: const Icon(FontAwesomeIcons.cat),
         selected: isSelectedGatos,
         backgroundColor: Colors.blue,
         selectedColor: Colors.red,
@@ -105,17 +115,5 @@ class _FiltroPanelState extends State<FiltroPanel> {
         );
       }).toList(),
     );
-  }
-
-  Future<void> _cargarProvincias() async {
-    final String data = await rootBundle.loadString('assets/provincias.json');
-    final List<dynamic> jsonList = json.decode(data);
-    provincias = jsonList.map((e) => Provincia.fromJson(e)).toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _cargarProvincias();
   }
 }

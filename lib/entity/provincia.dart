@@ -1,10 +1,9 @@
 class Provincia {
   final String nombre;
-  final String tipo;
 
-  Provincia({required this.nombre, required this.tipo});
+  Provincia({required this.nombre});
 
   factory Provincia.fromJson(Map<String, dynamic> json) {
-    return Provincia(nombre: json['nombre'], tipo: json['tipo']);
+    return Provincia(nombre: json['name']);
   }
 }

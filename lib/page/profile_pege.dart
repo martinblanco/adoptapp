@@ -1,9 +1,7 @@
-import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../home_page.dart';
+import 'home_page.dart';
 
 class DoctorsInfo extends StatefulWidget {
   DoctorsInfo(this.uid);
@@ -141,7 +139,7 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => PetGrid()),
+                                    builder: (context) => HomePage()),
                               );
                             },
                             child: Container(
