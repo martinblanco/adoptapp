@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 enum Animal { perro, gato }
 
-enum Size { chico, mediano, grande }
+enum PetSize { chico, mediano, grande }
 
 enum Sexo { hembra, macho }
 
@@ -21,13 +21,16 @@ class Mascota {
   bool isVacunas = false;
   String raza;
   String descripcion;
+  int distancia = 0;
   List<String> requisitos = [];
   Set usersLiked = {};
-  String fotoPerfil =
-      "https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg"; //tddo imagen default
+  String fotoPerfil;
+  List<String> fotos = [];
 
   Mascota(this.nombre, this.animal, this.edad, this.sexo, this.size,
-      this.descripcion, this.raza, this.user, this.fotoPerfil);
+      this.descripcion, this.raza, this.user, this.fotoPerfil) {
+    this.fotos = [this.fotoPerfil, this.fotoPerfil];
+  }
 
   void likeMascota(User user) {
     if (usersLiked.contains(user.uid)) {

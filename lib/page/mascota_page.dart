@@ -1,5 +1,6 @@
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 
 class MascotaPage extends StatefulWidget {
   MascotaPage({
@@ -14,6 +15,19 @@ class MascotaPage extends StatefulWidget {
 }
 
 class _MascotaPageState extends State<MascotaPage> {
+  final PageController _pageController = PageController();
+  double currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(() {
+      setState(() {
+        currentPage = _pageController.page ?? 0;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,20 +64,39 @@ class _MascotaPageState extends State<MascotaPage> {
               children: [
                 Hero(
                   tag: widget.mascota.fotoPerfil,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(widget.mascota.fotoPerfil),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(25),
-                        bottomRight: Radius.circular(25),
-                      ),
+                  child: SizedBox(
+                    height:
+                        800, // Ajusta la altura del carrusel según sea necesario
+                    child: PageView.builder(
+                      controller: _pageController,
+                      itemCount: widget.mascota.fotos
+                          .length, // listaDeFotos es la lista de URLs de imágenes
+                      itemBuilder: (context, index) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(widget.mascota.fotos[index]),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(25),
+                              bottomRight: Radius.circular(25),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ),
               ],
+            ),
+          ),
+          DotsIndicator(
+            dotsCount: 2,
+            position: currentPage,
+            decorator: const DotsDecorator(
+              color: Colors.grey,
+              activeColor: Colors.orange,
             ),
           ),
           Container(
@@ -111,7 +144,7 @@ class _MascotaPageState extends State<MascotaPage> {
                                 width: 4,
                               ),
                               Text(
-                                "(" + widget.mascota.nombre + "km)",
+                                ' ${widget.mascota.distancia} KM',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 14,

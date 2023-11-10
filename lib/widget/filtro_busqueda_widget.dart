@@ -16,19 +16,12 @@ class _FiltroPanelState extends State<FiltroPanel> {
   List<Provincia> provincias = [];
   bool isSelectedPerros = true;
   bool isSelectedGatos = true;
-  Provincia selectedProvincia = Provincia(nombre: 'Ciudad de Buenos Aires');
-
-  @override
-  void initState() {
-    super.initState();
-    _cargarProvincias();
-  }
 
   Future<void> _cargarProvincias() async {
-    provincias = json
-        .decode(await rootBundle.loadString('assets/jsons/provincias.json'))
-        .map((e) => Provincia.fromJson(e))
-        .toList();
+    final jsonString =
+        await rootBundle.loadString('assets/jsons/provincias.json');
+    final List<dynamic> jsonList = json.decode(jsonString);
+    provincias = jsonList.map((e) => Provincia.fromJson(e)).toList();
   }
 
   @override
@@ -61,8 +54,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
                     );
                   },
                 ),
-                _popup(),
-                _popup(),
+                _futurePopup(),
               ],
             ),
             Row(
@@ -100,7 +92,28 @@ class _FiltroPanelState extends State<FiltroPanel> {
         });
   }
 
+  _futurePopup() {
+    return FutureBuilder<void>(
+      future: _cargarProvincias(),
+      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // Mientras se carga, puedes mostrar un indicador de carga o texto
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          // Si ocurre un error durante la carga, puedes mostrar un mensaje de error
+          return Text('Error al cargar las provincias');
+        } else {
+          // Cuando la carga se completa, puedes mostrar el _popup() con las provincias
+          return _popup();
+        }
+      },
+    );
+  }
+
   _popup() {
+    Provincia selectedProvincia = provincias.isNotEmpty
+        ? provincias.first
+        : Provincia(name: 'Ciudad de Buenos Aires');
     return DropdownButton<Provincia>(
       value: selectedProvincia,
       onChanged: (Provincia? newValue) {
@@ -111,7 +124,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
       items: provincias.map<DropdownMenuItem<Provincia>>((Provincia value) {
         return DropdownMenuItem<Provincia>(
           value: value,
-          child: Text(value.nombre),
+          child: Text(value.name),
         );
       }).toList(),
     );

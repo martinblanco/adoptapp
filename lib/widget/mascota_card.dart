@@ -1,27 +1,48 @@
 import 'package:adoptapp/page/mascota_page.dart';
 import 'package:flutter/material.dart';
 import '../entity/mascota.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MascotaCard extends StatefulWidget {
   final Mascota mascota;
+  final Position? currentUserPosition;
 
-  const MascotaCard({Key? key, required this.mascota}) : super(key: key);
+  const MascotaCard(
+      {Key? key, required this.mascota, required this.currentUserPosition})
+      : super(key: key);
 
   @override
   _MascotaCardState createState() => _MascotaCardState();
 }
 
 class _MascotaCardState extends State<MascotaCard> {
+  Future _getTheDistance(Mascota mascota) async {
+    double? distanceImMeter = 0.0;
+    double storelat = -34.5435;
+    double storelng = -58.5165;
+    distanceImMeter = Geolocator.distanceBetween(
+      widget.currentUserPosition!.latitude,
+      widget.currentUserPosition!.longitude,
+      storelat,
+      storelng,
+    );
+    mascota.distancia = (distanceImMeter.round().toInt() / 1000).round();
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final String imageUrl = widget.mascota.fotoPerfil;
+    const String placeholderImagePath = 'assets/images/placeholder.png';
     final screenWidth = mediaQuery.size.width;
     final screenHeight = mediaQuery.size.height;
     final scale = screenWidth / 375; // 375 is the reference screen width
-    final baseFontSize = 16;
+    const baseFontSize = 16;
     final int scaledFontSize = (baseFontSize * scale).round();
     double width = MediaQuery.of(context).size.width;
+
+    if (widget.mascota.distancia == 0) {
+      _getTheDistance(widget.mascota);
+    }
 
     return GestureDetector(
       onTap: () {
@@ -52,25 +73,23 @@ class _MascotaCardState extends State<MascotaCard> {
               child: Stack(
                 children: [
                   Hero(
-                    tag: imageUrl,
+                    tag: widget.mascota.fotoPerfil,
                     child: ClipRRect(
                       borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(20),
                         topRight: Radius.circular(20),
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.orange,
-                            width: 1,
-                          ),
-                        ),
-                        child: Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                        ),
-                      ),
+                      child: (widget.mascota.fotoPerfil.isNotEmpty)
+                          ? Image.network(
+                              widget.mascota.fotoPerfil,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            )
+                          : Image.asset(
+                              placeholderImagePath,
+                              fit: BoxFit.cover,
+                              width: double.infinity,
+                            ),
                     ),
                   ),
                   buildHeartIcon(),
@@ -86,11 +105,12 @@ class _MascotaCardState extends State<MascotaCard> {
                 style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 15,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.w600),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${widget.mascota.nombre}'),
+                    Text('${widget.mascota.nombre}' +
+                        ' ${widget.mascota.distancia} KM'),
                   ],
                 ),
               ),

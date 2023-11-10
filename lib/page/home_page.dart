@@ -21,7 +21,14 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _widgetOptions = <Widget>[
+      const Text('SOON'),
+      MascotasGrid(mascotas: mascotas),
+      const Text('SOON'),
+    ];
+
     updateMascotas();
+
     return Scaffold(
       appBar: AppBar(
           title: const Text(
@@ -59,17 +66,17 @@ class _HomePageState extends State<HomePage> {
           ],
           automaticallyImplyLeading: false),
       body: Center(
-        child: _list().elementAt(_selectedIndex),
+        child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.local_hospital),
-            label: 'Salud',
+            label: 'Veterinarias',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.pets),
-            label: 'Mascotas',
+            icon: Icon(Icons.abc),
+            label: 'Masacotas',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -81,6 +88,16 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _onItemTapped(1);
+        },
+        tooltip: "Mascotas",
+        child: Icon(Icons.pets, color: Colors.orange),
+        elevation: 4.0,
+        backgroundColor: Colors.white,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       endDrawer: MenuPerfil(_auth.currentUser),
     );
   }
@@ -100,14 +117,5 @@ class _HomePageState extends State<HomePage> {
       }
       _selectedIndex = index;
     });
-  }
-
-  List<Widget> _list() {
-    List<Widget> _widgetOptions = <Widget>[
-      const Text('SOON'),
-      MascotasGrid(mascotas: mascotas),
-      const Text('SOON'),
-    ];
-    return _widgetOptions;
   }
 }

@@ -138,7 +138,7 @@ class _RegisterPetState extends State<RegisterPet> {
         Animal.values[widget.animal.selected()].name,
         text,
         Sexo.values[widget.sexo.selected()].name,
-        Size.values[widget.size.selected()].name,
+        PetSize.values[widget.size.selected()].name,
         text,
         text,
         user!.uid,
