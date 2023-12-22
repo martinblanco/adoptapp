@@ -1,9 +1,10 @@
 import 'dart:io';
-import 'package:adoptapp/widget/selector_card_widget.dart';
+import 'package:adoptapp/services/mascotas/mascotas_service.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/widgets/selector_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:adoptapp/database.dart';
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,6 +22,7 @@ class RegisterPet extends StatefulWidget {
 }
 
 class _RegisterPetState extends State<RegisterPet> {
+  final MascotasService _mascotaService = services.get<MascotasService>();
   List<Mascota> mascotas = [];
   late File imagen;
   late String url;
@@ -143,7 +145,7 @@ class _RegisterPetState extends State<RegisterPet> {
         text,
         user!.uid,
         url);
-    mascota.setId(saveMascota(mascota));
+    _mascotaService.addPet(mascota);
     setState(() {
       mascotas.add(mascota);
     });

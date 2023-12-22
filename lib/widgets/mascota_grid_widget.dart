@@ -1,5 +1,5 @@
-import 'package:adoptapp/widget/filtro_busqueda_widget.dart';
-import 'package:adoptapp/widget/mascota_card.dart';
+import 'package:adoptapp/widgets/filtro_busqueda_widget.dart';
+import 'package:adoptapp/widgets/mascota_card.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:geolocator/geolocator.dart';

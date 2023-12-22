@@ -1,5 +1,5 @@
-import 'package:adoptapp/widget/custon_card_widget.dart';
-import 'package:adoptapp/widget/selector_card_widget.dart';
+import 'package:adoptapp/widgets/custon_card_widget.dart';
+import 'package:adoptapp/widgets/selector_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 

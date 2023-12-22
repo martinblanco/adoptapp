@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:adoptapp/page/home_page.dart';
-import 'package:adoptapp/user_login_page.dart';
+import 'package:adoptapp/screens/home_page.dart';
+import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

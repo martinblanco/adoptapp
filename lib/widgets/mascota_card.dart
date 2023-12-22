@@ -1,4 +1,4 @@
-import 'package:adoptapp/page/mascota_page.dart';
+import 'package:adoptapp/screens/mascotas/mascota_page.dart';
 import 'package:flutter/material.dart';
 import '../entity/mascota.dart';
 import 'package:geolocator/geolocator.dart';

@@ -9,6 +9,7 @@ enum PetSize { chico, mediano, grande }
 enum Sexo { hembra, macho }
 
 class Mascota {
+  String id = "";
   String user;
   String animal;
   String nombre;

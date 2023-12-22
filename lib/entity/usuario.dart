@@ -2,6 +2,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:adoptapp/entity/mascota.dart';
 
 class Usuario {
+  String id = "";
   String mail;
   String userName;
   String isRefugio;

@@ -2,7 +2,7 @@ import 'package:adoptapp/entity/usuario.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../page/profile_pege.dart';
+import '../screens/profile_pege.dart';
 
 final user = FirebaseAuth.instance.currentUser;
 

@@ -1,10 +1,11 @@
-import 'package:adoptapp/widget/mascota_grid_widget.dart';
-import 'package:adoptapp/widget/perfil_menu_widget.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/widgets/mascota_grid_widget.dart';
+import 'package:adoptapp/widgets/perfil_menu_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:adoptapp/page/mascota_register_page.dart';
-import 'package:adoptapp/database.dart';
+import 'package:adoptapp/screens/mascotas/mascota_register_page.dart';
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -16,6 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final MascotasService _mascotaService = services.get<MascotasService>();
   List<Mascota> mascotas = [];
   int _selectedIndex = 0;
 
@@ -103,7 +105,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void updateMascotas() {
-    getAllMascotas().then((mascotas) => {
+    _mascotaService.getAllPets().then((mascotas) => {
           setState(() {
             this.mascotas = mascotas;
           })

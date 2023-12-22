@@ -1,11 +1,12 @@
-import 'package:adoptapp/google_page.dart';
-import 'package:adoptapp/page/home_page.dart';
+import 'package:adoptapp/screens/google_page.dart';
+import 'package:adoptapp/screens/home_page.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/services/user/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:adoptapp/entity/usuario.dart';
-import 'package:adoptapp/database.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -17,6 +18,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final UserService _userService = services.get<UserService>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
   final TextEditingController _passswordConfirmerController =
@@ -239,7 +241,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void newUsuario(User user, String nombreUsuario) {
     var usuario = Usuario(user.email!, nombreUsuario, "false");
-    usuario.setId(saveUsuario(usuario));
+    _userService.addUser(usuario);
     setState(() {
       usuarios.add(usuario);
     });

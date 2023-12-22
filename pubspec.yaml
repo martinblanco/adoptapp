@@ -25,6 +25,7 @@ dependencies:
   email_validator: '^2.1.16'
   geolocator: ^7.4.0
   dots_indicator: ^2.0.0
+  get_it: ^3.0.3
 
 dev_dependencies:
   flutter_test:

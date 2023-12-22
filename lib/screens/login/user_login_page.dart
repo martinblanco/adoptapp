@@ -1,12 +1,12 @@
-import 'package:adoptapp/google_page.dart';
-import 'package:adoptapp/user_register_page.dart';
+import 'package:adoptapp/screens/google_page.dart';
+import 'package:adoptapp/screens/register/user_register_page.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:adoptapp/page/home_page.dart';
+import 'package:adoptapp/screens/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
