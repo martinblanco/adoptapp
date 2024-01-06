@@ -93,7 +93,7 @@ class _MascotaPageState extends State<MascotaPage> {
           ),
           DotsIndicator(
             dotsCount: 2,
-            position: currentPage,
+            position: currentPage.toInt(),
             decorator: const DotsDecorator(
               color: Colors.grey,
               activeColor: Colors.orange,
