@@ -2,6 +2,7 @@ import 'package:adoptapp/services/mascotas/firebase_mascotas_service.dart';
 import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 import 'package:adoptapp/services/user/firebase_user_service.dart';
 import 'package:adoptapp/services/user/user_service.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:get_it/get_it.dart';
 
 final services = GetIt.instance;

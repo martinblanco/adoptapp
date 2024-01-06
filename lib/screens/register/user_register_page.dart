@@ -11,6 +11,7 @@ import 'package:adoptapp/entity/usuario.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterPage extends StatefulWidget {
+  static final routeName = '/register';
   const RegisterPage({Key? key}) : super(key: key);
 
   @override

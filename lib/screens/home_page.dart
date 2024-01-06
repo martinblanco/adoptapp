@@ -10,6 +10,7 @@ import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
+  static final routeName = '/home';
   const HomePage({Key? key}) : super(key: key);
 
   @override

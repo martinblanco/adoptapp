@@ -11,14 +11,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-class SignInOne extends StatefulWidget {
-  const SignInOne({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  static final routeName = '/login';
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _SignInOnePageState createState() => _SignInOnePageState();
+  _LoginPagePageState createState() => _LoginPagePageState();
 }
 
-class _SignInOnePageState extends State<SignInOne> {
+class _LoginPagePageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
