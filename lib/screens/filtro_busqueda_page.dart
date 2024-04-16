@@ -1,15 +1,10 @@
+import 'package:adoptapp/entity/mascota.dart';
 import 'package:adoptapp/widgets/choice_widget.dart';
 import 'package:adoptapp/widgets/custon_card_widget.dart';
 import 'package:adoptapp/widgets/dropdown_widget.dart';
 import 'package:adoptapp/widgets/filter_chip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-enum Sizes { extraSmall, small, medium, large }
-
-enum Animal { todos, perro, gato }
-
-enum Sexo { todos, hembra, macho }
 
 class FiltrosPage extends StatefulWidget {
   FiltrosPage({Key? key}) : super(key: key);

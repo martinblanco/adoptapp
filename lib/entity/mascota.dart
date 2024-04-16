@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-enum Animal { perro, gato }
+enum Sizes { extraSmall, small, medium, large }
 
-enum PetSize { chico, mediano, grande }
+enum Animal { todos, perro, gato }
 
-enum Sexo { hembra, macho }
+enum Sexo { todos, hembra, macho }
 
 class Mascota {
   String id = "";
