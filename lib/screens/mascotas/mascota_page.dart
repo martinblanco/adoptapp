@@ -8,7 +8,7 @@ class MascotaPage extends StatefulWidget {
     required this.mascota,
   }) : super(key: key);
 
-  Mascota mascota;
+  final Mascota mascota;
 
   @override
   State<MascotaPage> createState() => _MascotaPageState();
@@ -297,7 +297,7 @@ buildPetFeature(String value, String feature) {
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Colors.blue,
+          color: Colors.orange,
           width: 1,
         ),
         borderRadius: const BorderRadius.all(
@@ -309,18 +309,15 @@ buildPetFeature(String value, String feature) {
           Text(
             value,
             style: TextStyle(
-              color: Colors.grey[800],
+              color: Colors.orange,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(
-            height: 4,
-          ),
           Text(
             feature,
             style: TextStyle(
-              color: Colors.grey[600],
+              color: Colors.orange,
               fontSize: 14,
             ),
           ),

@@ -9,8 +9,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:adoptapp/screens/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
 class LoginPage extends StatefulWidget {
   static final routeName = '/login';
   const LoginPage({Key? key}) : super(key: key);
@@ -20,6 +18,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPagePageState extends State<LoginPage> {
+  final GlobalKey<FormState> _forLoginKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
@@ -36,7 +35,7 @@ class _LoginPagePageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: Form(
-          key: _formKey,
+          key: _forLoginKey,
           child: Stack(
             children: [
               Container(

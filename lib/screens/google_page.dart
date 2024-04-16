@@ -69,11 +69,13 @@ class SignInDemoState extends State<SignInDemo> {
       (dynamic contact) => contact['names'] != null,
       orElse: () => null,
     );
+    // ignore: unnecessary_null_comparison
     if (contact != null) {
       final Map<String, dynamic> name = contact['names'].firstWhere(
         (dynamic name) => name['displayName'] != null,
         orElse: () => null,
       );
+      // ignore: unnecessary_null_comparison
       if (name != null) {
         return name['displayName'];
       }

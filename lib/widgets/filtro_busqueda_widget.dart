@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:adoptapp/screens/filtro_busqueda_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../entity/provincia.dart';
 
@@ -13,30 +12,38 @@ class FiltroPanel extends StatefulWidget {
 }
 
 class _FiltroPanelState extends State<FiltroPanel> {
+  late Provincia selectedProvincia = Provincia(name: "C.A.B.A");
   List<Provincia> provincias = [];
   bool isSelectedPerros = true;
   bool isSelectedGatos = true;
 
-  Future<void> _cargarProvincias() async {
-    final jsonString =
-        await rootBundle.loadString('assets/jsons/provincias.json');
-    final List<dynamic> jsonList = json.decode(jsonString);
-    provincias = jsonList.map((e) => Provincia.fromJson(e)).toList();
+  @override
+  void initState() {
+    super.initState();
+    cargarProvincias();
+  }
+
+  Future<void> cargarProvincias() async {
+    String jsonString = await DefaultAssetBundle.of(context)
+        .loadString('assets/jsons/provincias.json');
+    List<dynamic> jsonList = json.decode(jsonString);
+    List<Provincia> listaProvincias =
+        jsonList.map((json) => Provincia.fromJson(json)).toList();
+    setState(() {
+      provincias = listaProvincias;
+      selectedProvincia = provincias.first;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20), color: Colors.amber),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(begin: Alignment.bottomRight, colors: [
-              Colors.black.withOpacity(.4),
-              Colors.black.withOpacity(.2),
-            ])),
+            borderRadius: BorderRadius.circular(10),
+            color: Colors.orangeAccent[100]),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -54,12 +61,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
                     );
                   },
                 ),
-                _futurePopup(),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
+                _popup(),
                 _filtroPerros(),
                 _filtroGatos(),
               ],
@@ -74,10 +76,12 @@ class _FiltroPanelState extends State<FiltroPanel> {
     return FilterChip(
         label: const Icon(FontAwesomeIcons.dog),
         selected: isSelectedPerros,
-        backgroundColor: Colors.blue,
-        selectedColor: Colors.red,
+        backgroundColor: Colors.orangeAccent,
+        selectedColor: Colors.orange,
         onSelected: (bool value) {
-          isSelectedPerros = !isSelectedPerros;
+          setState(() {
+            isSelectedPerros = !isSelectedPerros;
+          });
         });
   }
 
@@ -85,35 +89,16 @@ class _FiltroPanelState extends State<FiltroPanel> {
     return FilterChip(
         label: const Icon(FontAwesomeIcons.cat),
         selected: isSelectedGatos,
-        backgroundColor: Colors.blue,
-        selectedColor: Colors.red,
+        backgroundColor: Colors.orangeAccent,
+        selectedColor: Colors.orange,
         onSelected: (bool value) {
-          isSelectedGatos = !isSelectedGatos;
+          setState(() {
+            isSelectedGatos = !isSelectedGatos;
+          });
         });
   }
 
-  _futurePopup() {
-    return FutureBuilder<void>(
-      future: _cargarProvincias(),
-      builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // Mientras se carga, puedes mostrar un indicador de carga o texto
-          return CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          // Si ocurre un error durante la carga, puedes mostrar un mensaje de error
-          return Text('Error al cargar las provincias');
-        } else {
-          // Cuando la carga se completa, puedes mostrar el _popup() con las provincias
-          return _popup();
-        }
-      },
-    );
-  }
-
   _popup() {
-    Provincia selectedProvincia = provincias.isNotEmpty
-        ? provincias.first
-        : Provincia(name: 'Ciudad de Buenos Aires');
     return DropdownButton<Provincia>(
       value: selectedProvincia,
       onChanged: (Provincia? newValue) {

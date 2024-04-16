@@ -1,13 +1,17 @@
+import 'package:adoptapp/widgets/choice_widget.dart';
 import 'package:adoptapp/widgets/custon_card_widget.dart';
-import 'package:adoptapp/widgets/selector_card_widget.dart';
+import 'package:adoptapp/widgets/dropdown_widget.dart';
+import 'package:adoptapp/widgets/filter_chip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../entity/mascota.dart';
+enum Sizes { extraSmall, small, medium, large }
+
+enum Animal { todos, perro, gato }
+
+enum Sexo { todos, hembra, macho }
 
 class FiltrosPage extends StatefulWidget {
-  late SelectorCard animal;
-
   FiltrosPage({Key? key}) : super(key: key);
 
   @override
@@ -15,178 +19,210 @@ class FiltrosPage extends StatefulWidget {
 }
 
 class _FiltrosPageState extends State<FiltrosPage> {
+  bool selectedCachorro = false;
+  bool selectedVacunas = false;
+  bool selectedTransito = false;
+  bool selectedRaza = false;
+  bool selectedRefugio = false;
+  bool selectedPapeles = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Filtros'),
-        leading: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
-            size: 20.0,
+        appBar: AppBar(
+          title: const Text(
+            'Filtros',
+            style: TextStyle(color: Colors.white),
           ),
-        ),
-        backgroundColor: Colors.teal,
-        actions: [
-          TextButton(
-            child: const Text('LIMPIAR'),
-            onPressed: () {},
+          leading: GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 20.0,
+            ),
           ),
-          TextButton(
-            child: const Text('APLICAR'),
-            onPressed: () {},
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView(
-          children: [
-            CustomCard(
-              children: [
-                const Text(
-                  'Ordenar por',
-                ),
-                DropDown(),
-              ],
+          backgroundColor: Colors.orange,
+          actions: [
+            TextButton(
+              child:
+                  const Text('LIMPIAR', style: TextStyle(color: Colors.white)),
+              onPressed: () {},
             ),
-            CustomCard(
-              children: [
-                const Text(
-                  'Fecha de publicacion',
-                ),
-                DropDownDos(),
-              ],
-            ),
-            widget.animal = SelectorCard(
-                title: "Animal",
-                texts: const ["Perro", "Gato"],
-                icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),
-            SelectorCard(
-                title: "Sexo",
-                texts: const ["Hembra", "Macho"],
-                icons: const [FontAwesomeIcons.venus, FontAwesomeIcons.mars]),
-            SelectorCard(title: "Tamaño", texts: const [
-              "Chico",
-              "Mediano",
-              "Grande"
-            ], icons: const [
-              FontAwesomeIcons.s,
-              FontAwesomeIcons.m,
-              FontAwesomeIcons.l
-            ]),
-            CustomCard(children: [
-              CheckBoxList(
-                children: const ['Cachorro', 'Raza', 'Vacunado', 'Transito'],
-              ),
-            ]),
+            TextButton(
+              child:
+                  const Text('APLICAR', style: TextStyle(color: Colors.white)),
+              onPressed: () {},
+            )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class CheckBoxList extends StatefulWidget {
-  CheckBoxList({Key? key, required this.children}) : super(key: key) {
-    values = List.generate(children.length, (index) => false);
-  }
-  final List<String> children;
-  late final List<bool> values;
-  @override
-  _CheckBoxListState createState() => _CheckBoxListState();
-}
-
-class _CheckBoxListState extends State<CheckBoxList> {
-  @override
-  Widget build(BuildContext context) {
-    var children = widget.children;
-    var values = widget.values;
-    return Column(
-        children: children.map((element) {
-      int index = children.indexOf(element);
-      return CheckboxListTile(
-        activeColor: Colors.teal,
-        title: Text(
-          element,
-        ),
-        value: values[index],
-        onChanged: (bool? value) {
-          setState(() {
-            values[index] = value!;
-          });
-        },
-      );
-    }).toList());
-  }
-}
-
-class DropDown extends StatefulWidget {
-  const DropDown({Key? key}) : super(key: key);
-
-  @override
-  _DropDownState createState() => _DropDownState();
-}
-
-class _DropDownState extends State<DropDown> {
-  String dropdownValue = 'Mas cercano';
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-      value: dropdownValue,
-      onChanged: (String? value) {
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      isExpanded: true,
-      items: ['Mas cercano', 'Mas reciente']
-          .map((e) => DropdownMenuItem(
-                child: Text(e),
-                value: e,
-              ))
-          .toList(),
-      underline: Container(
-        height: 3,
-        color: Colors.teal,
-      ),
-    );
-  }
-}
-
-class DropDownDos extends StatefulWidget {
-  const DropDownDos({Key? key}) : super(key: key);
-
-  @override
-  _DropDownStates createState() => _DropDownStates();
-}
-
-class _DropDownStates extends State<DropDownDos> {
-  String dropdownValue = 'Todo';
-  @override
-  Widget build(BuildContext context) {
-    return DropdownButton(
-      value: dropdownValue,
-      onChanged: (String? value) {
-        setState(() {
-          dropdownValue = value!;
-        });
-      },
-      isExpanded: true,
-      items: ['Todo', 'Ultimas 24hs', 'Ultimos 7 dias', 'Ultimos 30 dias']
-          .map((e) => DropdownMenuItem(
-                child: Text(e),
-                value: e,
-              ))
-          .toList(),
-      underline: Container(
-        height: 3,
-        color: Colors.teal,
-      ),
-    );
+        body: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView(children: [
+              const CombinedCard(
+                title: Text("Ordenar por"),
+                isSingle: true,
+                contenido: DropDown(
+                    textos: ['Mas Relevante', 'Mas Reciente', 'Mas Cercano']),
+              ),
+              const CombinedCard(
+                title: Text("Fecha de creacion"),
+                isSingle: true,
+                contenido: DropDown(textos: [
+                  'Todo',
+                  'Ultimas 24hs',
+                  'Ultimos 7 dias',
+                  'Ultimos 30 dias'
+                ]),
+              ),
+              CombinedCard(
+                title: const Text(
+                  'Animal',
+                ),
+                contenido: [
+                  Choice<Animal>(
+                    segments: const <ButtonSegment<Animal>>[
+                      ButtonSegment<Animal>(
+                          value: Animal.todos,
+                          label: Text('Todos'),
+                          icon: Icon(FontAwesomeIcons.paw)),
+                      ButtonSegment<Animal>(
+                          value: Animal.perro,
+                          label: Text('Perros'),
+                          icon: Icon(FontAwesomeIcons.dog)),
+                      ButtonSegment<Animal>(
+                          value: Animal.gato,
+                          label: Text('Gatos'),
+                          icon: Icon(FontAwesomeIcons.cat)),
+                    ],
+                    initialSelection: {Animal.todos},
+                    onSelectionChanged: (Set<Animal> value) {
+                      // Maneja el valor seleccionado aquí
+                      print("Valor seleccionado: $value");
+                    },
+                    multiSelectionEnabled: false,
+                  )
+                ],
+              ),
+              CombinedCard(
+                title: Text(
+                  'Sexo',
+                ),
+                contenido: [
+                  Choice<Sexo>(
+                    segments: const <ButtonSegment<Sexo>>[
+                      ButtonSegment<Sexo>(
+                          value: Sexo.todos,
+                          label: Text('Todos'),
+                          icon: Icon(FontAwesomeIcons.genderless)),
+                      ButtonSegment<Sexo>(
+                          value: Sexo.hembra,
+                          label: Text('Hembra'),
+                          icon: Icon(FontAwesomeIcons.venus)),
+                      ButtonSegment<Sexo>(
+                          value: Sexo.macho,
+                          label: Text('Macho'),
+                          icon: Icon(FontAwesomeIcons.mars)),
+                    ],
+                    initialSelection: {Sexo.todos},
+                    onSelectionChanged: (Set<Sexo> value) {
+                      print("Valor seleccionado: $value");
+                    },
+                    multiSelectionEnabled: false,
+                  )
+                ],
+              ),
+              CombinedCard(title: Text('Tamaño'), contenido: [
+                Choice<Sizes>(
+                  segments: const <ButtonSegment<Sizes>>[
+                    ButtonSegment<Sizes>(
+                        value: Sizes.extraSmall, label: Text('XS')),
+                    ButtonSegment<Sizes>(value: Sizes.small, label: Text('S')),
+                    ButtonSegment<Sizes>(value: Sizes.medium, label: Text('M')),
+                    ButtonSegment<Sizes>(value: Sizes.large, label: Text('L')),
+                  ],
+                  initialSelection: {
+                    Sizes.extraSmall,
+                    Sizes.small,
+                    Sizes.medium,
+                    Sizes.large
+                  },
+                  onSelectionChanged: (Set<Sizes> value) {
+                    print("Valor seleccionado: $value");
+                  },
+                  multiSelectionEnabled: true,
+                ),
+              ]),
+              CombinedCard(title: Text("Otros Filtros"), contenido: [
+                Column(children: [
+                  Row(
+                    children: [
+                      CustomFilterChip(
+                        text: "Cachorro",
+                        selected: selectedCachorro,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedCachorro = value;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      CustomFilterChip(
+                        text: "Vacunas",
+                        selected: selectedVacunas,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedVacunas = value;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      CustomFilterChip(
+                        text: "Raza",
+                        selected: selectedRaza,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedRaza = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(children: [
+                    CustomFilterChip(
+                      text: "Transito",
+                      selected: selectedTransito,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedTransito = value;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    CustomFilterChip(
+                      text: "de Refugio",
+                      selected: selectedRefugio,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedRefugio = value;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    CustomFilterChip(
+                      text: "Papeles",
+                      selected: selectedPapeles,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedPapeles = value;
+                        });
+                      },
+                    ),
+                  ])
+                ]),
+              ]),
+            ])));
   }
 }

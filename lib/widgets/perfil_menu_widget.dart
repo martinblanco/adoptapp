@@ -1,4 +1,5 @@
 import 'package:adoptapp/entity/usuario.dart';
+import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +9,7 @@ final user = FirebaseAuth.instance.currentUser;
 
 class MenuPerfil extends StatefulWidget {
   MenuPerfil(this.currentUser, {Key? key}) : super(key: key);
-  User? currentUser;
+  final User? currentUser;
   @override
   _MenuPerfilState createState() => _MenuPerfilState();
 }
@@ -70,7 +71,14 @@ class _MenuPerfilState extends State<MenuPerfil> {
           ListTile(
             title: const Text('Exit'),
             leading: const Icon(Icons.exit_to_app),
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => const LoginPage(),
+                ),
+              );
+            },
           ),
         ],
       ),

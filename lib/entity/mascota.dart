@@ -21,6 +21,7 @@ class Mascota {
   bool isTransito = false;
   bool isVacunas = false;
   String raza;
+  late String cachorro;
   String descripcion;
   int distancia = 0;
   List<String> requisitos = [];
@@ -28,8 +29,8 @@ class Mascota {
   String fotoPerfil;
   List<String> fotos = [];
 
-  Mascota(this.nombre, this.animal, this.edad, this.sexo, this.size,
-      this.descripcion, this.raza, this.user, this.fotoPerfil) {
+  Mascota(this.nombre, this.animal, this.edad, this.isCachorro, this.sexo,
+      this.size, this.descripcion, this.raza, this.user, this.fotoPerfil) {
     this.fotos = [this.fotoPerfil, this.fotoPerfil];
   }
 
@@ -49,6 +50,7 @@ class Mascota {
       'nombre': nombre,
       'animal': animal,
       'edad': edad,
+      'cachorro': cachorro,
       'sexo': sexo,
       'size': size,
       'descripcion': descripcion,
@@ -84,6 +86,7 @@ Mascota createMascota(record) {
     'nombre': '',
     'animal': '',
     'edad': '',
+    'cachorro': '',
     'sexo': '',
     'size': '',
     'descripcion': '',
@@ -99,6 +102,7 @@ Mascota createMascota(record) {
       attributes['nombre'],
       attributes['animal'],
       attributes['edad'],
+      attributes['cachorro'] == "true" ? true : false,
       attributes['sexo'],
       attributes['size'],
       attributes['descripcion'],

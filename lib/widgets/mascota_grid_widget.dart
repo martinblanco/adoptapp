@@ -17,8 +17,17 @@ class _MascotasGridState extends State<MascotasGrid> {
   Position? _currentUserPosition;
 
   Future _getTheDistance() async {
-    _currentUserPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium);
+    bool enabled = await Geolocator.isLocationServiceEnabled();
+    if (enabled) {
+      try {
+        _currentUserPosition = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.low);
+      } catch (e) {
+        _currentUserPosition = null;
+      }
+    } else {
+      //LocationPermission permission = await Geolocator.checkPermission();
+    }
   }
 
   @override
@@ -45,7 +54,7 @@ class _MascotasGridState extends State<MascotasGrid> {
                     builder:
                         (BuildContext context, AsyncSnapshot<void> snapshot) {
                       if (snapshot.hasError) {
-                        return Text('Error');
+                        return Text(snapshot.stackTrace.toString());
                       } else {
                         return GridView.builder(
                           key: Key('MascotaGridView'),

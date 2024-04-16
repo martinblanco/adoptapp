@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 import 'package:adoptapp/services/services.dart';
-import 'package:adoptapp/widgets/selector_card_widget.dart';
+import 'package:adoptapp/widgets/choice_widget.dart';
+import 'package:adoptapp/widgets/custon_card_widget.dart';
+import 'package:adoptapp/widgets/filter_chip_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -9,11 +11,14 @@ import 'package:adoptapp/entity/mascota.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 
+enum Sizes { extraSmall, small, medium, large }
+
+enum Animal { todos, perro, gato }
+
+enum Sexo { todos, hembra, macho }
+
 class RegisterPet extends StatefulWidget {
   final String title = 'Registration';
-  late SelectorCard animal;
-  late SelectorCard sexo;
-  late SelectorCard size;
 
   RegisterPet({Key? key}) : super(key: key);
 
@@ -26,12 +31,19 @@ class _RegisterPetState extends State<RegisterPet> {
   List<Mascota> mascotas = [];
   late File imagen;
   late String url;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formPetKey = GlobalKey<FormState>();
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passswordController = TextEditingController();
   late final bool _success = false;
   late String _userEmail;
+
+  bool selectedCachorro = false;
+  bool selectedVacunas = false;
+  bool selectedTransito = false;
+  bool selectedRaza = false;
+  bool selectedRefugio = false;
+  bool selectedPapeles = false;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +52,7 @@ class _RegisterPetState extends State<RegisterPet> {
         title: Text(""),
       ),
       body: Form(
-        key: _formKey,
+        key: _formPetKey,
         child: ListView(children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -51,22 +63,151 @@ class _RegisterPetState extends State<RegisterPet> {
               ),
               buildTextField('Nombre'),
               buildTextField('Descripcion'),
-              widget.animal = SelectorCard(
-                  title: "Animal",
-                  texts: const ["Perro", "Gato"],
-                  icons: const [FontAwesomeIcons.dog, FontAwesomeIcons.cat]),
-              widget.sexo = SelectorCard(
-                  title: "Sexo",
-                  texts: const ["Hembra", "Macho"],
-                  icons: const [FontAwesomeIcons.venus, FontAwesomeIcons.mars]),
-              widget.size = SelectorCard(title: "Tamaño", texts: const [
-                "Chico",
-                "Mediano",
-                "Grande"
-              ], icons: const [
-                FontAwesomeIcons.s,
-                FontAwesomeIcons.m,
-                FontAwesomeIcons.l
+              CombinedCard(
+                title: const Text(
+                  'Animal',
+                ),
+                contenido: [
+                  Choice<Animal>(
+                    segments: const <ButtonSegment<Animal>>[
+                      ButtonSegment<Animal>(
+                          value: Animal.todos,
+                          label: Text('Todos'),
+                          icon: Icon(FontAwesomeIcons.paw)),
+                      ButtonSegment<Animal>(
+                          value: Animal.perro,
+                          label: Text('Perros'),
+                          icon: Icon(FontAwesomeIcons.dog)),
+                      ButtonSegment<Animal>(
+                          value: Animal.gato,
+                          label: Text('Gatos'),
+                          icon: Icon(FontAwesomeIcons.cat)),
+                    ],
+                    initialSelection: {Animal.todos},
+                    onSelectionChanged: (Set<Animal> value) {
+                      // Maneja el valor seleccionado aquí
+                      print("Valor seleccionado: $value");
+                    },
+                    multiSelectionEnabled: false,
+                  )
+                ],
+              ),
+              CombinedCard(
+                title: Text(
+                  'Sexo',
+                ),
+                contenido: [
+                  Choice<Sexo>(
+                    segments: const <ButtonSegment<Sexo>>[
+                      ButtonSegment<Sexo>(
+                          value: Sexo.todos,
+                          label: Text('Todos'),
+                          icon: Icon(FontAwesomeIcons.genderless)),
+                      ButtonSegment<Sexo>(
+                          value: Sexo.hembra,
+                          label: Text('Hembra'),
+                          icon: Icon(FontAwesomeIcons.venus)),
+                      ButtonSegment<Sexo>(
+                          value: Sexo.macho,
+                          label: Text('Macho'),
+                          icon: Icon(FontAwesomeIcons.mars)),
+                    ],
+                    initialSelection: {Sexo.todos},
+                    onSelectionChanged: (Set<Sexo> value) {
+                      print("Valor seleccionado: $value");
+                    },
+                    multiSelectionEnabled: false,
+                  )
+                ],
+              ),
+              CombinedCard(title: Text('Tamaño'), contenido: [
+                Choice<Sizes>(
+                  segments: const <ButtonSegment<Sizes>>[
+                    ButtonSegment<Sizes>(
+                        value: Sizes.extraSmall, label: Text('XS')),
+                    ButtonSegment<Sizes>(value: Sizes.small, label: Text('S')),
+                    ButtonSegment<Sizes>(value: Sizes.medium, label: Text('M')),
+                    ButtonSegment<Sizes>(value: Sizes.large, label: Text('L')),
+                  ],
+                  initialSelection: {
+                    Sizes.extraSmall,
+                    Sizes.small,
+                    Sizes.medium,
+                    Sizes.large
+                  },
+                  onSelectionChanged: (Set<Sizes> value) {
+                    print("Valor seleccionado: $value");
+                  },
+                  multiSelectionEnabled: true,
+                ),
+              ]),
+              CombinedCard(title: Text("Otros Filtros"), contenido: [
+                Column(children: [
+                  Row(
+                    children: [
+                      CustomFilterChip(
+                        text: "Cachorro",
+                        selected: selectedCachorro,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedCachorro = value;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      CustomFilterChip(
+                        text: "Vacunas",
+                        selected: selectedVacunas,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedVacunas = value;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 8),
+                      CustomFilterChip(
+                        text: "Raza",
+                        selected: selectedRaza,
+                        onChanged: (bool value) {
+                          setState(() {
+                            selectedRaza = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Row(children: [
+                    CustomFilterChip(
+                      text: "Transito",
+                      selected: selectedTransito,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedTransito = value;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    CustomFilterChip(
+                      text: "de Refugio",
+                      selected: selectedRefugio,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedRefugio = value;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 8),
+                    CustomFilterChip(
+                      text: "Papeles",
+                      selected: selectedPapeles,
+                      onChanged: (bool value) {
+                        setState(() {
+                          selectedPapeles = value;
+                        });
+                      },
+                    ),
+                  ])
+                ]),
               ]),
               buildBotton('Agregar Mascota'),
               Container(
@@ -136,15 +277,7 @@ class _RegisterPetState extends State<RegisterPet> {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     final User? user = _auth.currentUser;
     var mascota = Mascota(
-        text,
-        Animal.values[widget.animal.selected()].name,
-        text,
-        Sexo.values[widget.sexo.selected()].name,
-        PetSize.values[widget.size.selected()].name,
-        text,
-        text,
-        user!.uid,
-        url);
+        text, text, text, false, text, text, text, text, user!.uid, url);
     _mascotaService.addPet(mascota);
     setState(() {
       mascotas.add(mascota);

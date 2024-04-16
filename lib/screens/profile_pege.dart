@@ -6,7 +6,7 @@ import 'home_page.dart';
 class DoctorsInfo extends StatefulWidget {
   DoctorsInfo(this.uid);
 
-  String? uid;
+  final String? uid;
 
   @override
   _DoctorsInfoState createState() => _DoctorsInfoState();

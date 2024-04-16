@@ -25,7 +25,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passswordConfirmerController =
       TextEditingController();
   List<Usuario> usuarios = [];
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formRegisterKey = GlobalKey<FormState>();
   final TextEditingController _nombreController = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class _RegisterPageState extends State<RegisterPage> {
         ),
       ),
       body: Form(
-          key: _formKey,
+          key: _formRegisterKey,
           child: Stack(
             children: [
               Container(
@@ -128,6 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
           if (value!.isEmpty) {
             return 'Type your Email';
           }
+          return null;
         },
         style: GoogleFonts.inter(
           fontSize: 16.0,
@@ -166,6 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
           if (value!.isEmpty) {
             return 'Type your Password';
           }
+          return null;
         },
         style: GoogleFonts.inter(
           fontSize: 16.0,

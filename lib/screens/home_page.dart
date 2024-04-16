@@ -26,7 +26,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = <Widget>[
       const Text('SOON'),
+      const Text('SOON'),
       MascotasGrid(mascotas: mascotas),
+      const Text('SOON'),
       const Text('SOON'),
     ];
 
@@ -78,11 +80,22 @@ class _HomePageState extends State<HomePage> {
             label: 'Veterinarias',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.abc),
+            icon: Icon(Icons.storefront_outlined),
+            label: 'Tiendas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.arrow_drop_up_rounded,
+              color: Colors.white,
+            ),
             label: 'Masacotas',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.person_2),
+            label: 'Servicios',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.house_siding),
             label: 'Refugios',
           ),
         ],
@@ -93,7 +106,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _onItemTapped(1);
+          _onItemTapped(2);
         },
         tooltip: "Mascotas",
         child: Icon(Icons.pets, color: Colors.orange),
