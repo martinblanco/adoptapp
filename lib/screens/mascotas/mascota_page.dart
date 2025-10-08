@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 
 class MascotaPage extends StatefulWidget {
-  MascotaPage({
+  const MascotaPage({
     Key? key,
     required this.mascota,
   }) : super(key: key);
@@ -258,12 +258,12 @@ class _MascotaPageState extends State<MascotaPage> {
                           borderRadius: const BorderRadius.all(
                             Radius.circular(20),
                           ),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(
-                              color: Colors.blue[300]!.withOpacity(0.5),
+                              color: Color.fromRGBO(33, 150, 243, 0.5),
                               spreadRadius: 3,
                               blurRadius: 5,
-                              offset: const Offset(0, 0),
+                              offset: Offset(0, 0),
                             ),
                           ],
                           color: Colors.blue[300],
@@ -308,7 +308,7 @@ buildPetFeature(String value, String feature) {
         children: [
           Text(
             value,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.orange,
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -316,7 +316,7 @@ buildPetFeature(String value, String feature) {
           ),
           Text(
             feature,
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.orange,
               fontSize: 14,
             ),

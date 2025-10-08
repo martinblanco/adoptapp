@@ -107,17 +107,17 @@ class _MascotaCardState extends State<MascotaCard> {
                           });
                         },
                         style: ElevatedButton.styleFrom(
-                            shape: CircleBorder(
+                            shape: const CircleBorder(
                                 side: BorderSide(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Color.fromRGBO(255, 255, 255, 0.3),
                                     width: 1)),
-                            padding: EdgeInsets.all(1),
-                            fixedSize: Size(30, 30),
-                            backgroundColor: Colors.white.withOpacity(0.3)),
+                            padding: const EdgeInsets.all(1),
+                            fixedSize: const Size(30, 30),
+                            backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),),
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.favorite,
                               size: 22,
                               color: Colors.orange,
@@ -146,9 +146,7 @@ class _MascotaCardState extends State<MascotaCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('${widget.mascota.nombre}' +
-                        ", " +
-                        '${widget.mascota.edad}'),
+                    Text(widget.mascota.nombre + ", " + widget.mascota.edad),
                   ],
                 ),
               ),
@@ -170,7 +168,7 @@ _buildIcons(Mascota mascota) {
   return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        mascota.isCachorro ? _buildText() : SizedBox.shrink(),
+        mascota.isCachorro ? _buildText() : const SizedBox.shrink(),
         const SizedBox(width: 5),
         _buildIcon(Icon(iconData, color: Colors.white, size: 16)),
         const SizedBox(width: 5),

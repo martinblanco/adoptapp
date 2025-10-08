@@ -1,17 +1,17 @@
-import 'package:adoptapp/screens/google_page.dart';
+import 'dart:io';
 import 'package:adoptapp/screens/home_page.dart';
 import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/services/user/user_service.dart';
+import 'package:adoptapp/strings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:adoptapp/entity/usuario.dart';
+import 'package:image_picker/image_picker.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class RegisterPage extends StatefulWidget {
-  static final routeName = '/register';
+  static const routeName = '/register';
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
@@ -21,225 +21,192 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final UserService _userService = services.get<UserService>();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passswordController = TextEditingController();
-  final TextEditingController _passswordConfirmerController =
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   List<Usuario> usuarios = [];
-  final GlobalKey<FormState> _formRegisterKey = GlobalKey<FormState>();
-  final TextEditingController _nombreController = TextEditingController();
+  XFile? _profileImage;
+
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _profileImage = image;
+    });
+  }
+
+  void _validateForm() {
+    if (_formKey.currentState!.validate()) {
+      _register();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.of(context).pop(false),
-        ),
-      ),
-      body: Form(
-          key: _formRegisterKey,
-          child: Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: ExactAssetImage('assets/images/curved.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      logo(size.height / 8, size.height / 8),
-                      SizedBox(
-                        height: size.height * 0.03,
-                      ),
-                      emailTextField(size, _emailController),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      passwordTextField(size, _passswordController),
-                      passwordTextField(size, _passswordConfirmerController),
-                      SizedBox(
-                        height: size.height * 0.03,
-                      ),
-                      signInButton(size, _emailController, _passswordController,
-                          context),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      signInWithText(),
-                      SizedBox(
-                        height: size.height * 0.02,
-                      ),
-                      signInOneSocialButton(
-                          context,
-                          size,
-                          'assets/logos/google_logo.svg',
-                          'Sign Up with Google'),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          )),
-    );
-  }
-
-  Widget logo(double height_, double width_) {
-    return SvgPicture.asset(
-      'assets/logos/logo.svg',
-      height: height_,
-      width: width_,
-    );
-  }
-
-  Widget emailTextField(Size size, TextEditingController _emailController) {
     return Container(
-      alignment: Alignment.center,
-      height: size.height / 11,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          width: 1.0,
-          color: const Color(0xFFFF9000),
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image:
+              AssetImage(Strings.imageCurveRoute), // Ruta de la imagen de fondo
+          fit: BoxFit.cover, // Ajusta la imagen para cubrir toda el área
         ),
       ),
-      child: TextFormField(
-        maxLines: 1,
-        controller: _emailController,
-        textInputAction: TextInputAction.next,
-        keyboardType: TextInputType.text,
-        onFieldSubmitted: (value) {
-          //FocusScope.of(context).requestFocus(_phoneFocusNode);
-        },
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Type your Email';
-          }
-          return null;
-        },
-        style: GoogleFonts.inter(
-          fontSize: 16.0,
-          color: const Color.fromARGB(255, 255, 255, 255),
+      child: Scaffold(
+        backgroundColor: Colors
+            .transparent, // Hace el fondo del Scaffold transparente para ver el fondo
+        appBar: AppBar(
+          backgroundColor: Colors
+              .transparent, // Hace transparente el AppBar para ver el fondo
+          elevation: 0, // Elimina la sombra del AppBar si no la necesitas
         ),
-        cursorColor: const Color(0xFF15224F),
-        decoration: InputDecoration(
-            icon: const Icon(Icons.email, color: Colors.orange),
-            labelText: 'Email',
-            labelStyle: GoogleFonts.inter(
-              fontSize: 12.0,
-              color: const Color.fromARGB(255, 255, 255, 255),
+        body: Form(
+          key: _formKey,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // ... (tu código existente)
+                  Center(
+                    child: GestureDetector(
+                      onTap: _pickImage,
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.orange,
+                        backgroundImage: _profileImage != null
+                            ? FileImage(File(_profileImage!.path))
+                            : null,
+                        child: _profileImage == null
+                            ? const Icon(Icons.camera_alt,
+                                size: 50, color: Colors.white)
+                            : null,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  // Campo para nombre
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: _inputDecoration('Nombre'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, ingresa tu nombre';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Campo para email
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: _inputDecoration('Email'),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, ingresa tu email';
+                      }
+                      // Validación simple de email
+                      if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                        return 'Por favor, ingresa un email válido';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Campo para contraseña
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: _inputDecoration('Contraseña'),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, ingresa tu contraseña';
+                      }
+                      if (value.length < 6) {
+                        return 'La contraseña debe tener al menos 6 caracteres';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  // Campo para confirmar contraseña
+                  TextFormField(
+                    controller: _confirmPasswordController,
+                    decoration: _inputDecoration('Confirmar Contraseña'),
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor, confirma tu contraseña';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  // Botón de confirmar
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: _validateForm,
+                      child: const Text('Registrarse'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            border: InputBorder.none),
-      ),
-    );
-  }
-
-  Widget passwordTextField(
-      Size size, TextEditingController _passwordController) {
-    return Container(
-      alignment: Alignment.center,
-      height: size.height / 11,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8.0),
-        border: Border.all(
-          width: 1.0,
-          color: const Color(0xFFFF9000),
-        ),
-      ),
-      child: TextFormField(
-        controller: _passwordController,
-        textInputAction: TextInputAction.next,
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Type your Password';
-          }
-          return null;
-        },
-        style: GoogleFonts.inter(
-          fontSize: 16.0,
-          color: const Color.fromARGB(255, 255, 255, 255),
-        ),
-        maxLines: 1,
-        obscureText: true,
-        keyboardType: TextInputType.visiblePassword,
-        cursorColor: const Color(0xFF15224F),
-        decoration: InputDecoration(
-            icon: const Icon(
-              Icons.lock,
-              color: Colors.orange,
-            ),
-            labelText: 'Password',
-            labelStyle: GoogleFonts.inter(
-              fontSize: 12.0,
-              color: const Color.fromARGB(255, 255, 255, 255),
-            ),
-            suffixIcon: const Icon(Icons.remove_red_eye, color: Colors.orange),
-            border: InputBorder.none),
-      ),
-    );
-  }
-
-  Widget signInButton(Size size, TextEditingController emailController,
-      TextEditingController passwordController, BuildContext context) {
-    return ElevatedButton(
-        onPressed: () {
-          _register();
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.orange,
-          foregroundColor: Colors.white,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-        ),
-        child: Container(
-          alignment: Alignment.center,
-          height: size.height / 11,
-          child: Text(
-            'Sign up',
-            style: GoogleFonts.inter(
-              fontSize: 16.0,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
           ),
-        ));
+        ),
+      ),
+    );
   }
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passswordController.dispose();
-    super.dispose();
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      labelStyle: const TextStyle(color: Colors.orange),
+      enabledBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.orange),
+      ),
+      focusedBorder: const UnderlineInputBorder(
+        borderSide: BorderSide(color: Colors.orange, width: 2.0),
+      ),
+    );
   }
 
   void _register() async {
-    final UserCredential userCredential =
-        await _auth.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passswordController.text,
-    );
-    User? user = userCredential.user;
-    user?.updateDisplayName(_nombreController.text);
-    if (user != null) {
-      setState(() {});
-      newUsuario(user, _nombreController.text);
-    } else {}
+    try {
+      final UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      User? user = userCredential.user;
+      if (user != null) {
+        //newUsuario(user, _nombreController.text);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Registro exitoso')));
+        await user.updateDisplayName(_nameController.text);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrarse: $e')),
+      );
+    }
   }
 
   void newUsuario(User user, String nombreUsuario) {
@@ -250,88 +217,19 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
-  Widget signInWithText() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Expanded(child: Divider()),
-        const SizedBox(
-          width: 16,
-        ),
-        Text(
-          'Or Sing Up with',
-          style: GoogleFonts.inter(
-            fontSize: 12.0,
-            color: const Color.fromARGB(255, 255, 255, 255),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        const Expanded(child: Divider()),
-      ],
-    );
-  }
-}
+//   GoogleSignIn _googleSignIn = GoogleSignIn(
+//   scopes: <String>[
+//     'email',
+//   ],
+// );
 
-signInOneSocialButton(
-    BuildContext context, Size size, String iconPath, String text) {
-  return ElevatedButton(
-      onPressed: () => _pushPage(context, const SignInDemo()),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(40.0)),
-      ),
-      child: Container(
-        height: size.height / 12,
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              flex: 1,
-              child: SvgPicture.asset(iconPath),
-            ),
-            Expanded(
-              flex: 2,
-              child: Text(
-                text,
-                style: GoogleFonts.inter(
-                  fontSize: 16.0,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ));
-}
+//   Future<void> _handleSignOut() async {
+//     _googleSignIn.disconnect();
+//   }
 
-void signInWithEmail(TextEditingController _emailController,
-    TextEditingController _passwordController, BuildContext context) async {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  UserCredential userCredential;
-  try {
-    userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text, password: _passwordController.text);
-  } catch (e) {
-    null;
-  } finally {
-    userCredential = await _auth.signInWithEmailAndPassword(
-        email: _emailController.text, password: _passwordController.text);
-    User? user = userCredential.user;
-    if (user != null) {
-      _pushPage(context, const HomePage());
-    } else {}
-  }
-}
-
-void _pushPage(BuildContext context, Widget page) {
-  Navigator.of(context).push(
-    MaterialPageRoute<void>(builder: (_) => page),
-  );
+//   void _pushPage(BuildContext context, Widget page) {
+//     Navigator.of(context).push(
+//       MaterialPageRoute<void>(builder: (_) => page),
+//     );
+//   }
 }

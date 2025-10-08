@@ -1,18 +1,17 @@
+import 'package:adoptapp/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'home_page.dart';
-
-class DoctorsInfo extends StatefulWidget {
-  DoctorsInfo(this.uid);
+class ProfilePage extends StatefulWidget {
+  const ProfilePage(this.uid, {Key? key}) : super(key: key);
 
   final String? uid;
 
   @override
-  _DoctorsInfoState createState() => _DoctorsInfoState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _DoctorsInfoState extends State<DoctorsInfo> {
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +21,7 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -33,7 +32,7 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                 child: Row(
                   children: <Widget>[
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: CircleAvatar(
                         radius: 50,
                         child: ClipOval(
@@ -46,13 +45,13 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                         ),
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 20,
                     ),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width - 222,
                       height: 220,
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -86,52 +85,53 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
-              Text(
+              const Text(
                 "About",
                 style: TextStyle(fontSize: 22),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
-              Text(
+              const Text(
                 "Dr. Stefeni Albert is a cardiologist in Nashville & affiliated with multiple hospitals in the  area.He received his medical degree from Duke University School of Medicine and has been in practice for more than 20 years. ",
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 24,
               ),
-              Text(
+              const Text(
                 "En adopcion",
                 style: TextStyle(
                     color: Color(0xff242424),
                     fontSize: 28,
                     fontWeight: FontWeight.w600),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 22,
               ),
               Row(
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
                       decoration: BoxDecoration(
-                          color: Color(0xffFBB97C),
+                          color: const Color(0xffFBB97C),
                           borderRadius: BorderRadius.circular(20)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                  color: Color(0xffFCCA9B),
+                                  color: const Color(0xffFCCA9B),
                                   borderRadius: BorderRadius.circular(16)),
-                              child: Icon(FontAwesomeIcons.dog, size: 20.0)),
-                          SizedBox(
+                              child:
+                                  const Icon(FontAwesomeIcons.dog, size: 20.0)),
+                          const SizedBox(
                             width: 16,
                           ),
                           InkWell(
@@ -139,13 +139,13 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => HomePage()),
+                                    builder: (context) => const HomePage()),
                               );
                             },
-                            child: Container(
+                            child: SizedBox(
                               width:
                                   MediaQuery.of(context).size.width / 2 - 130,
-                              child: Text(
+                              child: const Text(
                                 "Perros",
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 17),
@@ -156,31 +156,32 @@ class _DoctorsInfoState extends State<DoctorsInfo> {
                       ),
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 16,
                   ),
                   Expanded(
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
                       decoration: BoxDecoration(
-                          color: Color(0xffA5A5A5),
+                          color: const Color(0xffA5A5A5),
                           borderRadius: BorderRadius.circular(20)),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                  color: Color(0xffBBBBBB),
+                                  color: const Color(0xffBBBBBB),
                                   borderRadius: BorderRadius.circular(16)),
-                              child: Icon(FontAwesomeIcons.cat, size: 20.0)),
-                          SizedBox(
+                              child:
+                                  const Icon(FontAwesomeIcons.cat, size: 20.0)),
+                          const SizedBox(
                             width: 16,
                           ),
-                          Container(
+                          SizedBox(
                             width: MediaQuery.of(context).size.width / 2 - 130,
-                            child: Text(
+                            child: const Text(
                               "Gatos",
                               style:
                                   TextStyle(color: Colors.white, fontSize: 17),
@@ -204,12 +205,12 @@ class IconTile extends StatelessWidget {
   final Color? backColor;
   final IconData? icon;
 
-  IconTile({this.icon, this.backColor});
+  const IconTile({Key? key, this.icon, this.backColor}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 16),
+      margin: const EdgeInsets.only(right: 16),
       child: Container(
         height: 45,
         width: 45,

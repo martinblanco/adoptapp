@@ -29,7 +29,7 @@ class _DropDownState extends State<DropDown> {
       isExpanded: true,
       items: widget.textos
           .map((e) => DropdownMenuItem(
-                child: Text(e, style: TextStyle(color: Colors.orange)),
+                child: Text(e, style: const TextStyle(color: Colors.orange)),
                 value: e,
               ))
           .toList(),

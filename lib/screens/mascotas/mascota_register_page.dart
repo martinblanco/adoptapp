@@ -10,11 +10,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
+
+final Logger logger = Logger();
 
 class RegisterPet extends StatefulWidget {
   final String title = 'Registration';
 
-  RegisterPet({Key? key}) : super(key: key);
+  const RegisterPet({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _RegisterPetState();
@@ -43,7 +46,7 @@ class _RegisterPetState extends State<RegisterPet> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(""),
+        title: const Text(""),
       ),
       body: Form(
         key: _formPetKey,
@@ -77,17 +80,17 @@ class _RegisterPetState extends State<RegisterPet> {
                           label: Text('Gatos'),
                           icon: Icon(FontAwesomeIcons.cat)),
                     ],
-                    initialSelection: {Animal.todos},
+                    initialSelection: const {Animal.todos},
                     onSelectionChanged: (Set<Animal> value) {
                       // Maneja el valor seleccionado aquí
-                      print("Valor seleccionado: $value");
+                      logger.i("Valor seleccionado: $value");
                     },
                     multiSelectionEnabled: false,
                   )
                 ],
               ),
               CombinedCard(
-                title: Text(
+                title: const Text(
                   'Sexo',
                 ),
                 contenido: [
@@ -106,15 +109,15 @@ class _RegisterPetState extends State<RegisterPet> {
                           label: Text('Macho'),
                           icon: Icon(FontAwesomeIcons.mars)),
                     ],
-                    initialSelection: {Sexo.todos},
+                    initialSelection: const {Sexo.todos},
                     onSelectionChanged: (Set<Sexo> value) {
-                      print("Valor seleccionado: $value");
+                      logger.i("Valor seleccionado: $value");
                     },
                     multiSelectionEnabled: false,
                   )
                 ],
               ),
-              CombinedCard(title: Text('Tamaño'), contenido: [
+              CombinedCard(title: const Text('Tamaño'), contenido: [
                 Choice<Sizes>(
                   segments: const <ButtonSegment<Sizes>>[
                     ButtonSegment<Sizes>(
@@ -123,19 +126,19 @@ class _RegisterPetState extends State<RegisterPet> {
                     ButtonSegment<Sizes>(value: Sizes.medium, label: Text('M')),
                     ButtonSegment<Sizes>(value: Sizes.large, label: Text('L')),
                   ],
-                  initialSelection: {
+                  initialSelection: const {
                     Sizes.extraSmall,
                     Sizes.small,
                     Sizes.medium,
                     Sizes.large
                   },
                   onSelectionChanged: (Set<Sizes> value) {
-                    print("Valor seleccionado: $value");
+                    logger.i("Valor seleccionado: $value");
                   },
                   multiSelectionEnabled: true,
                 ),
               ]),
-              CombinedCard(title: Text("Otros Filtros"), contenido: [
+              CombinedCard(title: const Text("Otros Filtros"), contenido: [
                 Column(children: [
                   Row(
                     children: [
@@ -148,7 +151,7 @@ class _RegisterPetState extends State<RegisterPet> {
                           });
                         },
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       CustomFilterChip(
                         text: "Vacunas",
                         selected: selectedVacunas,
@@ -158,7 +161,7 @@ class _RegisterPetState extends State<RegisterPet> {
                           });
                         },
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       CustomFilterChip(
                         text: "Raza",
                         selected: selectedRaza,
@@ -180,7 +183,7 @@ class _RegisterPetState extends State<RegisterPet> {
                         });
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     CustomFilterChip(
                       text: "de Refugio",
                       selected: selectedRefugio,
@@ -190,7 +193,7 @@ class _RegisterPetState extends State<RegisterPet> {
                         });
                       },
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     CustomFilterChip(
                       text: "Papeles",
                       selected: selectedPapeles,

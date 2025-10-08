@@ -10,7 +10,7 @@ import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class HomePage extends StatefulWidget {
-  static final routeName = '/home';
+  static const routeName = '/home';
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (BuildContext context) => RegisterPet(),
+                      builder: (BuildContext context) => const RegisterPet(),
                     ),
                   );
                 },
@@ -109,7 +109,7 @@ class _HomePageState extends State<HomePage> {
           _onItemTapped(2);
         },
         tooltip: "Mascotas",
-        child: Icon(Icons.pets, color: Colors.orange),
+        child: const Icon(Icons.pets, color: Colors.orange),
         elevation: 4.0,
         backgroundColor: Colors.white,
       ),

@@ -5,11 +5,11 @@ class CustomFilterChip extends StatefulWidget {
   final bool selected;
   final Function(bool) onChanged;
 
-  const CustomFilterChip({
+  const CustomFilterChip({Key? key, 
     required this.text,
     required this.selected,
     required this.onChanged,
-  });
+  }) : super(key: key);
 
   @override
   _CustomFilterChipState createState() => _CustomFilterChipState();

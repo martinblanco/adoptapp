@@ -26,12 +26,20 @@ dependencies:
   geolocator: ^10.1.0
   dots_indicator: ^3.0.0
   get_it: ^7.6.6
-
+  firebase_auth_web: any
+  firebase_core_web: any
+  firebase_database_web: any
+  firebase_storage_web: any
+  google_sign_in_web: any
+  image_picker_for_web: any
+  http: any
+  google_sign_in: ^6.1.1
+  google_fonts: any
+  logger: ^2.6.2
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  google_sign_in: ^5.3.2
-
   flutter_lints: ^1.0.0
 
 flutter:

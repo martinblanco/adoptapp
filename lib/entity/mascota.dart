@@ -31,7 +31,7 @@ class Mascota {
 
   Mascota(this.nombre, this.animal, this.edad, this.isCachorro, this.sexo,
       this.size, this.descripcion, this.raza, this.user, this.fotoPerfil) {
-    this.fotos = [this.fotoPerfil, this.fotoPerfil];
+    fotos = [fotoPerfil, fotoPerfil];
   }
 
   void likeMascota(User user) {

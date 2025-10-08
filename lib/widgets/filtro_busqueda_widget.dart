@@ -56,7 +56,7 @@ class _FiltroPanelState extends State<FiltroPanel> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (BuildContext context) => FiltrosPage(),
+                        builder: (BuildContext context) => const FiltrosPage(),
                       ),
                     );
                   },

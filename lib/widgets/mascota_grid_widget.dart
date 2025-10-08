@@ -57,7 +57,7 @@ class _MascotasGridState extends State<MascotasGrid> {
                         return Text(snapshot.stackTrace.toString());
                       } else {
                         return GridView.builder(
-                          key: Key('MascotaGridView'),
+                          key: const Key('MascotaGridView'),
                           physics: const BouncingScrollPhysics(),
                           gridDelegate:
                               SliverGridDelegateWithFixedCrossAxisCount(
@@ -87,6 +87,6 @@ class _MascotasGridState extends State<MascotasGrid> {
   }
 
   Future<void> _refresh() {
-    return Future.delayed(Duration(seconds: 1));
+    return Future.delayed(const Duration(seconds: 1));
   }
 }

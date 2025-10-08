@@ -6,12 +6,12 @@ class Choice<T> extends StatefulWidget {
   final void Function(Set<T>) onSelectionChanged;
   final bool multiSelectionEnabled;
 
-  Choice({
+  const Choice({Key? key, 
     required this.segments,
     required this.initialSelection,
     required this.onSelectionChanged,
     this.multiSelectionEnabled = false,
-  });
+  }) : super(key: key);
 
   @override
   State<Choice<T>> createState() => _ChoiceState<T>();

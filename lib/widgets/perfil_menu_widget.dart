@@ -1,23 +1,30 @@
 import 'package:adoptapp/entity/usuario.dart';
 import 'package:adoptapp/screens/login/user_login_page.dart';
+import 'package:adoptapp/screens/profile_pege.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../screens/profile_pege.dart';
 
 final user = FirebaseAuth.instance.currentUser;
 
 class MenuPerfil extends StatefulWidget {
-  MenuPerfil(this.currentUser, {Key? key}) : super(key: key);
-  final User? currentUser;
+  const MenuPerfil(this.user, {Key? key}) : super(key: key);
+  final User? user;
   @override
   _MenuPerfilState createState() => _MenuPerfilState();
 }
 
 class _MenuPerfilState extends State<MenuPerfil> {
+  late final Usuario usuario;
+
+  @override
+  void initState() {
+    super.initState();
+    usuario = Usuario(user?.email ?? 'No email available',
+        user?.displayName ?? 'Guest', "Usuario");
+  }
+
   @override
   Widget build(BuildContext context) {
-    Usuario usuario = Usuario("email?", "asd", "false");
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
@@ -27,51 +34,54 @@ class _MenuPerfilState extends State<MenuPerfil> {
             accountEmail: Text(usuario.mail),
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
-                child: Image.network(
-                  'https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg',
-                  fit: BoxFit.cover,
-                  width: 90,
-                  height: 90,
-                ),
+                child: user?.photoURL == null
+                    ? Image.asset(
+                        'assets/images/avatar.jpg',
+                        fit: BoxFit.cover,
+                        width: 90,
+                        height: 90,
+                      )
+                    : Image.network(
+                        user!.photoURL!,
+                        fit: BoxFit.cover,
+                        width: 90,
+                        height: 90,
+                      ),
               ),
             ),
-            decoration: const BoxDecoration(
-              color: Colors.orange,
-            ),
+            decoration: const BoxDecoration(color: Colors.orange),
           ),
-          ListTile(
-            leading: const Icon(Icons.person),
-            title: const Text('Perfil'),
+          _buildListTile(
+            icon: Icons.person,
+            title: 'Perfil',
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => DoctorsInfo(user!.uid),
-                ),
-              );
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => ProfilePage(user!.uid),
+                  ),
+                );
+              }
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.favorite),
-            title: const Text('Favorites'),
+          _buildListTile(
+            icon: Icons.favorite,
+            title: 'Favoritos',
             onTap: () {},
           ),
           const Divider(),
-          ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Settings'),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(Icons.description),
-            title: const Text('Policies'),
+          _buildListTile(
+            icon: Icons.settings,
+            title: 'Configuracion',
             onTap: () {},
           ),
           const Divider(),
-          ListTile(
-            title: const Text('Exit'),
-            leading: const Icon(Icons.exit_to_app),
+          _buildListTile(
+            icon: Icons.exit_to_app,
+            title: 'Exit',
             onTap: () {
+              FirebaseAuth.instance.signOut();
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -82,6 +92,17 @@ class _MenuPerfilState extends State<MenuPerfil> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildListTile(
+      {required IconData icon,
+      required String title,
+      required VoidCallback onTap}) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap,
     );
   }
 }
