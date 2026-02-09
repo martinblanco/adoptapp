@@ -1,6 +1,6 @@
+import 'package:adoptapp/entity/mascota.dart';
 import 'package:adoptapp/screens/mascotas/mascota_page.dart';
 import 'package:flutter/material.dart';
-import '../entity/mascota.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MascotaCard extends StatefulWidget {
@@ -35,13 +35,6 @@ class _MascotaCardState extends State<MascotaCard> {
 
   @override
   Widget build(BuildContext context) {
-    //final mediaQuery = MediaQuery.of(context);
-    const String placeholderImagePath = 'assets/images/placeholder.png';
-    //final screenWidth = mediaQuery.size.width;
-    //final screenHeight = mediaQuery.size.height;
-    //final scale = screenWidth / 375; // 375 is the reference screen width
-    //const baseFontSize = 16;
-    //final int scaledFontSize = (baseFontSize * scale).round();
     double width = MediaQuery.of(context).size.width;
 
     if (widget.mascota.distancia == 0) {
@@ -56,139 +49,156 @@ class _MascotaCardState extends State<MascotaCard> {
               builder: (context) => MascotaPage(mascota: widget.mascota)),
         );
       },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(10),
-            topRight: Radius.circular(10),
-          ),
-          border: Border.all(
-            color: Colors.orange,
-            width: 1.5,
-          ),
+      child: Card(
+        color: Colors.white,
+        elevation: 10, // subir para ver mejor la sombra
+        shadowColor: Colors.black38, // sombra más visible
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
         ),
-        margin: const EdgeInsets.only(right: 0, left: 0, bottom: 16),
-        width: width * 0.5,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Expanded(
-              child: Stack(
-                children: [
-                  Hero(
-                    tag: widget.mascota.fotoPerfil,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                      child: (widget.mascota.fotoPerfil.isNotEmpty)
-                          ? Image.network(
-                              widget.mascota.fotoPerfil,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
-                            )
-                          : Image.asset(
-                              placeholderImagePath,
-                              fit: BoxFit.cover,
-                              width: double.infinity,
+        clipBehavior: Clip.none, // evitar que se recorte la sombra
+        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // espacio para la sombra
+        child: Container(
+          width: width * 0.5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                child: Stack(
+                  children: [
+                    _buildProfileImage(),
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Material(
+                          color: Colors.transparent,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () => setState(() => _isLiked = !_isLiked),
+                            child: Container(
+                              width: 34,
+                              height: 34,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: Colors.transparent, // sin fondo
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                _isLiked ? Icons.favorite : Icons.favorite_border,
+                                color: _isLiked ? Colors.red : Colors.white,
+                                size: 30,
+                              ),
                             ),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.topRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(1),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            _isLiked = !_isLiked;
-                          });
-                        },
-                        style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(
-                                side: BorderSide(
-                                    color: Color.fromRGBO(255, 255, 255, 0.3),
-                                    width: 1)),
-                            padding: const EdgeInsets.all(1),
-                            fixedSize: const Size(30, 30),
-                            backgroundColor: const Color.fromRGBO(255, 255, 255, 0.3),),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            const Icon(
-                              Icons.favorite,
-                              size: 22,
-                              color: Colors.orange,
-                            ),
-                            Icon(
-                              Icons.favorite,
-                              size: 15,
-                              color: _isLiked ? Colors.orange : Colors.white,
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 5),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DefaultTextStyle(
-                style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(widget.mascota.nombre + ", " + widget.mascota.edad),
                   ],
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            _buildIcons(widget.mascota),
-            const SizedBox(height: 5),
-          ],
+              const SizedBox(height: 5),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DefaultTextStyle(
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.mascota.distancia.toString() + " km", style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                )),
+                      Text(widget.mascota.nombre),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 5),
+              _buildIcons(widget.mascota),
+              const SizedBox(height: 5),
+            ],
+          ),
         ),
       ),
     );
   }
-}
 
-_buildIcons(Mascota mascota) {
-  final iconData = Mascota.getSexoIcon(mascota.sexo);
-  final sizeText = Mascota.getSizeIcon(mascota.size);
+  // helpers
+  Widget _buildProfileImage() {
+    const String placeholderImagePathDog = 'assets/images/placeholderdog.jpg';
+    const String placeholderImagePathCat = 'assets/images/placeholdercat.jpg';
+    String placeholder = widget.mascota.animal.toLowerCase() == 'perro'
+        ? placeholderImagePathDog
+        : placeholderImagePathCat;
+    final tag = 'mascota-${widget.mascota.id + widget.mascota.nombre}';
+    final url = widget.mascota.fotoPerfil;
+    return Hero(
+      tag: tag,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.orange, width: 1.5), // borde naranja en la foto
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: url.isNotEmpty
+              ? Image.network(
+                  url,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  loadingBuilder: (context, child, progress) {
+                    if (progress == null) return child;
+                    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                  },
+                  errorBuilder: (context, error, stack) {
+                    return Image.asset(placeholder, fit: BoxFit.cover, width: double.infinity, height: double.infinity);
+                  },
+                )
+              : Image.asset(placeholder, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+        ),
+      ),
+    );
+  }
 
-  return Padding(
+  Widget _badge({Widget? icon, String? text, double radius = 12}) {
+    if (text != null) {
+      return Container(
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.orange),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      );
+    }
+    return CircleAvatar(
+      backgroundColor: Colors.orange,
+      radius: radius,
+      child: icon,
+    );
+  }
+
+  Widget _buildIcons(Mascota mascota) {
+    final iconData = Mascota.getSexoIcon(mascota.sexo);
+    final sizeText = Mascota.getSizeIcon(mascota.size);
+    final sexString = Mascota.getSexoString(mascota.sexo);
+    final edadString = widget.mascota.edad;
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        mascota.isCachorro ? _buildText() : const SizedBox.shrink(),
-        const SizedBox(width: 5),
-        _buildIcon(Icon(iconData, color: Colors.white, size: 16)),
-        const SizedBox(width: 5),
-        _buildIcon(Text(sizeText, style: const TextStyle(color: Colors.white))),
-      ]));
-}
-
-Widget _buildIcon<T extends Widget>(T icon) {
-  return CircleAvatar(
-    backgroundColor: Colors.orange,
-    radius: 12,
-    child: icon,
-  );
-}
-
-Widget _buildText<T extends Widget>() {
-  return Container(
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(5), color: Colors.orange),
-      child: const Padding(
-          padding: EdgeInsets.all(2.0),
-          child: Text("Cachorro", style: TextStyle(color: Colors.white))));
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _badge(text: sexString),
+          const SizedBox(width: 5),
+          if (mascota.isCachorro) _badge(text: 'Cachorro')
+          else  _badge(text: edadString),
+        ],
+      ),
+    );
+  }
 }

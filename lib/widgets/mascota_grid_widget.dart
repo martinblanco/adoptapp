@@ -1,3 +1,5 @@
+import 'package:adoptapp/services/mascotas/mascotas_service.dart';
+import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/widgets/filtro_busqueda_widget.dart';
 import 'package:adoptapp/widgets/mascota_card.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +7,9 @@ import 'package:adoptapp/entity/mascota.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MascotasGrid extends StatefulWidget {
-  final List<Mascota> mascotas;
+  List<Mascota> mascotas;
 
-  const MascotasGrid({Key? key, required this.mascotas}) : super(key: key);
+  MascotasGrid({Key? key, required this.mascotas}) : super(key: key);
 
   @override
   _MascotasGridState createState() => _MascotasGridState();
@@ -15,7 +17,7 @@ class MascotasGrid extends StatefulWidget {
 
 class _MascotasGridState extends State<MascotasGrid> {
   Position? _currentUserPosition;
-
+  final MascotasService _mascotaService = services.get<MascotasService>();
   Future _getTheDistance() async {
     bool enabled = await Geolocator.isLocationServiceEnabled();
     if (enabled) {
@@ -33,7 +35,7 @@ class _MascotasGridState extends State<MascotasGrid> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey.shade50,
       body: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(5.0),
@@ -86,7 +88,11 @@ class _MascotasGridState extends State<MascotasGrid> {
     );
   }
 
-  Future<void> _refresh() {
-    return Future.delayed(const Duration(seconds: 1));
+  Future<void> _refresh() async {
+    _mascotaService.getAllPets().then((mascotas) => {
+          setState(() {
+            widget.mascotas = mascotas;
+          })
+        });
   }
 }

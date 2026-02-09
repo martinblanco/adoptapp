@@ -70,6 +70,15 @@ class Mascota {
     return _sexoIconMap[sexo] ?? Icons.pets;
   }
 
+  static const Map<String, String> _sexoTextMap = {
+    "hembra": "Hembra",
+    "macho": "Macho",
+  };
+
+  static String getSexoString(String sexo) {
+    return _sexoTextMap[sexo] ?? "";
+  }
+
   static const Map<String, String> _sizeIconMap = {
     "chico": "S",
     "mediano": "M",
