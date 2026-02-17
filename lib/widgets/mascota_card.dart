@@ -57,8 +57,9 @@ class _MascotaCardState extends State<MascotaCard> {
           borderRadius: BorderRadius.circular(10),
         ),
         clipBehavior: Clip.none, // evitar que se recorte la sombra
-        margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8), // espacio para la sombra
-        child: Container(
+        margin: const EdgeInsets.symmetric(
+            horizontal: 8, vertical: 8), // espacio para la sombra
+        child: SizedBox(
           width: width * 0.5,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -81,12 +82,14 @@ class _MascotaCardState extends State<MascotaCard> {
                               width: 34,
                               height: 34,
                               alignment: Alignment.center,
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.transparent, // sin fondo
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
-                                _isLiked ? Icons.favorite : Icons.favorite_border,
+                                _isLiked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
                                 color: _isLiked ? Colors.red : Colors.white,
                                 size: 30,
                               ),
@@ -106,15 +109,16 @@ class _MascotaCardState extends State<MascotaCard> {
                       color: Colors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w600),
-                  child: Column(
+                  child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(widget.mascota.distancia.toString() + " km", style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                )),
-                      Text(widget.mascota.nombre),
+                      Text(widget.mascota.nombre + " "),
+                      Text("(${widget.mascota.distancia.toString()} km)",
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          )),
                     ],
                   ),
                 ),
@@ -143,7 +147,8 @@ class _MascotaCardState extends State<MascotaCard> {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.orange, width: 1.5), // borde naranja en la foto
+          border: Border.all(
+              color: Colors.orange, width: 1.5), // borde naranja en la foto
         ),
         clipBehavior: Clip.hardEdge,
         child: ClipRRect(
@@ -156,13 +161,20 @@ class _MascotaCardState extends State<MascotaCard> {
                   height: double.infinity,
                   loadingBuilder: (context, child, progress) {
                     if (progress == null) return child;
-                    return const Center(child: CircularProgressIndicator(strokeWidth: 2));
+                    return const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2));
                   },
                   errorBuilder: (context, error, stack) {
-                    return Image.asset(placeholder, fit: BoxFit.cover, width: double.infinity, height: double.infinity);
+                    return Image.asset(placeholder,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity);
                   },
                 )
-              : Image.asset(placeholder, fit: BoxFit.cover, width: double.infinity, height: double.infinity),
+              : Image.asset(placeholder,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity),
         ),
       ),
     );
@@ -171,9 +183,11 @@ class _MascotaCardState extends State<MascotaCard> {
   Widget _badge({Widget? icon, String? text, double radius = 12}) {
     if (text != null) {
       return Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Colors.orange),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(5), color: Colors.orange),
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
+        child: Text(text,
+            style: const TextStyle(color: Colors.white, fontSize: 14)),
       );
     }
     return CircleAvatar(
@@ -184,19 +198,31 @@ class _MascotaCardState extends State<MascotaCard> {
   }
 
   Widget _buildIcons(Mascota mascota) {
-    final iconData = Mascota.getSexoIcon(mascota.sexo);
-    final sizeText = Mascota.getSizeIcon(mascota.size);
+    //final iconData = Mascota.getAnimalIcon(mascota.animal);
+    //final sizeText = Mascota.getSizeIcon(mascota.size);
     final sexString = Mascota.getSexoString(mascota.sexo);
-    final edadString = widget.mascota.edad;
+    final sizeString = Mascota.getSizeIcon(mascota.size);
+    final edadString = widget.mascota.edad + " años";
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _badge(text: sexString),
-          const SizedBox(width: 5),
-          if (mascota.isCachorro) _badge(text: 'Cachorro')
-          else  _badge(text: edadString),
+          Row(
+            children: [
+              _badge(text: sexString),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 4)),
+              _badge(text: edadString)
+            ],
+          ),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 4)),
+          Row(
+            children: [
+              _badge(text: sizeString),
+              Padding(padding: const EdgeInsets.symmetric(horizontal: 4)),
+              if (mascota.isCachorro) _badge(text: 'Cachorro')
+            ],
+          ),
         ],
       ),
     );

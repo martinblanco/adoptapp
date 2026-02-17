@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 enum Sizes { extraSmall, small, medium, large }
 
@@ -13,6 +13,7 @@ class Mascota {
   String user;
   String animal;
   String nombre;
+  String descripcion;
   String edad;
   String sexo;
   String size;
@@ -20,27 +21,30 @@ class Mascota {
   bool isRaza = false;
   bool isTransito = false;
   bool isVacunas = false;
-  String raza;
-  late String cachorro;
-  String descripcion;
+  bool isCastrado = false;
+  bool isPapeles = false;
+
   int distancia = 0;
   List<String> requisitos = [];
-  Set usersLiked = {};
   String fotoPerfil;
   List<String> fotos = [];
 
-  Mascota(this.nombre, this.animal, this.edad, this.isCachorro, this.sexo,
-      this.size, this.descripcion, this.raza, this.user, this.fotoPerfil) {
+  Mascota(
+      this.nombre,
+      this.animal,
+      this.edad,
+      this.isCachorro,
+      this.sexo,
+      this.size,
+      this.descripcion,
+      this.isCastrado,
+      this.isPapeles,
+      this.isRaza,
+      this.isVacunas,
+      this.isTransito,
+      this.user,
+      this.fotoPerfil) {
     fotos = [fotoPerfil, fotoPerfil];
-  }
-
-  void likeMascota(User user) {
-    if (usersLiked.contains(user.uid)) {
-      usersLiked.remove(user.uid);
-    } else {
-      usersLiked.add(user.uid);
-    }
-    //this.update();
   }
 
   void setId(DatabaseReference id) {}
@@ -50,15 +54,27 @@ class Mascota {
       'nombre': nombre,
       'animal': animal,
       'edad': edad,
-      'cachorro': cachorro,
+      'cachorro': isCachorro,
       'sexo': sexo,
       'size': size,
       'descripcion': descripcion,
-      'raza': raza,
+      'castrado': isCastrado,
+      'papeles': isPapeles,
+      'raza': isRaza,
+      'vacunas': isVacunas,
+      'transito': isTransito,
       'usuario': user,
       'foto': fotoPerfil,
-      'usersLiked': usersLiked.toList()
     };
+  }
+
+  static const Map<String, IconData> _animalIconMap = {
+    "perro": FontAwesomeIcons.dog,
+    "gato": FontAwesomeIcons.cat,
+  };
+
+  static IconData getAnimalIcon(String sexo) {
+    return _animalIconMap[sexo] ?? Icons.pets;
   }
 
   static const Map<String, IconData> _sexoIconMap = {
@@ -80,9 +96,10 @@ class Mascota {
   }
 
   static const Map<String, String> _sizeIconMap = {
-    "chico": "S",
-    "mediano": "M",
-    "grande": "L",
+    "extraSmall": "Mini",
+    "small": "Chico",
+    "medium": "Mediano",
+    "large": "Grande",
   };
 
   static String getSizeIcon(String size) {
@@ -95,14 +112,17 @@ Mascota createMascota(record) {
     'nombre': '',
     'animal': '',
     'edad': '',
-    'cachorro': '',
+    'cachorro': false,
     'sexo': '',
     'size': '',
     'descripcion': '',
-    'raza': '',
+    'castrado': false,
+    'papeles': false,
+    'raza': false,
+    'vacunas': false,
+    'transito': false,
     'usuario': '',
     'foto': '',
-    'usersLiked': [],
   };
 
   record.forEach((key, value) => {attributes[key] = value});
@@ -111,15 +131,17 @@ Mascota createMascota(record) {
       attributes['nombre'],
       attributes['animal'],
       attributes['edad'],
-      attributes['cachorro'] == "true" ? true : false,
+      attributes['cachorro'],
       attributes['sexo'],
       attributes['size'],
       attributes['descripcion'],
+      attributes['castrado'],
+      attributes['papeles'],
       attributes['raza'],
+      attributes['vacunas'],
+      attributes['transito'],
       attributes['usuario'],
       attributes['foto']);
-
-  mascota.usersLiked = Set.from(attributes['usersLiked']);
 
   return mascota;
 }

@@ -5,8 +5,10 @@ class Usuario {
   String id = "";
   String mail;
   String userName;
-  String isRefugio;
+  bool isRefugio = false;
   late List<Mascota> mascotas = [];
+
+  var photoURL;
 
   Usuario(this.mail, this.userName, this.isRefugio);
 
@@ -26,7 +28,7 @@ Usuario createUsuario(record) {
   Map<String, dynamic> attributes = {
     'nombre': '',
     'mail': '',
-    'isRefugio': '',
+    'isRefugio': false,
     'mascotas': [],
   };
 

@@ -1,19 +1,54 @@
+import 'package:adoptapp/entity/usuario.dart';
+import 'package:adoptapp/screens/filtro_busqueda_page.dart';
 import 'package:adoptapp/screens/home_page.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/services/user/user_service.dart';
+import 'package:adoptapp/widgets/mascota_grid_widgetPErfil.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage(this.uid, {Key? key}) : super(key: key);
+  const ProfilePage({Key? key, required this.uid}) : super(key: key);
 
-  final String? uid;
+  final String uid;
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final UserService _usuariosService = services.get<UserService>();
+  Usuario? usuario;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _usuariosService.getUser(widget.uid).then((user) {
+      if (mounted) {
+        setState(() {
+          usuario = user;
+        });
+      }
+    }).catchError((error) {
+      print('Error loading user: $error');
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (usuario == null) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0.0,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -36,12 +71,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: CircleAvatar(
                         radius: 50,
                         child: ClipOval(
-                          child: Image.network(
-                            'https://ichef.bbci.co.uk/news/800/cpsprodpb/15665/production/_107435678_perro1.jpg',
-                            fit: BoxFit.cover,
-                            width: 100,
-                            height: 100,
-                          ),
+                          child: null == null
+                              ? Image.asset(
+                                  'assets/images/avatar.jpg',
+                                  fit: BoxFit.cover,
+                                  width: 90,
+                                  height: 90,
+                                )
+                              : Image.network(
+                                  //user!.photoURL!,
+                                  "asd",
+                                  fit: BoxFit.cover,
+                                  width: 90,
+                                  height: 90,
+                                ),
                         ),
                       ),
                     ),
@@ -51,32 +94,36 @@ class _ProfilePageState extends State<ProfilePage> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width - 222,
                       height: 220,
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "Usuario",
-                            style: TextStyle(fontSize: 32),
+                            usuario!.mail,
+                            style: const TextStyle(fontSize: 32),
                           ),
                           Text(
-                            "Mail",
-                            style: TextStyle(fontSize: 19, color: Colors.grey),
+                            usuario!.userName,
+                            style: const TextStyle(
+                                fontSize: 19, color: Colors.grey),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                           ),
-                          Row(
+                          const Row(
                             children: <Widget>[
                               IconTile(
                                   icon: FontAwesomeIcons.instagram,
-                                  backColor: Color(0xffFEF2F0)),
+                                  backColor: Color(0xffFEF2F0),
+                                  size: 40.0),
                               IconTile(
                                   icon: FontAwesomeIcons.facebook,
-                                  backColor: Color(0xffFEF2F0)),
+                                  backColor: Color(0xffFEF2F0),
+                                  size: 40.0),
                               IconTile(
                                   icon: FontAwesomeIcons.twitter,
-                                  backColor: Color(0xffFEF2F0)),
+                                  backColor: Color(0xffFEF2F0),
+                                  size: 40.0),
                             ],
                           )
                         ],
@@ -139,7 +186,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
+                                    builder: (context) =>
+                                        MascotasGridd(uid: widget.uid)),
                               );
                             },
                             child: SizedBox(
@@ -205,18 +253,21 @@ class IconTile extends StatelessWidget {
   final Color? backColor;
   final IconData? icon;
 
-  const IconTile({Key? key, this.icon, this.backColor}) : super(key: key);
+  final double size;
+
+  const IconTile({Key? key, this.icon, this.backColor, required this.size})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(right: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
-        height: 45,
-        width: 45,
+        height: size,
+        width: size,
         decoration: BoxDecoration(
-            color: backColor, borderRadius: BorderRadius.circular(15)),
-        child: Icon(icon, size: 20.0),
+            color: backColor, borderRadius: BorderRadius.circular(20)),
+        child: Icon(icon, size: size / 2),
       ),
     );
   }

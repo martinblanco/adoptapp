@@ -8,8 +8,11 @@ class FirebaseUserService extends UserService {
   @override
   Future<Usuario> getUser(String uid) async {
     DataSnapshot dataSnapshot =
-        await _databaseReference.child('usuarios/').equalTo(uid).get();
-    return createUsuario(dataSnapshot.children);
+        await _databaseReference.child('usuarios/$uid').get();
+    if (!dataSnapshot.exists) {
+      throw Exception('Usuario no encontrado');
+    }
+    return createUsuario(dataSnapshot.value as Map);
   }
 
   @override

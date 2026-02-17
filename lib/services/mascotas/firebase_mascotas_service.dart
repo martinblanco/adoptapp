@@ -43,12 +43,14 @@ class FirebaseMascotasService extends MascotasService {
   @override
   Future<List<Mascota>> getPetsByUser(String uid) async {
     DataSnapshot dataSnapshot =
-        await _databaseReference.child('mascotas/').equalTo(uid).get();
+        await _databaseReference.child('mascotas/').get();
     List<Mascota> mascotas = [];
     if (dataSnapshot.value != null) {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
-        mascotas.add(mascota);
+        if (mascota.user == uid) {
+          mascotas.add(mascota);
+        }
       }
     }
     return mascotas;

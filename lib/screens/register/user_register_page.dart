@@ -210,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void newUsuario(User user, String nombreUsuario) {
-    var usuario = Usuario(user.email!, nombreUsuario, "false");
+    var usuario = Usuario(user.email!, nombreUsuario, false);
     _userService.addUser(usuario);
     setState(() {
       usuarios.add(usuario);

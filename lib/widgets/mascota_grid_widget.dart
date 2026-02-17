@@ -18,6 +18,13 @@ class MascotasGrid extends StatefulWidget {
 class _MascotasGridState extends State<MascotasGrid> {
   Position? _currentUserPosition;
   final MascotasService _mascotaService = services.get<MascotasService>();
+  List<Mascota> displayedMascotas = [];
+
+  @override
+  void initState() {
+    super.initState();
+    displayedMascotas = widget.mascotas;
+  }
   Future _getTheDistance() async {
     bool enabled = await Geolocator.isLocationServiceEnabled();
     if (enabled) {
@@ -41,7 +48,25 @@ class _MascotasGridState extends State<MascotasGrid> {
           padding: const EdgeInsets.all(5.0),
           child: Column(
             children: <Widget>[
-              const FiltroPanel(),
+              FiltroPanel(onFilterChanged: (filters) {
+                final bool perros = filters['perros'] ?? true;
+                final bool gatos = filters['gatos'] ?? true;
+                setState(() {
+                  if (perros && gatos) {
+                    displayedMascotas = widget.mascotas;
+                  } else if (perros && !gatos) {
+                    displayedMascotas = widget.mascotas
+                        .where((m) => m.animal.toLowerCase().contains('perro'))
+                        .toList();
+                  } else if (!perros && gatos) {
+                    displayedMascotas = widget.mascotas
+                        .where((m) => m.animal.toLowerCase().contains('gato'))
+                        .toList();
+                  } else {
+                    displayedMascotas = [];
+                  }
+                });
+              }),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.01,
               ),
@@ -70,11 +95,11 @@ class _MascotasGridState extends State<MascotasGrid> {
                                     MediaQuery.of(context).size.height *
                                     1.55,
                           ),
-                          itemCount: widget.mascotas.length,
-                          itemBuilder: (BuildContext context, int index) =>
+                            itemCount: displayedMascotas.length,
+                            itemBuilder: (BuildContext context, int index) =>
                               MascotaCard(
-                                  mascota: widget.mascotas[index],
-                                  currentUserPosition: _currentUserPosition),
+                                mascota: displayedMascotas[index],
+                                currentUserPosition: _currentUserPosition),
                         );
                       }
                     },
@@ -92,6 +117,7 @@ class _MascotasGridState extends State<MascotasGrid> {
     _mascotaService.getAllPets().then((mascotas) => {
           setState(() {
             widget.mascotas = mascotas;
+            displayedMascotas = mascotas;
           })
         });
   }

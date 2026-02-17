@@ -1,4 +1,5 @@
 import 'package:adoptapp/entity/usuario.dart';
+import 'package:adoptapp/screens/about_page.dart';
 import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:adoptapp/screens/profile_pege.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,7 +21,8 @@ class _MenuPerfilState extends State<MenuPerfil> {
   void initState() {
     super.initState();
     usuario = Usuario(user?.email ?? 'No email available',
-        user?.displayName ?? 'Guest', "Usuario");
+        user?.displayName ?? 'Guest', false);
+    logger.i("Valor seleccionado: " + user!.uid);
   }
 
   @override
@@ -59,7 +61,8 @@ class _MenuPerfilState extends State<MenuPerfil> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => ProfilePage(user!.uid),
+                    builder: (BuildContext context) =>
+                        ProfilePage(uid: user!.uid),
                   ),
                 );
               }
@@ -72,9 +75,18 @@ class _MenuPerfilState extends State<MenuPerfil> {
           ),
           const Divider(),
           _buildListTile(
-            icon: Icons.settings,
-            title: 'Configuracion',
-            onTap: () {},
+            icon: Icons.info,
+            title: 'Acerca de',
+            onTap: () {
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => const AboutPage(),
+                  ),
+                );
+              }
+            },
           ),
           const Divider(),
           _buildListTile(

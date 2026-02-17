@@ -5,7 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../entity/provincia.dart';
 
 class FiltroPanel extends StatefulWidget {
-  const FiltroPanel({Key? key}) : super(key: key);
+  final ValueChanged<Map<String, dynamic>>? onFilterChanged;
+
+  const FiltroPanel({Key? key, this.onFilterChanged}) : super(key: key);
 
   @override
   _FiltroPanelState createState() => _FiltroPanelState();
@@ -81,6 +83,11 @@ class _FiltroPanelState extends State<FiltroPanel> {
         onSelected: (bool value) {
           setState(() {
             isSelectedPerros = !isSelectedPerros;
+            widget.onFilterChanged?.call({
+              'perros': isSelectedPerros,
+              'gatos': isSelectedGatos,
+              'provincia': selectedProvincia
+            });
           });
         });
   }
@@ -94,6 +101,11 @@ class _FiltroPanelState extends State<FiltroPanel> {
         onSelected: (bool value) {
           setState(() {
             isSelectedGatos = !isSelectedGatos;
+            widget.onFilterChanged?.call({
+              'perros': isSelectedPerros,
+              'gatos': isSelectedGatos,
+              'provincia': selectedProvincia
+            });
           });
         });
   }
@@ -104,6 +116,11 @@ class _FiltroPanelState extends State<FiltroPanel> {
       onChanged: (Provincia? newValue) {
         setState(() {
           selectedProvincia = newValue!;
+          widget.onFilterChanged?.call({
+            'perros': isSelectedPerros,
+            'gatos': isSelectedGatos,
+            'provincia': selectedProvincia
+          });
         });
       },
       items: provincias.map<DropdownMenuItem<Provincia>>((Provincia value) {

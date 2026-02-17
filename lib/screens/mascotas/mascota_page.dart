@@ -1,6 +1,8 @@
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:flutter/material.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:adoptapp/screens/profile_pege.dart';
+import 'package:adoptapp/screens/profile_pege.dart';
 
 class MascotaPage extends StatefulWidget {
   const MascotaPage({
@@ -56,234 +58,225 @@ class _MascotaPageState extends State<MascotaPage> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                Hero(
-                  tag: widget.mascota.fotoPerfil,
-                  child: SizedBox(
-                    height:
-                        800, // Ajusta la altura del carrusel según sea necesario
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: widget.mascota.fotos
-                          .length, // listaDeFotos es la lista de URLs de imágenes
-                      itemBuilder: (context, index) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(widget.mascota.fotos[index]),
-                              fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 350,
+              child: Stack(
+                children: [
+                  Hero(
+                    tag: widget.mascota.fotoPerfil,
+                    child: SizedBox(
+                      height: 350,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: widget.mascota.fotos.length,
+                        itemBuilder: (context, index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image:
+                                    NetworkImage(widget.mascota.fotos[index]),
+                                fit: BoxFit.cover,
+                              ),
+                              borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(25),
+                                bottomRight: Radius.circular(25),
+                              ),
                             ),
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(25),
-                              bottomRight: Radius.circular(25),
-                            ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          DotsIndicator(
-            dotsCount: 2,
-            position: currentPage.toInt(),
-            decorator: const DotsDecorator(
-              color: Colors.grey,
-              activeColor: Colors.orange,
+            DotsIndicator(
+              dotsCount: 2,
+              position: currentPage.toInt(),
+              decorator: const DotsDecorator(
+                color: Colors.grey,
+                activeColor: Colors.orange,
+              ),
             ),
-          ),
-          Container(
-            color: Colors.white,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.mascota.nombre,
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontWeight: FontWeight.bold,
-                              fontSize: 24,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 8,
-                          ),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.location_on,
-                                color: Colors.grey[600],
-                                size: 20,
+            Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.mascota.nombre,
+                              style: TextStyle(
+                                color: Colors.grey[800],
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24,
                               ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                widget.mascota.nombre,
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 4,
-                              ),
-                              Text(
-                                ' ${widget.mascota.distancia} KM',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        height: 50,
-                        width: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: widget.mascota.isCachorro
-                              ? Colors.red[400]
-                              : Colors.white,
-                        ),
-                        child: Icon(
-                          Icons.favorite,
-                          size: 24,
-                          color: widget.mascota.isCachorro
-                              ? Colors.white
-                              : Colors.grey[300],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    children: [
-                      buildPetFeature("4 months", "Age"),
-                      buildPetFeature("Grey", "Color"),
-                      buildPetFeature("11 Kg", "Weight"),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Pet Story",
-                    style: TextStyle(
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    "Maine Coon cats are known for their intelligence and playfulness, as well as their size. One of the largest breeds of domestic cats, they are lovingly referreds.",
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                      right: 16, left: 16, top: 16, bottom: 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          //UserAvatar(),
-
-                          const SizedBox(
-                            width: 12,
-                          ),
-
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Posted by",
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 4,
-                              ),
-                              Text(
-                                "Nannie Barker",
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 20),
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(20),
-                          ),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color.fromRGBO(33, 150, 243, 0.5),
-                              spreadRadius: 3,
-                              blurRadius: 5,
-                              offset: Offset(0, 0),
                             ),
                           ],
-                          color: Colors.blue[300],
                         ),
-                        child: const Text(
-                          "Contact Me",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: widget.mascota.isCachorro
+                                ? Colors.red[400]
+                                : Colors.white,
+                          ),
+                          child: Icon(
+                            Icons.favorite,
+                            size: 24,
+                            color: widget.mascota.isCachorro
+                                ? Colors.white
+                                : Colors.grey[300],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        buildPetFeature(widget.mascota.edad + " Años", "Edad"),
+                        buildPetFeature(
+                            Mascota.getSizeIcon(widget.mascota.size), "Tamaño"),
+                        buildPetFeature(
+                            Mascota.getSexoString(widget.mascota.sexo), "Sexo"),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Descripcion",
+                      style: TextStyle(
+                        color: Colors.grey[800],
+                        fontWeight: FontWeight.bold,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      widget.mascota.descripcion +
+                          widget.mascota.descripcion +
+                          widget.mascota.descripcion +
+                          widget.mascota.descripcion,
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        right: 16, left: 16, top: 16, bottom: 24),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ProfilePage(uid: widget.mascota.user),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                child: ClipOval(
+                                  child: null == null
+                                      ? Image.asset(
+                                          'assets/images/avatar.jpg',
+                                          fit: BoxFit.cover,
+                                          width: 90,
+                                          height: 90,
+                                        )
+                                      : Image.network(
+                                          //user!.photoURL!,
+                                          "asd",
+                                          fit: BoxFit.cover,
+                                          width: 90,
+                                          height: 90,
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 12,
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Subido por",
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 4,
+                                  ),
+                                  Text(
+                                    widget.mascota.user,
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.location_on,
+                                        size: 16,
+                                        color: Colors.orange,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        "Buenos aires, Argentina",
+                                        style: TextStyle(
+                                          color: Colors.grey[600],
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -307,18 +300,18 @@ buildPetFeature(String value, String feature) {
       child: Column(
         children: [
           Text(
+            feature,
+            style: const TextStyle(
+              color: Colors.orange,
+              fontSize: 14,
+            ),
+          ),
+          Text(
             value,
             style: const TextStyle(
               color: Colors.orange,
               fontSize: 16,
               fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            feature,
-            style: const TextStyle(
-              color: Colors.orange,
-              fontSize: 14,
             ),
           ),
         ],
