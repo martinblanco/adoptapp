@@ -1,11 +1,10 @@
-import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/providers/mascotas_provider.dart';
 import 'package:adoptapp/widgets/mascota_grid_widget.dart';
 import 'package:adoptapp/widgets/perfil_menu_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/screens/mascotas/mascota_register_page.dart';
-import 'package:adoptapp/entity/mascota.dart';
-import 'package:adoptapp/services/mascotas/mascotas_service.dart';
+import 'package:provider/provider.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -18,90 +17,84 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final MascotasService _mascotaService = services.get<MascotasService>();
-  List<Mascota> mascotas = [];
   int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final List<Widget> _widgetOptions = <Widget>[
-      const Text('SOON'),
-      const Text('SOON'),
-      MascotasGrid(mascotas: mascotas),
-      const Text('SOON'),
-      const Text('SOON'),
-    ];
-
-    updateMascotas();
-
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-            'ADOPTAPP',
-            style: TextStyle(
-              color: Colors.orange,
+        title: const Text(
+          'ADOPTAPP',
+          style: TextStyle(
+            color: Colors.orange,
+          ),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        actions: [
+          Builder(
+            builder: (context) => Container(
+              margin: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    color: Colors.orange.shade800,
+                    icon: const Icon(Icons.add_box_outlined),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              const RegisterPet(),
+                        ),
+                      );
+                    },
+                    tooltip:
+                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  ),
+                  IconButton(
+                    color: Colors.orange.shade800,
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => Scaffold.of(context).openEndDrawer(),
+                    tooltip:
+                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  ),
+                ],
+              ),
             ),
           ),
-          elevation: 0,
-          backgroundColor: Colors.white,
-          actions: [
-            Builder(
-              builder: (context) => IconButton(
-                color: Colors.orange,
-                icon: const Icon(Icons.add_box_outlined),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const RegisterPet(),
-                    ),
-                  );
-                },
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              ),
-            ),
-            Builder(
-              builder: (context) => IconButton(
-                color: Colors.orange,
-                icon: const Icon(Icons.menu),
-                onPressed: () => Scaffold.of(context).openEndDrawer(),
-                tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              ),
-            ),
-          ],
-          automaticallyImplyLeading: false),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        ],
+        automaticallyImplyLeading: false,
+      ),
+      body: Consumer<MascotasNotifier>(
+        builder: (_, mascotasNotifier, __) => _selectedIndex != 2
+            ? const Center(child: Text('SOON'))
+            : _buildMascotasView(mascotasNotifier),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.local_hospital),
-            label: 'Veterinarias',
-          ),
+              icon: Icon(Icons.local_hospital), label: 'Veterinarias'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storefront_outlined),
-            label: 'Tiendas',
-          ),
+              icon: Icon(Icons.storefront_outlined), label: 'Tiendas'),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.arrow_drop_up_rounded,
-              color: Colors.white,
-            ),
-            label: 'Masacotas',
-          ),
+              icon: Icon(Icons.arrow_drop_up_rounded, color: Colors.white),
+              label: 'Mascotas'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_2),
-            label: 'Servicios',
-          ),
+              icon: Icon(Icons.person_2), label: 'Servicios'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.house_siding),
-            label: 'Refugios',
-          ),
+              icon: Icon(Icons.house_siding), label: 'Refugios'),
         ],
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.orangeAccent[100],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.orange,
-        unselectedItemColor: Colors.grey,
+        unselectedItemColor: Colors.white,
         onTap: _onItemTapped,
       ),
       floatingActionButton: FloatingActionButton(
@@ -118,20 +111,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void updateMascotas() {
-    _mascotaService.getAllPets().then((mascotas) => {
-          setState(() {
-            this.mascotas = mascotas;
-          })
-        });
+  Widget _buildMascotasView(MascotasNotifier mascotasNotifier) {
+    if (mascotasNotifier.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (mascotasNotifier.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: ${mascotasNotifier.error}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => mascotasNotifier.refresh(),
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return MascotasGrid(mascotas: mascotasNotifier.mascotas);
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      if (index == 1) {
-        updateMascotas();
-      }
-      _selectedIndex = index;
-    });
+    if (index == 2 && _selectedIndex != 2) {
+      context.read<MascotasNotifier>().refresh();
+    }
+    setState(() => _selectedIndex = index);
   }
 }

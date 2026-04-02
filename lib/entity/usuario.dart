@@ -8,8 +8,6 @@ class Usuario {
   bool isRefugio = false;
   late List<Mascota> mascotas = [];
 
-  var photoURL;
-
   Usuario(this.mail, this.userName, this.isRefugio);
 
   void setId(DatabaseReference id) {}

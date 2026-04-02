@@ -1,4 +1,5 @@
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:adoptapp/screens/mascotas/mascota_filtros.dart';
 import 'package:adoptapp/widgets/choice_widget.dart';
 import 'package:adoptapp/widgets/custon_card_widget.dart';
 import 'package:adoptapp/widgets/dropdown_widget.dart';
@@ -10,20 +11,42 @@ import 'package:logger/logger.dart';
 final Logger logger = Logger();
 
 class FiltrosPage extends StatefulWidget {
-  const FiltrosPage({Key? key}) : super(key: key);
+  final FiltrosMascota filtrosActuales;
+
+  const FiltrosPage({Key? key, required this.filtrosActuales})
+      : super(key: key);
 
   @override
   _FiltrosPageState createState() => _FiltrosPageState();
 }
 
-
 class _FiltrosPageState extends State<FiltrosPage> {
-  bool selectedCachorro = false;
-  bool selectedVacunas = false;
-  bool selectedTransito = false;
-  bool selectedRaza = false;
-  bool selectedRefugio = false;
-  bool selectedPapeles = false;
+  late FiltrosMascota _filtros;
+
+  @override
+  void initState() {
+    super.initState();
+    _filtros = widget.filtrosActuales.copyWith(
+      sizes: Set.from(widget.filtrosActuales.sizes),
+    );
+  }
+
+  void _aplicarFiltros() {
+    // Normaliza lo elegido en la página avanzada hacia los bools que usa el grid
+    final filtrosAplicados = _filtros.copyWith(
+      perros:
+          _filtros.animal == Animal.perro || _filtros.animal == Animal.todos,
+      gatos: _filtros.animal == Animal.gato || _filtros.animal == Animal.todos,
+    );
+
+    Navigator.pop(context, filtrosAplicados);
+  }
+
+  void _limpiarFiltros() {
+    setState(() {
+      _filtros = FiltrosMascota();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,38 +71,55 @@ class _FiltrosPageState extends State<FiltrosPage> {
             TextButton(
               child:
                   const Text('LIMPIAR', style: TextStyle(color: Colors.white)),
-              onPressed: () {},
+              onPressed: _limpiarFiltros,
             ),
             TextButton(
               child:
                   const Text('APLICAR', style: TextStyle(color: Colors.white)),
-              onPressed: () {},
+              onPressed: _aplicarFiltros,
             )
           ],
         ),
         body: Padding(
             padding: const EdgeInsets.all(8.0),
             child: ListView(children: [
-              const CombinedCard(
-                title: Text("Ordenar por"),
+              CombinedCard(
+                title: const Text("Ordenar por"),
                 isSingle: true,
                 contenido: DropDown(
-                    textos: ['Mas Relevante', 'Mas Reciente', 'Mas Cercano']),
-              ),
-              const CombinedCard(
-                title: Text("Fecha de creacion"),
-                isSingle: true,
-                contenido: DropDown(textos: [
-                  'Todo',
-                  'Ultimas 24hs',
-                  'Ultimos 7 dias',
-                  'Ultimos 30 dias'
-                ]),
+                  textos: const [
+                    'Mas Relevante',
+                    'Mas Reciente',
+                    'Mas Cercano'
+                  ],
+                  initialValue: _filtros.ordenarPor,
+                  onChanged: (value) {
+                    setState(() {
+                      _filtros.ordenarPor = value;
+                    });
+                  },
+                ),
               ),
               CombinedCard(
-                title: const Text(
-                  'Animal',
+                title: const Text("Fecha de creacion"),
+                isSingle: true,
+                contenido: DropDown(
+                  textos: const [
+                    'Todo',
+                    'Ultimas 24hs',
+                    'Ultimos 7 dias',
+                    'Ultimos 30 dias'
+                  ],
+                  initialValue: _filtros.fechaCreacion,
+                  onChanged: (value) {
+                    setState(() {
+                      _filtros.fechaCreacion = value;
+                    });
+                  },
                 ),
+              ),
+              CombinedCard(
+                title: const Text('Animal'),
                 contenido: [
                   Choice<Animal>(
                     segments: const <ButtonSegment<Animal>>[
@@ -96,19 +136,19 @@ class _FiltrosPageState extends State<FiltrosPage> {
                           label: Text('Gatos'),
                           icon: Icon(FontAwesomeIcons.cat)),
                     ],
-                    initialSelection: const {Animal.todos},
+                    initialSelection: {_filtros.animal},
                     onSelectionChanged: (Set<Animal> value) {
-                      // Maneja el valor seleccionado aquí
-                      logger.i("Valor seleccionado: $value");
+                      setState(() {
+                        _filtros.animal = value.first;
+                      });
+                      logger.i("Animal seleccionado: ${value.first}");
                     },
                     multiSelectionEnabled: false,
                   )
                 ],
               ),
               CombinedCard(
-                title: const Text(
-                  'Sexo',
-                ),
+                title: const Text('Sexo'),
                 contenido: [
                   Choice<Sexo>(
                     segments: const <ButtonSegment<Sexo>>[
@@ -125,9 +165,12 @@ class _FiltrosPageState extends State<FiltrosPage> {
                           label: Text('Macho'),
                           icon: Icon(FontAwesomeIcons.mars)),
                     ],
-                    initialSelection: const {Sexo.todos},
+                    initialSelection: {_filtros.sexo},
                     onSelectionChanged: (Set<Sexo> value) {
-                      logger.i("Valor seleccionado: $value");
+                      setState(() {
+                        _filtros.sexo = value.first;
+                      });
+                      logger.i("Sexo seleccionado: ${value.first}");
                     },
                     multiSelectionEnabled: false,
                   )
@@ -142,14 +185,12 @@ class _FiltrosPageState extends State<FiltrosPage> {
                     ButtonSegment<Sizes>(value: Sizes.medium, label: Text('M')),
                     ButtonSegment<Sizes>(value: Sizes.large, label: Text('L')),
                   ],
-                  initialSelection: const {
-                    Sizes.extraSmall,
-                    Sizes.small,
-                    Sizes.medium,
-                    Sizes.large
-                  },
+                  initialSelection: _filtros.sizes,
                   onSelectionChanged: (Set<Sizes> value) {
-                    logger.i("Valor seleccionado: $value");
+                    setState(() {
+                      _filtros.sizes = value;
+                    });
+                    logger.i("Tamaños seleccionados: $value");
                   },
                   multiSelectionEnabled: true,
                 ),
@@ -160,30 +201,30 @@ class _FiltrosPageState extends State<FiltrosPage> {
                     children: [
                       CustomFilterChip(
                         text: "Cachorro",
-                        selected: selectedCachorro,
+                        selected: _filtros.cachorro,
                         onChanged: (bool value) {
                           setState(() {
-                            selectedCachorro = value;
+                            _filtros.cachorro = value;
                           });
                         },
                       ),
                       const SizedBox(width: 8),
                       CustomFilterChip(
                         text: "Vacunas",
-                        selected: selectedVacunas,
+                        selected: _filtros.vacunas,
                         onChanged: (bool value) {
                           setState(() {
-                            selectedVacunas = value;
+                            _filtros.vacunas = value;
                           });
                         },
                       ),
                       const SizedBox(width: 8),
                       CustomFilterChip(
                         text: "Raza",
-                        selected: selectedRaza,
+                        selected: _filtros.raza,
                         onChanged: (bool value) {
                           setState(() {
-                            selectedRaza = value;
+                            _filtros.raza = value;
                           });
                         },
                       ),
@@ -192,30 +233,30 @@ class _FiltrosPageState extends State<FiltrosPage> {
                   Row(children: [
                     CustomFilterChip(
                       text: "Transito",
-                      selected: selectedTransito,
+                      selected: _filtros.transito,
                       onChanged: (bool value) {
                         setState(() {
-                          selectedTransito = value;
+                          _filtros.transito = value;
                         });
                       },
                     ),
                     const SizedBox(width: 8),
                     CustomFilterChip(
                       text: "de Refugio",
-                      selected: selectedRefugio,
+                      selected: _filtros.refugio,
                       onChanged: (bool value) {
                         setState(() {
-                          selectedRefugio = value;
+                          _filtros.refugio = value;
                         });
                       },
                     ),
                     const SizedBox(width: 8),
                     CustomFilterChip(
                       text: "Papeles",
-                      selected: selectedPapeles,
+                      selected: _filtros.papeles,
                       onChanged: (bool value) {
                         setState(() {
-                          selectedPapeles = value;
+                          _filtros.papeles = value;
                         });
                       },
                     ),

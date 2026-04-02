@@ -1,8 +1,12 @@
 import 'package:adoptapp/entity/mascota.dart';
-import 'package:flutter/material.dart';
+import 'package:adoptapp/screens/profile_pege.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/services/user/user_service.dart';
 import 'package:dots_indicator/dots_indicator.dart';
-import 'package:adoptapp/screens/profile_pege.dart';
-import 'package:adoptapp/screens/profile_pege.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MascotaPage extends StatefulWidget {
   const MascotaPage({
@@ -18,16 +22,128 @@ class MascotaPage extends StatefulWidget {
 
 class _MascotaPageState extends State<MascotaPage> {
   final PageController _pageController = PageController();
+  final UserService _userService = services.get<UserService>();
   double currentPage = 0;
+  bool _isLiked = false;
+  bool _isFavoriteLoading = true;
+
+  bool get _hasLocation =>
+      widget.mascota.latitud != null && widget.mascota.longitud != null;
+
+  LatLng get _petLocation =>
+      LatLng(widget.mascota.latitud!, widget.mascota.longitud!);
 
   @override
   void initState() {
     super.initState();
+    _loadFavoriteState();
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page ?? 0;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _openMap() async {
+    if (!_hasLocation) {
+      return;
+    }
+
+    final lat = widget.mascota.latitud!;
+    final lng = widget.mascota.longitud!;
+    final label = Uri.encodeComponent(widget.mascota.nombre);
+    final geoUri = Uri.parse('geo:$lat,$lng?q=$lat,$lng($label)');
+    final webUri = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$lat,$lng',
+    );
+
+    if (await canLaunchUrl(geoUri)) {
+      await launchUrl(geoUri, mode: LaunchMode.externalApplication);
+      return;
+    }
+
+    await launchUrl(webUri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _loadFavoriteState() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null || widget.mascota.id.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _isLiked = false;
+          _isFavoriteLoading = false;
+        });
+      }
+      return;
+    }
+
+    try {
+      final bool isFavorite =
+          await _userService.isPetFavorite(user.uid, widget.mascota.id);
+      if (mounted) {
+        setState(() {
+          _isLiked = isFavorite;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLiked = false;
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFavoriteLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Iniciá sesión para usar favoritos')),
+      );
+      return;
+    }
+
+    if (widget.mascota.id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo guardar este favorito')),
+      );
+      return;
+    }
+
+    final bool previousValue = _isLiked;
+    setState(() {
+      _isLiked = !previousValue;
+    });
+
+    try {
+      if (previousValue) {
+        await _userService.removeFavoritePet(user.uid, widget.mascota.id);
+      } else {
+        await _userService.addFavoritePet(user.uid, widget.mascota.id);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLiked = previousValue;
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al actualizar favoritos')),
+      );
+    }
   }
 
   @override
@@ -125,21 +241,32 @@ class _MascotaPageState extends State<MascotaPage> {
                             ),
                           ],
                         ),
-                        Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: widget.mascota.isCachorro
-                                ? Colors.red[400]
-                                : Colors.white,
-                          ),
-                          child: Icon(
-                            Icons.favorite,
-                            size: 24,
-                            color: widget.mascota.isCachorro
-                                ? Colors.white
-                                : Colors.grey[300],
+                        Material(
+                          color: Colors.transparent,
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: _isFavoriteLoading ? null : _toggleFavorite,
+                            child: Container(
+                              height: 50,
+                              width: 50,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color:
+                                    _isLiked ? Colors.red[400] : Colors.white,
+                              ),
+                              child: Icon(
+                                _isLiked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                size: 24,
+                                color: _isFavoriteLoading
+                                    ? Colors.grey[500]
+                                    : (_isLiked
+                                        ? Colors.white
+                                        : Colors.grey[400]),
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -184,6 +311,101 @@ class _MascotaPageState extends State<MascotaPage> {
                       ),
                     ),
                   ),
+                  if (_hasLocation) ...[
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Ubicación Aproximada',
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontWeight: FontWeight.bold,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 12,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: GestureDetector(
+                        onTap: _openMap,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: SizedBox(
+                            height: 190,
+                            width: double.infinity,
+                            child: Stack(
+                              children: [
+                                IgnorePointer(
+                                  child: GoogleMap(
+                                    initialCameraPosition: CameraPosition(
+                                      target: _petLocation,
+                                      zoom: 14,
+                                    ),
+                                    mapToolbarEnabled: false,
+                                    myLocationButtonEnabled: false,
+                                    zoomControlsEnabled: false,
+                                    scrollGesturesEnabled: false,
+                                    zoomGesturesEnabled: false,
+                                    tiltGesturesEnabled: false,
+                                    rotateGesturesEnabled: false,
+                                    liteModeEnabled: true,
+                                    circles: {
+                                      Circle(
+                                        circleId: const CircleId(
+                                            'mascota_location_area'),
+                                        center: _petLocation,
+                                        radius: 350,
+                                        fillColor: Colors.orange,
+                                        strokeColor: Colors.orange,
+                                        strokeWidth: 2,
+                                      ),
+                                    },
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 12,
+                                  top: 12,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.open_in_new,
+                                          size: 16,
+                                          color: Colors.orange,
+                                        ),
+                                        SizedBox(width: 6),
+                                        Text(
+                                          'Abrir mapa',
+                                          style: TextStyle(
+                                            color: Colors.orange,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(
                     height: 16,
                   ),
@@ -207,20 +429,12 @@ class _MascotaPageState extends State<MascotaPage> {
                             children: [
                               CircleAvatar(
                                 child: ClipOval(
-                                  child: null == null
-                                      ? Image.asset(
-                                          'assets/images/avatar.jpg',
-                                          fit: BoxFit.cover,
-                                          width: 90,
-                                          height: 90,
-                                        )
-                                      : Image.network(
-                                          //user!.photoURL!,
-                                          "asd",
-                                          fit: BoxFit.cover,
-                                          width: 90,
-                                          height: 90,
-                                        ),
+                                  child: Image.asset(
+                                    'assets/images/avatar.jpg',
+                                    fit: BoxFit.cover,
+                                    width: 90,
+                                    height: 90,
+                                  ),
                                 ),
                               ),
                               const SizedBox(
@@ -249,7 +463,7 @@ class _MascotaPageState extends State<MascotaPage> {
                                   ),
                                   Row(
                                     children: [
-                                      Icon(
+                                      const Icon(
                                         Icons.location_on,
                                         size: 16,
                                         color: Colors.orange,

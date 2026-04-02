@@ -22,7 +22,7 @@ class AboutPage extends StatelessWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [Colors.orangeAccent, Colors.greenAccent])),
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
                 height: 350.0,
                 child: Center(
@@ -33,13 +33,13 @@ class AboutPage extends StatelessWidget {
                       Container(
                         width: 100.0,
                         height: 100.0,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black,
                               blurRadius: 8.0,
-                              offset: const Offset(0, 2),
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
@@ -129,42 +129,40 @@ class AboutPage extends StatelessWidget {
                   ),
                 ),
               )),
-          Container(
-            child: const Padding(
-              padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    "Bio:",
-                    style: TextStyle(
-                        color: Colors.orangeAccent,
-                        fontStyle: FontStyle.normal,
-                        fontSize: 28.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "Bio:",
+                  style: TextStyle(
+                      color: Colors.orangeAccent,
+                      fontStyle: FontStyle.normal,
+                      fontSize: 28.0),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Text(
+                  'AdoptApp fue diseñada para facilitar la adopción responsable '
+                  'y ayudar a encontrar hogares amorosos para las mascotas necesitadas.',
+                  style: TextStyle(
+                    fontSize: 22.0,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w300,
+                    color: Colors.black,
+                    letterSpacing: 2.0,
                   ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    'AdoptApp fue diseñada para facilitar la adopción responsable '
-                    'y ayudar a encontrar hogares amorosos para las mascotas necesitadas.',
-                    style: TextStyle(
-                      fontSize: 22.0,
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           const SizedBox(
             height: 20.0,
           ),
-          Center(
+          const Center(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

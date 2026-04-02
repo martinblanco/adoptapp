@@ -1,9 +1,7 @@
 import 'package:adoptapp/entity/usuario.dart';
-import 'package:adoptapp/screens/filtro_busqueda_page.dart';
-import 'package:adoptapp/screens/home_page.dart';
 import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/services/user/user_service.dart';
-import 'package:adoptapp/widgets/mascota_grid_widgetPErfil.dart';
+import 'package:adoptapp/widgets/mascota_grid_widget_perfil.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -30,9 +28,7 @@ class _ProfilePageState extends State<ProfilePage> {
           usuario = user;
         });
       }
-    }).catchError((error) {
-      print('Error loading user: $error');
-    });
+    }).catchError((error) {});
   }
 
   @override
@@ -71,20 +67,12 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: CircleAvatar(
                         radius: 50,
                         child: ClipOval(
-                          child: null == null
-                              ? Image.asset(
-                                  'assets/images/avatar.jpg',
-                                  fit: BoxFit.cover,
-                                  width: 90,
-                                  height: 90,
-                                )
-                              : Image.network(
-                                  //user!.photoURL!,
-                                  "asd",
-                                  fit: BoxFit.cover,
-                                  width: 90,
-                                  height: 90,
-                                ),
+                          child: Image.asset(
+                            'assets/images/avatar.jpg',
+                            fit: BoxFit.cover,
+                            width: 90,
+                            height: 90,
+                          ),
                         ),
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:adoptapp/screens/mascotas/mascota_filtros.dart';
 import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/widgets/filtro_busqueda_widget.dart';
@@ -15,28 +16,115 @@ class MascotasGrid extends StatefulWidget {
   _MascotasGridState createState() => _MascotasGridState();
 }
 
-class _MascotasGridState extends State<MascotasGrid> {
+class _MascotasGridState extends State<MascotasGrid>
+    with WidgetsBindingObserver {
   Position? _currentUserPosition;
+  late Future<void> _locationFuture;
   final MascotasService _mascotaService = services.get<MascotasService>();
   List<Mascota> displayedMascotas = [];
+  FiltrosMascota _filtrosActuales = FiltrosMascota();
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     displayedMascotas = widget.mascotas;
+    _filtrosActuales = FiltrosMascota(
+      perros: false,
+      gatos: false,
+      provincia: '',
+    );
+    _locationFuture = _loadCurrentLocation();
   }
-  Future _getTheDistance() async {
-    bool enabled = await Geolocator.isLocationServiceEnabled();
-    if (enabled) {
-      try {
-        _currentUserPosition = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.low);
-      } catch (e) {
-        _currentUserPosition = null;
-      }
-    } else {
-      //LocationPermission permission = await Geolocator.checkPermission();
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _reloadLocation();
     }
+  }
+
+  void _reloadLocation() {
+    if (!mounted) return;
+
+    setState(() {
+      _locationFuture = _loadCurrentLocation();
+    });
+  }
+
+  Future<void> _loadCurrentLocation() async {
+    final enabled = await Geolocator.isLocationServiceEnabled();
+    if (!enabled) {
+      _currentUserPosition = null;
+      return;
+    }
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      _currentUserPosition = null;
+      return;
+    }
+
+    try {
+      _currentUserPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+      );
+    } catch (_) {
+      _currentUserPosition = await Geolocator.getLastKnownPosition();
+    }
+  }
+
+  bool _esPerro(String animal) {
+    final a = animal.toLowerCase();
+    return a.contains('perro') || a.contains('can');
+  }
+
+  bool _esGato(String animal) {
+    final a = animal.toLowerCase();
+    return a.contains('gato') || a.contains('fel');
+  }
+
+  void _filtrarMascotas() {
+    displayedMascotas = widget.mascotas.where((mascota) {
+      bool cumplePerrosGatos = true;
+
+      if (_filtrosActuales.perros || _filtrosActuales.gatos) {
+        cumplePerrosGatos = false;
+
+        if (_filtrosActuales.perros && _esPerro(mascota.animal)) {
+          cumplePerrosGatos = true;
+        }
+        if (_filtrosActuales.gatos && _esGato(mascota.animal)) {
+          cumplePerrosGatos = true;
+        }
+      }
+
+      // bool cumpleProvincia = true;
+      // if (_filtrosActuales.provincia.isNotEmpty) {
+      //   cumpleProvincia = mascota.provincia.toLowerCase() ==
+      //       _filtrosActuales.provincia.toLowerCase();
+      // }
+
+      return cumplePerrosGatos;
+    }).toList();
+  }
+
+  void _aplicarFiltros(FiltrosMascota filtros) {
+    setState(() {
+      _filtrosActuales = filtros;
+      _filtrarMascotas();
+    });
   }
 
   @override
@@ -48,25 +136,12 @@ class _MascotasGridState extends State<MascotasGrid> {
           padding: const EdgeInsets.all(5.0),
           child: Column(
             children: <Widget>[
-              FiltroPanel(onFilterChanged: (filters) {
-                final bool perros = filters['perros'] ?? true;
-                final bool gatos = filters['gatos'] ?? true;
-                setState(() {
-                  if (perros && gatos) {
-                    displayedMascotas = widget.mascotas;
-                  } else if (perros && !gatos) {
-                    displayedMascotas = widget.mascotas
-                        .where((m) => m.animal.toLowerCase().contains('perro'))
-                        .toList();
-                  } else if (!perros && gatos) {
-                    displayedMascotas = widget.mascotas
-                        .where((m) => m.animal.toLowerCase().contains('gato'))
-                        .toList();
-                  } else {
-                    displayedMascotas = [];
-                  }
-                });
-              }),
+              FiltroPanel(
+                onFilterChanged: (filtros) {
+                  _aplicarFiltros(filtros);
+                },
+                filtrosActuales: _filtrosActuales,
+              ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.01,
               ),
@@ -77,7 +152,7 @@ class _MascotasGridState extends State<MascotasGrid> {
                   onRefresh: _refresh,
                   child: Scrollbar(
                       child: FutureBuilder<void>(
-                    future: _getTheDistance(),
+                    future: _locationFuture,
                     builder:
                         (BuildContext context, AsyncSnapshot<void> snapshot) {
                       if (snapshot.hasError) {
@@ -95,11 +170,11 @@ class _MascotasGridState extends State<MascotasGrid> {
                                     MediaQuery.of(context).size.height *
                                     1.55,
                           ),
-                            itemCount: displayedMascotas.length,
-                            itemBuilder: (BuildContext context, int index) =>
+                          itemCount: displayedMascotas.length,
+                          itemBuilder: (BuildContext context, int index) =>
                               MascotaCard(
-                                mascota: displayedMascotas[index],
-                                currentUserPosition: _currentUserPosition),
+                                  mascota: displayedMascotas[index],
+                                  currentUserPosition: _currentUserPosition),
                         );
                       }
                     },
@@ -114,11 +189,13 @@ class _MascotasGridState extends State<MascotasGrid> {
   }
 
   Future<void> _refresh() async {
-    _mascotaService.getAllPets().then((mascotas) => {
-          setState(() {
-            widget.mascotas = mascotas;
-            displayedMascotas = mascotas;
-          })
-        });
+    final mascotas = await _mascotaService.getAllPets();
+    if (!mounted) return;
+
+    setState(() {
+      widget.mascotas = mascotas;
+      _filtrarMascotas();
+      _locationFuture = _loadCurrentLocation();
+    });
   }
 }

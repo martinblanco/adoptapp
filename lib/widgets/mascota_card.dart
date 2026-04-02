@@ -1,7 +1,13 @@
 import 'package:adoptapp/entity/mascota.dart';
 import 'package:adoptapp/screens/mascotas/mascota_page.dart';
+import 'package:adoptapp/services/services.dart';
+import 'package:adoptapp/services/user/user_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:logger/logger.dart';
+
+final Logger logger = Logger();
 
 class MascotaCard extends StatefulWidget {
   final Mascota mascota;
@@ -17,20 +23,108 @@ class MascotaCard extends StatefulWidget {
 
 class _MascotaCardState extends State<MascotaCard> {
   bool _isLiked = false;
-  Future _getTheDistance(Mascota mascota) async {
-    double? distanceImMeter = 0.0;
-    double storelat = -34.5435;
-    double storelng = -58.5165;
+  bool _isFavoriteLoading = true;
+  final UserService _userService = services.get<UserService>();
 
-    if (widget.currentUserPosition != null) {
-      distanceImMeter = Geolocator.distanceBetween(
-        widget.currentUserPosition!.latitude,
-        widget.currentUserPosition!.longitude,
-        storelat,
-        storelng,
-      );
-      mascota.distancia = (distanceImMeter.round().toInt() / 1000).round();
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteState();
+  }
+
+  Future<void> _loadFavoriteState() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user == null || widget.mascota.id.isEmpty) {
+      if (mounted) {
+        setState(() {
+          _isLiked = false;
+          _isFavoriteLoading = false;
+        });
+      }
+      return;
     }
+
+    try {
+      final bool isFavorite =
+          await _userService.isPetFavorite(user.uid, widget.mascota.id);
+      if (mounted) {
+        setState(() {
+          _isLiked = isFavorite;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLiked = false;
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFavoriteLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    final User? user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Iniciá sesión para usar favoritos')),
+      );
+      return;
+    }
+
+    if (widget.mascota.id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo guardar este favorito')),
+      );
+      return;
+    }
+
+    final bool previousValue = _isLiked;
+    setState(() {
+      _isLiked = !previousValue;
+    });
+
+    try {
+      if (previousValue) {
+        await _userService.removeFavoritePet(user.uid, widget.mascota.id);
+      } else {
+        await _userService.addFavoritePet(user.uid, widget.mascota.id);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isLiked = previousValue;
+        });
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error al actualizar favoritos')),
+      );
+    }
+  }
+
+  void _getTheDistance(Mascota mascota) {
+    final currentPosition = widget.currentUserPosition;
+    final petLat = mascota.latitud;
+    final petLng = mascota.longitud;
+
+    if (currentPosition == null || petLat == null || petLng == null) {
+      mascota.distancia = 0;
+      return;
+    }
+
+    final distanceInMeter = Geolocator.distanceBetween(
+      currentPosition.latitude,
+      currentPosition.longitude,
+      petLat,
+      petLng,
+    );
+
+    mascota.distancia = (distanceInMeter / 1000).round();
   }
 
   @override
@@ -77,7 +171,7 @@ class _MascotaCardState extends State<MascotaCard> {
                           shape: const CircleBorder(),
                           child: InkWell(
                             customBorder: const CircleBorder(),
-                            onTap: () => setState(() => _isLiked = !_isLiked),
+                            onTap: _isFavoriteLoading ? null : _toggleFavorite,
                             child: Container(
                               width: 34,
                               height: 34,
@@ -90,7 +184,9 @@ class _MascotaCardState extends State<MascotaCard> {
                                 _isLiked
                                     ? Icons.favorite
                                     : Icons.favorite_border,
-                                color: _isLiked ? Colors.red : Colors.white,
+                                color: _isFavoriteLoading
+                                    ? Colors.white70
+                                    : (_isLiked ? Colors.red : Colors.white),
                                 size: 30,
                               ),
                             ),
@@ -211,15 +307,15 @@ class _MascotaCardState extends State<MascotaCard> {
           Row(
             children: [
               _badge(text: sexString),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 4)),
+              const Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
               _badge(text: edadString)
             ],
           ),
-          Padding(padding: const EdgeInsets.symmetric(vertical: 4)),
+          const Padding(padding: EdgeInsets.symmetric(vertical: 4)),
           Row(
             children: [
               _badge(text: sizeString),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 4)),
+              const Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
               if (mascota.isCachorro) _badge(text: 'Cachorro')
             ],
           ),

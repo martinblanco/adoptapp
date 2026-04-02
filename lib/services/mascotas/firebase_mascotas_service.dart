@@ -34,6 +34,7 @@ class FirebaseMascotasService extends MascotasService {
     if (dataSnapshot.value != null) {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
+        mascota.id = child.key ?? '';
         mascotas.add(mascota);
       }
     }
@@ -48,6 +49,7 @@ class FirebaseMascotasService extends MascotasService {
     if (dataSnapshot.value != null) {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
+        mascota.id = child.key ?? '';
         if (mascota.user == uid) {
           mascotas.add(mascota);
         }

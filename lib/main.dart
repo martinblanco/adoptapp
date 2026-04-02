@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:adoptapp/providers/mascotas_provider.dart';
 import 'package:adoptapp/screens/home_page.dart';
 import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:adoptapp/screens/register/user_register_page.dart';
@@ -7,6 +8,7 @@ import 'package:adoptapp/strings.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,18 +26,24 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: Strings.appTitle,
-      debugShowCheckedModeBanner: false,
-      home: const LoginPage(),
-      initialRoute: FirebaseAuth.instance.currentUser == null
-          ? LoginPage.routeName
-          : HomePage.routeName,
-      routes: _buildRoutes(),
-      theme: _buildThemeData(),
-      onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (context) => const LoginPage());
-      },
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (_) => MascotasNotifier()..loadMascotas()),
+      ],
+      child: MaterialApp(
+        title: Strings.appTitle,
+        debugShowCheckedModeBanner: false,
+        home: const LoginPage(),
+        initialRoute: FirebaseAuth.instance.currentUser == null
+            ? LoginPage.routeName
+            : HomePage.routeName,
+        routes: _buildRoutes(),
+        theme: _buildThemeData(),
+        onUnknownRoute: (settings) {
+          return MaterialPageRoute(builder: (context) => const LoginPage());
+        },
+      ),
     );
   }
 

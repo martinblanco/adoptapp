@@ -1,42 +1,55 @@
 import 'package:flutter/material.dart';
 
 class DropDown extends StatefulWidget {
-  const DropDown({Key? key, required this.textos}) : super(key: key);
   final List<String> textos;
+  final String? initialValue;
+  final Function(String)? onChanged;
+
+  const DropDown({
+    Key? key,
+    required this.textos,
+    this.initialValue,
+    this.onChanged,
+  }) : super(key: key);
 
   @override
-  _DropDownState createState() => _DropDownState();
+  State<DropDown> createState() => _DropDownState();
 }
 
 class _DropDownState extends State<DropDown> {
-  String dropdownValue = '';
+  late String dropdownValue;
 
   @override
   void initState() {
     super.initState();
-    dropdownValue = widget.textos.first;
+    dropdownValue = widget.initialValue ?? widget.textos.first;
   }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButton(
+    return DropdownButton<String>(
       value: dropdownValue,
+      icon: const Icon(Icons.arrow_downward),
+      elevation: 16,
+      style: const TextStyle(color: Colors.deepPurple),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
       onChanged: (String? value) {
         setState(() {
           dropdownValue = value!;
         });
+        if (widget.onChanged != null) {
+          widget.onChanged!(value!);
+        }
       },
-      isExpanded: true,
-      items: widget.textos
-          .map((e) => DropdownMenuItem(
-                child: Text(e, style: const TextStyle(color: Colors.orange)),
-                value: e,
-              ))
-          .toList(),
-      underline: Container(
-        height: 3,
-        color: Colors.orange,
-      ),
+      items: widget.textos.map<DropdownMenuItem<String>>((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
     );
   }
 }

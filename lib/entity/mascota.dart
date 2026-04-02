@@ -14,6 +14,8 @@ class Mascota {
   String animal;
   String nombre;
   String descripcion;
+  double? latitud;
+  double? longitud;
   String edad;
   String sexo;
   String size;
@@ -37,6 +39,8 @@ class Mascota {
       this.sexo,
       this.size,
       this.descripcion,
+      this.latitud,
+      this.longitud,
       this.isCastrado,
       this.isPapeles,
       this.isRaza,
@@ -58,6 +62,8 @@ class Mascota {
       'sexo': sexo,
       'size': size,
       'descripcion': descripcion,
+      'latitud': latitud,
+      'longitud': longitud,
       'castrado': isCastrado,
       'papeles': isPapeles,
       'raza': isRaza,
@@ -108,6 +114,12 @@ class Mascota {
 }
 
 Mascota createMascota(record) {
+  double? toNullableDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString());
+  }
+
   Map<String, dynamic> attributes = {
     'nombre': '',
     'animal': '',
@@ -116,6 +128,8 @@ Mascota createMascota(record) {
     'sexo': '',
     'size': '',
     'descripcion': '',
+    'latitud': null,
+    'longitud': null,
     'castrado': false,
     'papeles': false,
     'raza': false,
@@ -135,6 +149,8 @@ Mascota createMascota(record) {
       attributes['sexo'],
       attributes['size'],
       attributes['descripcion'],
+      toNullableDouble(attributes['latitud']),
+      toNullableDouble(attributes['longitud']),
       attributes['castrado'],
       attributes['papeles'],
       attributes['raza'],

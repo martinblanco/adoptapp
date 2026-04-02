@@ -19,26 +19,26 @@ class CombinedCard extends StatelessWidget {
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Card(
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        clipBehavior: Clip.hardEdge,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              title,
-              if (isSingle)
-                contenido
-              else
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: contenido,
-                ),
-            ],
+          elevation: 6,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          clipBehavior: Clip.hardEdge,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                title,
+                if (isSingle)
+                  contenido
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: contenido,
+                  ),
+              ],
+            ),
           ),
         ),
-      ),
       ),
     );
   }

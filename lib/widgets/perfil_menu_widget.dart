@@ -2,6 +2,8 @@ import 'package:adoptapp/entity/usuario.dart';
 import 'package:adoptapp/screens/about_page.dart';
 import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:adoptapp/screens/profile_pege.dart';
+import 'package:adoptapp/widgets/mascota_grid_widget_gestion.dart';
+import 'package:adoptapp/widgets/mascota_grid_widget_perfil.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -71,7 +73,38 @@ class _MenuPerfilState extends State<MenuPerfil> {
           _buildListTile(
             icon: Icons.favorite,
             title: 'Favoritos',
-            onTap: () {},
+            onTap: () {
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => MascotasGridd(
+                      uid: user!.uid,
+                      showFavorites: true,
+                      title: 'Favoritos',
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+          _buildListTile(
+            icon: Icons.pets,
+            title: 'Mis Mascotas',
+            onTap: () {
+              if (user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => MascotasGridGestion(
+                      uid: user!.uid,
+                      showFavorites: false,
+                      title: 'Mis Mascotas',
+                    ),
+                  ),
+                );
+              }
+            },
           ),
           const Divider(),
           _buildListTile(

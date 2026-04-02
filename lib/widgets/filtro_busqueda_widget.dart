@@ -1,134 +1,117 @@
-import 'dart:convert';
 import 'package:adoptapp/screens/filtro_busqueda_page.dart';
+import 'package:adoptapp/providers/filtro_provider.dart';
+import 'package:adoptapp/screens/mascotas/mascota_filtros.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../entity/provincia.dart';
+import 'package:provider/provider.dart';
 
 class FiltroPanel extends StatefulWidget {
-  final ValueChanged<Map<String, dynamic>>? onFilterChanged;
+  final ValueChanged<FiltrosMascota>? onFilterChanged;
+  final FiltrosMascota filtrosActuales;
 
-  const FiltroPanel({Key? key, this.onFilterChanged}) : super(key: key);
+  const FiltroPanel(
+      {Key? key, this.onFilterChanged, required this.filtrosActuales})
+      : super(key: key);
 
   @override
-  _FiltroPanelState createState() => _FiltroPanelState();
+  State<FiltroPanel> createState() => _FiltroPanelState();
 }
 
 class _FiltroPanelState extends State<FiltroPanel> {
-  late Provincia selectedProvincia = Provincia(name: "C.A.B.A");
-  List<Provincia> provincias = [];
-  bool isSelectedPerros = true;
-  bool isSelectedGatos = true;
+  late FiltrosMascota _filtrosActuales;
 
   @override
   void initState() {
     super.initState();
-    cargarProvincias();
-  }
-
-  Future<void> cargarProvincias() async {
-    String jsonString = await DefaultAssetBundle.of(context)
-        .loadString('assets/jsons/provincias.json');
-    List<dynamic> jsonList = json.decode(jsonString);
-    List<Provincia> listaProvincias =
-        jsonList.map((json) => Provincia.fromJson(json)).toList();
-    setState(() {
-      provincias = listaProvincias;
-      selectedProvincia = provincias.first;
-    });
+    _filtrosActuales = widget.filtrosActuales;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-      child: Container(
-        decoration: BoxDecoration(
+    return ChangeNotifierProvider(
+      create: (ctx) => FiltroNotifier()..cargarProvincias(ctx),
+      child: Consumer<FiltroNotifier>(
+        builder: (context, filtro, _) => Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: Colors.orangeAccent[100]),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const FiltrosPage(),
-                      ),
-                    );
+            color: Colors.orangeAccent[100],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.filter_list),
+                onPressed: _abrirFiltros,
+              ),
+              if (!filtro.isLoading)
+                DropdownButton(
+                  value: filtro.selectedProvincia,
+                  onChanged: (newValue) {
+                    if (newValue != null) {
+                      filtro.setProvincia(newValue);
+                      _filtrosActuales =
+                          _filtrosActuales.copyWith(provincia: newValue.name);
+                      widget.onFilterChanged?.call(_filtrosActuales);
+                    }
                   },
-                ),
-                _popup(),
-                _filtroPerros(),
-                _filtroGatos(),
-              ],
-            ),
-          ],
+                  items: filtro.provincias
+                      .map((p) =>
+                          DropdownMenuItem(value: p, child: Text(p.name)))
+                      .toList(),
+                )
+              else
+                const SizedBox(
+                    width: 80,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2)),
+              FilterChip(
+                label: const Icon(FontAwesomeIcons.dog, size: 16),
+                selected: filtro.isSelectedPerros,
+                backgroundColor: Colors.orangeAccent,
+                selectedColor: Colors.orange,
+                onSelected: (_) {
+                  filtro.togglePerros();
+                  _filtrosActuales = _filtrosActuales.copyWith(
+                    perros: filtro.isSelectedPerros,
+                  );
+                  widget.onFilterChanged?.call(_filtrosActuales);
+                },
+              ),
+              FilterChip(
+                label: const Icon(FontAwesomeIcons.cat, size: 16),
+                selected: filtro.isSelectedGatos,
+                backgroundColor: Colors.orangeAccent,
+                selectedColor: Colors.orange,
+                onSelected: (_) {
+                  filtro.toggleGatos();
+                  _filtrosActuales = _filtrosActuales.copyWith(
+                    gatos: filtro.isSelectedGatos,
+                  );
+                  widget.onFilterChanged?.call(_filtrosActuales);
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  _filtroPerros() {
-    return FilterChip(
-        label: const Icon(FontAwesomeIcons.dog),
-        selected: isSelectedPerros,
-        backgroundColor: Colors.orangeAccent,
-        selectedColor: Colors.orange,
-        onSelected: (bool value) {
-          setState(() {
-            isSelectedPerros = !isSelectedPerros;
-            widget.onFilterChanged?.call({
-              'perros': isSelectedPerros,
-              'gatos': isSelectedGatos,
-              'provincia': selectedProvincia
-            });
-          });
-        });
-  }
-
-  _filtroGatos() {
-    return FilterChip(
-        label: const Icon(FontAwesomeIcons.cat),
-        selected: isSelectedGatos,
-        backgroundColor: Colors.orangeAccent,
-        selectedColor: Colors.orange,
-        onSelected: (bool value) {
-          setState(() {
-            isSelectedGatos = !isSelectedGatos;
-            widget.onFilterChanged?.call({
-              'perros': isSelectedPerros,
-              'gatos': isSelectedGatos,
-              'provincia': selectedProvincia
-            });
-          });
-        });
-  }
-
-  _popup() {
-    return DropdownButton<Provincia>(
-      value: selectedProvincia,
-      onChanged: (Provincia? newValue) {
-        setState(() {
-          selectedProvincia = newValue!;
-          widget.onFilterChanged?.call({
-            'perros': isSelectedPerros,
-            'gatos': isSelectedGatos,
-            'provincia': selectedProvincia
-          });
-        });
-      },
-      items: provincias.map<DropdownMenuItem<Provincia>>((Provincia value) {
-        return DropdownMenuItem<Provincia>(
-          value: value,
-          child: Text(value.name),
-        );
-      }).toList(),
+  void _abrirFiltros() async {
+    final resultado = await Navigator.push<FiltrosMascota>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FiltrosPage(filtrosActuales: _filtrosActuales),
+      ),
     );
+
+    if (resultado != null) {
+      setState(() {
+        _filtrosActuales = resultado;
+      });
+      widget.onFilterChanged?.call(_filtrosActuales);
+    }
   }
 }
