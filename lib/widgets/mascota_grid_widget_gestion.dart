@@ -1,6 +1,7 @@
 import 'package:adoptapp/services/mascotas/mascotas_service.dart';
 import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/services/user/user_service.dart';
+import 'package:adoptapp/screens/mascotas/mascota_register_page.dart';
 import 'package:adoptapp/widgets/mascota_card_long.dart';
 import 'package:flutter/material.dart';
 import 'package:adoptapp/entity/mascota.dart';
@@ -77,6 +78,26 @@ class _MascotasGridGestionState extends State<MascotasGridGestion> {
                         MascotaBanner(
                       mascota: _mascotas[index],
                       currentUserPosition: null,
+                      showEditButton: !widget.showFavorites,
+                      showAdoptButton: !widget.showFavorites,
+                      onEdit: () async {
+                        await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                RegisterPet(mascotaToEdit: _mascotas[index]),
+                          ),
+                        );
+
+                        if (!mounted) {
+                          return;
+                        }
+
+                        await _refresh();
+                      },
+                      onAdopted: (_) async {
+                        await _refresh();
+                      },
                     ),
                   );
                 }

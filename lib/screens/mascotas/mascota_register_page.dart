@@ -31,7 +31,9 @@ class _PetAttributes {
 }
 
 class RegisterPet extends StatefulWidget {
-  const RegisterPet({Key? key}) : super(key: key);
+  const RegisterPet({Key? key, this.mascotaToEdit}) : super(key: key);
+
+  final Mascota? mascotaToEdit;
 
   @override
   State<RegisterPet> createState() => _RegisterPetState();
@@ -53,12 +55,63 @@ class _RegisterPetState extends State<RegisterPet> {
   late String _imageUrl;
   late _PetAttributes _attr;
   bool _isUploading = false;
+  Animal _selectedAnimal = Animal.perro;
+  Sexo _selectedSexo = Sexo.hembra;
+  Sizes _selectedSize = Sizes.medium;
+
+  bool get _isEditing => widget.mascotaToEdit != null;
 
   @override
   void initState() {
     super.initState();
     _imagen = null;
+    _imageUrl = '';
     _attr = _PetAttributes();
+
+    final mascota = widget.mascotaToEdit;
+    if (mascota != null) {
+      _nombreCtrl.text = mascota.nombre;
+      _descripcionCtrl.text = mascota.descripcion;
+      _edadCtrl.text = mascota.edad;
+      _selectedAnimal = _parseAnimal(mascota.animal);
+      _selectedSexo = _parseSexo(mascota.sexo);
+      _selectedSize = _parseSize(mascota.size);
+      _animalCtrl.text = _selectedAnimal.name;
+      _sexoCtrl.text = _selectedSexo.name;
+      _sizeCtrl.text = _selectedSize.name;
+      _ubicacionSeleccionada =
+          (mascota.latitud != null && mascota.longitud != null)
+              ? LatLng(mascota.latitud!, mascota.longitud!)
+              : null;
+      _attr.cachorro = mascota.isCachorro;
+      _attr.vacunas = mascota.isVacunas;
+      _attr.transito = mascota.isTransito;
+      _attr.raza = mascota.isRaza;
+      _attr.castrado = mascota.isCastrado;
+      _attr.papeles = mascota.isPapeles;
+      _imageUrl = mascota.fotoPerfil;
+    }
+  }
+
+  Animal _parseAnimal(String value) {
+    return Animal.values.firstWhere(
+      (animal) => animal.name == value,
+      orElse: () => Animal.perro,
+    );
+  }
+
+  Sexo _parseSexo(String value) {
+    return Sexo.values.firstWhere(
+      (sexo) => sexo.name == value,
+      orElse: () => Sexo.hembra,
+    );
+  }
+
+  Sizes _parseSize(String value) {
+    return Sizes.values.firstWhere(
+      (size) => size.name == value,
+      orElse: () => Sizes.medium,
+    );
   }
 
   @override
@@ -76,8 +129,8 @@ class _RegisterPetState extends State<RegisterPet> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Poner en Adopción',
-            style: TextStyle(color: Colors.white)),
+        title: Text(_isEditing ? 'Editar Mascota' : 'Poner en Adopción',
+            style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.orange,
       ),
       body: Container(
@@ -175,8 +228,13 @@ class _RegisterPetState extends State<RegisterPet> {
                       label: Text('Gato'),
                       icon: Icon(FontAwesomeIcons.cat)),
                 ],
-                initialSelection: const {Animal.perro},
-                onSelectionChanged: (v) => _animalCtrl.text = v.first.name,
+                initialSelection: {_selectedAnimal},
+                onSelectionChanged: (v) {
+                  setState(() {
+                    _selectedAnimal = v.first;
+                    _animalCtrl.text = v.first.name;
+                  });
+                },
                 multiSelectionEnabled: false,
               ),
               Choice<Sexo>(
@@ -190,8 +248,13 @@ class _RegisterPetState extends State<RegisterPet> {
                       label: Text('Macho'),
                       icon: Icon(FontAwesomeIcons.mars)),
                 ],
-                initialSelection: const {Sexo.hembra},
-                onSelectionChanged: (v) => _sexoCtrl.text = v.first.name,
+                initialSelection: {_selectedSexo},
+                onSelectionChanged: (v) {
+                  setState(() {
+                    _selectedSexo = v.first;
+                    _sexoCtrl.text = v.first.name;
+                  });
+                },
                 multiSelectionEnabled: false,
               )
             ],
@@ -209,8 +272,13 @@ class _RegisterPetState extends State<RegisterPet> {
               ButtonSegment<Sizes>(value: Sizes.medium, label: Text('M')),
               ButtonSegment<Sizes>(value: Sizes.large, label: Text('L')),
             ],
-            initialSelection: const {Sizes.medium},
-            onSelectionChanged: (v) => _sizeCtrl.text = v.first.name,
+            initialSelection: {_selectedSize},
+            onSelectionChanged: (v) {
+              setState(() {
+                _selectedSize = v.first;
+                _sizeCtrl.text = v.first.name;
+              });
+            },
             multiSelectionEnabled: false,
           ),
         ],
@@ -339,14 +407,14 @@ class _RegisterPetState extends State<RegisterPet> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation(Colors.white)))
-              : const Text('Agregar Mascota'),
+              : Text(_isEditing ? 'Guardar cambios' : 'Agregar Mascota'),
         ),
       );
 
   Future<void> uploadImage() async {
     if (!_formKey.currentState!.validate()) return;
 
-    if (_imagen == null) {
+    if (_imagen == null && !_isEditing) {
       _showSnackBar('Seleccione una imagen primero');
       return;
     }
@@ -354,27 +422,40 @@ class _RegisterPetState extends State<RegisterPet> {
     setState(() => _isUploading = true);
 
     try {
-      final compressed = await FlutterImageCompress.compressWithFile(
-        _imagen!.path,
-        quality: 70,
-        minWidth: 800,
-        minHeight: 800,
-        format: CompressFormat.jpeg,
-      );
+      if (_imagen != null) {
+        final compressed = await FlutterImageCompress.compressWithFile(
+          _imagen!.path,
+          quality: 60,
+          minWidth: 800,
+          minHeight: 800,
+          format: CompressFormat.jpeg,
+        );
 
-      if (compressed == null) throw Exception('No se pudo comprimir la imagen');
+        if (compressed == null) {
+          throw Exception('No se pudo comprimir la imagen');
+        }
 
-      final filename = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final ref = FirebaseStorage.instance.ref().child('mascotas/$filename');
+        final filename = '${DateTime.now().millisecondsSinceEpoch}.jpg';
+        final ref = FirebaseStorage.instance.ref().child('mascotas/$filename');
 
-      final upload =
-          ref.putData(compressed, SettableMetadata(contentType: 'image/jpeg'));
-      await upload;
+        final upload = ref.putData(
+            compressed, SettableMetadata(contentType: 'image/jpeg'));
+        await upload;
 
-      _imageUrl = await ref.getDownloadURL();
+        _imageUrl = await ref.getDownloadURL();
+      }
+
       await _savePet();
-      _showSnackBar('Mascota agregada correctamente');
-      _resetForm();
+
+      if (_isEditing) {
+        _showSnackBar('Mascota actualizada correctamente');
+        if (mounted) {
+          Navigator.pop(context, true);
+        }
+      } else {
+        _showSnackBar('Mascota agregada correctamente');
+        _resetForm();
+      }
     } catch (e) {
       logger.e('Error: $e');
       _showSnackBar('Error: ${e.toString().substring(0, 50)}');
@@ -385,7 +466,8 @@ class _RegisterPetState extends State<RegisterPet> {
 
   Future<void> _savePet() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user == null) throw Exception('Usuario no autenticado');
+    final ownerId = widget.mascotaToEdit?.user ?? user?.uid;
+    if (ownerId == null) throw Exception('Usuario no autenticado');
 
     final mascota = Mascota(
       _nombreCtrl.text,
@@ -402,9 +484,15 @@ class _RegisterPetState extends State<RegisterPet> {
       _attr.raza,
       _attr.vacunas,
       _attr.transito,
-      user.uid,
+      ownerId,
       _imageUrl,
     );
+
+    if (_isEditing) {
+      mascota.id = widget.mascotaToEdit!.id;
+      await _mascotaService.updatePet(mascota);
+      return;
+    }
 
     await _mascotaService.addPet(mascota);
   }
@@ -416,6 +504,12 @@ class _RegisterPetState extends State<RegisterPet> {
       _nombreCtrl.clear();
       _descripcionCtrl.clear();
       _edadCtrl.clear();
+      _animalCtrl.text = Animal.perro.name;
+      _sexoCtrl.text = Sexo.hembra.name;
+      _sizeCtrl.text = Sizes.medium.name;
+      _selectedAnimal = Animal.perro;
+      _selectedSexo = Sexo.hembra;
+      _selectedSize = Sizes.medium;
       _ubicacionSeleccionada = null;
       _attr.reset();
     });

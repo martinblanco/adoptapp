@@ -57,4 +57,22 @@ class FirebaseMascotasService extends MascotasService {
     }
     return mascotas;
   }
+
+  @override
+  Future<void> incrementInAppAdoptionsCounter() async {
+    await _databaseReference
+        .child('app_stats/adopciones_en_app')
+        .runTransaction((Object? currentData) {
+      if (currentData is num) {
+        return Transaction.success(currentData.toInt() + 1);
+      }
+
+      if (currentData is String) {
+        final parsedValue = int.tryParse(currentData) ?? 0;
+        return Transaction.success(parsedValue + 1);
+      }
+
+      return Transaction.success(1);
+    });
+  }
 }

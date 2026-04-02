@@ -1,14 +1,27 @@
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:adoptapp/screens/mascotas/mascota_register_page.dart';
 import 'package:adoptapp/screens/mascotas/mascota_page.dart';
+import 'package:adoptapp/services/mascotas/mascotas_service.dart';
+import 'package:adoptapp/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MascotaBanner extends StatefulWidget {
   final Mascota mascota;
   final Position? currentUserPosition;
+  final Future<void> Function()? onEdit;
+  final Future<void> Function(Mascota mascota)? onAdopted;
+  final bool showEditButton;
+  final bool showAdoptButton;
 
   const MascotaBanner(
-      {Key? key, required this.mascota, required this.currentUserPosition})
+      {Key? key,
+      required this.mascota,
+      required this.currentUserPosition,
+      this.onEdit,
+      this.onAdopted,
+      this.showEditButton = true,
+      this.showAdoptButton = true})
       : super(key: key);
 
   @override
@@ -16,6 +29,88 @@ class MascotaBanner extends StatefulWidget {
 }
 
 class _MascotaBannerState extends State<MascotaBanner> {
+  final MascotasService _mascotaService = services.get<MascotasService>();
+  bool _isAdoptionLoading = false;
+
+  Future<void> _onFueAdoptadoPressed() async {
+    if (_isAdoptionLoading) return;
+
+    final bool? fueEnLaApp = await _showAdoptionSourceDialog();
+    if (fueEnLaApp == null) return;
+
+    if (widget.mascota.id.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No se pudo eliminar esta mascota')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isAdoptionLoading = true;
+    });
+
+    try {
+      await _mascotaService.deletePet(widget.mascota.id);
+
+      if (fueEnLaApp) {
+        await _mascotaService.incrementInAppAdoptionsCounter();
+      }
+
+      if (!mounted) return;
+
+      if (widget.onAdopted != null) {
+        await widget.onAdopted!(widget.mascota);
+      }
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            fueEnLaApp
+                ? '${widget.mascota.nombre} marcado como adoptado en la app'
+                : '${widget.mascota.nombre} marcado como adoptado por fuera',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Hubo un error al marcar la adopcion')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAdoptionLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<bool?> _showAdoptionSourceDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Fue adoptado?'),
+        content: const Text('Elegi como se concreto la adopcion'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Por fuera'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('En la app'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: const Text('Cancelar'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -74,28 +169,98 @@ class _MascotaBannerState extends State<MascotaBanner> {
                               ),
                             ),
                           ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
+                          if (widget.showEditButton)
+                            Material(
                               color: Colors.orange.shade100,
-                              borderRadius: BorderRadius.circular(30),
+                              borderRadius: BorderRadius.circular(999),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(999),
+                                onTap: () async {
+                                  if (widget.onEdit != null) {
+                                    await widget.onEdit!();
+                                    return;
+                                  }
+
+                                  if (!mounted) return;
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => RegisterPet(
+                                        mascotaToEdit: widget.mascota,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 16,
+                                    color: Colors.orange.shade900,
+                                  ),
+                                ),
+                              ),
                             ),
-                            child: Text(
-                              '${widget.mascota.distancia} km',
-                              style: TextStyle(
-                                color: Colors.orange.shade900,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w700,
+                        ],
+                      ),
+                      _buildIcons(widget.mascota),
+                      if (widget.showAdoptButton) ...[
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFFFF8A00), Color(0xFFFF5E62)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Color(0x4DFF8A00),
+                                  blurRadius: 10,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: ElevatedButton.icon(
+                              onPressed: _isAdoptionLoading
+                                  ? null
+                                  : _onFueAdoptadoPressed,
+                              icon: _isAdoptionLoading
+                                  ? const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.white),
+                                      ),
+                                    )
+                                  : const Icon(Icons.volunteer_activism_rounded,
+                                      size: 16),
+                              label: const Text(
+                                'Fue Adoptado!',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                foregroundColor: Colors.white,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                               ),
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      _buildIcons(widget.mascota),
+                        ),
+                      ],
                     ],
                   ),
                 ),
