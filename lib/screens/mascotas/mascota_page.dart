@@ -177,9 +177,11 @@ class _MascotaPageState extends State<MascotaPage> {
     final Uri deepLink = _buildPetDeepLink();
 
     try {
-      await Share.share(
-        'Mira a ${widget.mascota.nombre} en AdoptApp\n$deepLink',
-        subject: 'Adopta a ${widget.mascota.nombre}',
+      await SharePlus.instance.share(
+        ShareParams(
+          text: 'Mira a ${widget.mascota.nombre} en AdoptApp\n$deepLink',
+          subject: 'Adopta a ${widget.mascota.nombre}',
+        ),
       );
     } on MissingPluginException {
       await Clipboard.setData(ClipboardData(text: deepLink.toString()));
@@ -291,10 +293,12 @@ class _MascotaPageState extends State<MascotaPage> {
       final Directory tempDir = await getTemporaryDirectory();
       final File file = await _saveShareImageInDirectory(tempDir);
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Mira a ${widget.mascota.nombre} en AdoptApp',
-        subject: 'Adopta a ${widget.mascota.nombre}',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path)],
+          text: 'Mira a ${widget.mascota.nombre} en AdoptApp',
+          subject: 'Adopta a ${widget.mascota.nombre}',
+        ),
       );
     } on MissingPluginException {
       if (!mounted) {
