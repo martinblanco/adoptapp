@@ -42,6 +42,24 @@ class FirebaseMascotasService extends MascotasService {
   }
 
   @override
+  Future<Mascota?> getPetById(String petId) async {
+    if (petId.isEmpty) {
+      return null;
+    }
+
+    final DataSnapshot snapshot =
+        await _databaseReference.child('mascotas/').child(petId).get();
+
+    if (!snapshot.exists || snapshot.value == null) {
+      return null;
+    }
+
+    final Mascota mascota = createMascota(snapshot.value);
+    mascota.id = snapshot.key ?? petId;
+    return mascota;
+  }
+
+  @override
   Future<List<Mascota>> getPetsByUser(String uid) async {
     DataSnapshot dataSnapshot =
         await _databaseReference.child('mascotas/').get();

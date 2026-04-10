@@ -9,6 +9,8 @@ abstract class MascotasService {
 
   Future<List<Mascota>> getAllPets();
 
+  Future<Mascota?> getPetById(String petId);
+
   Future<List<Mascota>> getPetsByUser(String uid);
 
   Future<void> incrementInAppAdoptionsCounter();
