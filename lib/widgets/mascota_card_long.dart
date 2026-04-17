@@ -10,18 +10,20 @@ class MascotaBanner extends StatefulWidget {
   final Mascota mascota;
   final Position? currentUserPosition;
   final Future<void> Function()? onEdit;
-  final Future<void> Function(Mascota mascota)? onAdopted;
+  final Future<void> Function(Mascota mascota)? onStatusChanged;
   final bool showEditButton;
-  final bool showAdoptButton;
+  final bool showPrimaryActionButton;
+  final bool showDeleteButton;
 
   const MascotaBanner(
       {Key? key,
       required this.mascota,
       required this.currentUserPosition,
       this.onEdit,
-      this.onAdopted,
+      this.onStatusChanged,
       this.showEditButton = true,
-      this.showAdoptButton = true})
+      this.showPrimaryActionButton = true,
+      this.showDeleteButton = true})
       : super(key: key);
 
   @override
@@ -31,6 +33,48 @@ class MascotaBanner extends StatefulWidget {
 class _MascotaBannerState extends State<MascotaBanner> {
   final MascotasService _mascotaService = services.get<MascotasService>();
   bool _isAdoptionLoading = false;
+  bool _isDeleteLoading = false;
+
+  bool get _isAdoptionPost => widget.mascota.estado == MascotaEstado.enAdopcion;
+  bool get _isLostPost => widget.mascota.estado == MascotaEstado.perdido;
+  bool get _isFoundPost => widget.mascota.estado == MascotaEstado.encontrado;
+  bool get _shouldShowPrimaryAction =>
+      widget.showPrimaryActionButton &&
+      (_isAdoptionPost || _isLostPost || _isFoundPost);
+
+  String get _statusLabel {
+    if (_isLostPost) return 'Perdido';
+    if (_isFoundPost) return 'Encontrado';
+    return 'En adopción';
+  }
+
+  List<Color> get _primaryActionColors {
+    if (_isLostPost) {
+      return const [Color(0xFFDC2626), Color(0xFFFB7185)];
+    }
+    if (_isFoundPost) {
+      return const [Color(0xFF0F766E), Color(0xFF2DD4BF)];
+    }
+    return const [Color(0xFFFF8A00), Color(0xFFFF5E62)];
+  }
+
+  Color get _primaryActionShadowColor {
+    if (_isLostPost) return const Color(0x4DDC2626);
+    if (_isFoundPost) return const Color(0x4D0F766E);
+    return const Color(0x4DFF8A00);
+  }
+
+  Color get _statusBadgeColor {
+    if (_isLostPost) return const Color(0xFFDC2626);
+    if (_isFoundPost) return const Color(0xFF0F766E);
+    return Colors.orange;
+  }
+
+  Future<void> _notifyStatusChanged() async {
+    if (widget.onStatusChanged != null) {
+      await widget.onStatusChanged!(widget.mascota);
+    }
+  }
 
   Future<void> _onFueAdoptadoPressed() async {
     if (_isAdoptionLoading) return;
@@ -58,9 +102,7 @@ class _MascotaBannerState extends State<MascotaBanner> {
 
       if (!mounted) return;
 
-      if (widget.onAdopted != null) {
-        await widget.onAdopted!(widget.mascota);
-      }
+      await _notifyStatusChanged();
 
       if (!mounted) return;
 
@@ -85,6 +127,146 @@ class _MascotaBannerState extends State<MascotaBanner> {
         });
       }
     }
+  }
+
+  Future<void> _onFueEncontradoPressed() async {
+    if (_isAdoptionLoading) return;
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(_isFoundPost ? 'Fue devuelto?' : 'Fue encontrado?'),
+        content: const Text('Esta publicación dejará de mostrarse.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Confirmar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || widget.mascota.id.isEmpty) return;
+
+    setState(() {
+      _isAdoptionLoading = true;
+    });
+
+    try {
+      await _mascotaService.markPetAsReturned(widget.mascota.id);
+
+      if (!mounted) return;
+
+      await _notifyStatusChanged();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFoundPost
+                ? '${widget.mascota.nombre} marcado como devuelto'
+                : '${widget.mascota.nombre} marcado como encontrado',
+          ),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            _isFoundPost
+                ? 'Hubo un error al marcar como devuelto'
+                : 'Hubo un error al marcar como encontrado',
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAdoptionLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _onDeletePressed() async {
+    if (_isDeleteLoading || widget.mascota.id.isEmpty) return;
+
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Eliminar publicación?'),
+        content: const Text('La publicación se ocultará de la app.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() {
+      _isDeleteLoading = true;
+    });
+
+    try {
+      await _mascotaService.deletePet(widget.mascota.id);
+
+      if (!mounted) return;
+
+      await _notifyStatusChanged();
+
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Publicación eliminada')),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Hubo un error al eliminar la publicación')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDeleteLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _onPrimaryActionPressed() async {
+    if (_isLostPost || _isFoundPost) {
+      await _onFueEncontradoPressed();
+      return;
+    }
+
+    await _onFueAdoptadoPressed();
+  }
+
+  String get _primaryActionLabel {
+    if (_isLostPost) return 'Encontrado';
+    if (_isFoundPost) return 'Devuelto';
+    return 'Adoptado';
+  }
+
+  IconData get _primaryActionIcon {
+    if (_isLostPost) return Icons.search;
+    if (_isFoundPost) return Icons.keyboard_return_rounded;
+    return Icons.volunteer_activism_rounded;
   }
 
   Future<bool?> _showAdoptionSourceDialog() {
@@ -123,6 +305,7 @@ class _MascotaBannerState extends State<MascotaBanner> {
       },
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        constraints: const BoxConstraints(minHeight: 132),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           boxShadow: const [
@@ -144,7 +327,7 @@ class _MascotaBannerState extends State<MascotaBanner> {
               Expanded(
                 child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
@@ -158,75 +341,127 @@ class _MascotaBannerState extends State<MascotaBanner> {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              widget.mascota.nombre,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: 19,
-                                fontWeight: FontWeight.w700,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _badge(
+                                  text: _statusLabel,
+                                  backgroundColor: _statusBadgeColor,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  widget.mascota.nombre.isEmpty
+                                      ? 'Sin título'
+                                      : widget.mascota.nombre,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           if (widget.showEditButton)
-                            Material(
-                              color: Colors.orange.shade100,
-                              borderRadius: BorderRadius.circular(999),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(999),
-                                onTap: () async {
-                                  if (widget.onEdit != null) {
-                                    await widget.onEdit!();
-                                    return;
-                                  }
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Material(
+                                  color: Colors.orange.shade100,
+                                  borderRadius: BorderRadius.circular(999),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(999),
+                                    onTap: () async {
+                                      if (widget.onEdit != null) {
+                                        await widget.onEdit!();
+                                        return;
+                                      }
 
-                                  if (!mounted) return;
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RegisterPet(
-                                        mascotaToEdit: widget.mascota,
+                                      if (!mounted) return;
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => RegisterPet(
+                                            mascotaToEdit: widget.mascota,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8),
+                                      child: Icon(
+                                        Icons.edit,
+                                        size: 16,
+                                        color: Colors.orange.shade900,
                                       ),
                                     ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: Icon(
-                                    Icons.edit,
-                                    size: 16,
-                                    color: Colors.orange.shade900,
                                   ),
                                 ),
-                              ),
+                                if (widget.showDeleteButton) ...[
+                                  const SizedBox(width: 8),
+                                  Material(
+                                    color: Colors.red.shade50,
+                                    borderRadius: BorderRadius.circular(999),
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(999),
+                                      onTap: _isDeleteLoading
+                                          ? null
+                                          : _onDeletePressed,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8),
+                                        child: _isDeleteLoading
+                                            ? SizedBox(
+                                                width: 16,
+                                                height: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(
+                                                    Colors.red.shade400,
+                                                  ),
+                                                ),
+                                              )
+                                            : Icon(
+                                                Icons.delete_outline,
+                                                size: 16,
+                                                color: Colors.red.shade400,
+                                              ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ],
                             ),
                         ],
                       ),
                       _buildIcons(widget.mascota),
-                      if (widget.showAdoptButton) ...[
+                      if (_shouldShowPrimaryAction) ...[
                         Align(
-                          alignment: Alignment.bottomRight,
+                          alignment: Alignment.centerRight,
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFFFF8A00), Color(0xFFFF5E62)],
+                              gradient: LinearGradient(
+                                colors: _primaryActionColors,
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
                               borderRadius: BorderRadius.circular(20),
-                              boxShadow: const [
+                              boxShadow: [
                                 BoxShadow(
-                                  color: Color(0x4DFF8A00),
+                                  color: _primaryActionShadowColor,
                                   blurRadius: 10,
-                                  offset: Offset(0, 4),
+                                  offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
                             child: ElevatedButton.icon(
                               onPressed: _isAdoptionLoading
                                   ? null
-                                  : _onFueAdoptadoPressed,
+                                  : _onPrimaryActionPressed,
                               icon: _isAdoptionLoading
                                   ? const SizedBox(
                                       width: 14,
@@ -238,12 +473,11 @@ class _MascotaBannerState extends State<MascotaBanner> {
                                                 Colors.white),
                                       ),
                                     )
-                                  : const Icon(Icons.volunteer_activism_rounded,
-                                      size: 16),
-                              label: const Text(
-                                'Fue Adoptado!',
-                                style: TextStyle(
-                                  fontSize: 12,
+                                  : Icon(_primaryActionIcon, size: 16),
+                              label: Text(
+                                _primaryActionLabel,
+                                style: const TextStyle(
+                                  fontSize: 16,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -255,7 +489,9 @@ class _MascotaBannerState extends State<MascotaBanner> {
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 4),
+                                    horizontal: 8, vertical: 2),
+                                minimumSize: const Size(0, 32),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                             ),
                           ),
@@ -314,29 +550,37 @@ class _MascotaBannerState extends State<MascotaBanner> {
     );
   }
 
-  Widget _badge({Widget? icon, String? text, double radius = 12}) {
+  Widget _badge({
+    Widget? icon,
+    String? text,
+    double radius = 12,
+    Color backgroundColor = Colors.orange,
+  }) {
     if (text != null) {
       return Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(5), color: Colors.orange),
+          borderRadius: BorderRadius.circular(5),
+          color: backgroundColor,
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-        child: Text(text,
-            style: const TextStyle(color: Colors.white, fontSize: 14)),
+        child: Text(
+          text,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
       );
     }
     return CircleAvatar(
-      backgroundColor: Colors.orange,
+      backgroundColor: backgroundColor,
       radius: radius,
       child: icon,
     );
   }
 
   Widget _buildIcons(Mascota mascota) {
-    //final iconData = Mascota.getAnimalIcon(mascota.animal);
-    //final sizeText = Mascota.getSizeIcon(mascota.size);
     final sexString = Mascota.getSexoString(mascota.sexo);
     final sizeString = Mascota.getSizeIcon(mascota.size);
-    final edadString = widget.mascota.edad + " años";
+    final edadString =
+        widget.mascota.edad.isEmpty ? '' : '${widget.mascota.edad} años';
     return Padding(
       padding: EdgeInsets.zero,
       child: Column(
@@ -345,16 +589,18 @@ class _MascotaBannerState extends State<MascotaBanner> {
         children: [
           Row(
             children: [
-              _badge(text: sexString),
-              const SizedBox(width: 4),
-              _badge(text: edadString)
+              if (sexString.isNotEmpty) _badge(text: sexString),
+              if (sexString.isNotEmpty && edadString.isNotEmpty)
+                const SizedBox(width: 4),
+              if (edadString.isNotEmpty) _badge(text: edadString),
             ],
           ),
           const SizedBox(height: 6),
           Row(
             children: [
-              _badge(text: sizeString),
-              const SizedBox(width: 4),
+              if (sizeString.isNotEmpty) _badge(text: sizeString),
+              if (sizeString.isNotEmpty && mascota.isCachorro)
+                const SizedBox(width: 4),
               if (mascota.isCachorro) _badge(text: 'Cachorro')
             ],
           ),

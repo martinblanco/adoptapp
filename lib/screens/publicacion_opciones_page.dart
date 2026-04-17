@@ -9,7 +9,7 @@ class PublicacionOpcionesPage extends StatelessWidget {
     final List<_OptionItem> options = [
       _OptionItem(
         title: 'Poner en adopción',
-        description: 'Publicá tu mascota para encontrarle hogar.',
+        description: 'Encontremosle un hogar.',
         icon: Icons.pets,
         color: const Color(0xFFF97316),
         onTap: () {
@@ -20,16 +20,24 @@ class PublicacionOpcionesPage extends StatelessWidget {
         },
       ),
       _OptionItem(
-        title: 'Perdido',
+        title: 'Perdido/Encontrado',
         description: 'Difundí una mascota perdida rápidamente.',
         icon: Icons.search_off,
         color: const Color(0xFFDC2626),
-        onTap: () => _showSoonMessage(context, 'Perdido'),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  const RegisterPet(mode: RegisterPetMode.lostFound),
+            ),
+          );
+        },
       ),
       _OptionItem(
         title: 'Agregar un servicio',
-        description: 'Publicá paseador, cuidador o similar.',
-        icon: Icons.handyman,
+        description: 'Publicá paseador, peluquero, cuidador, etc.',
+        icon: Icons.people,
         color: const Color(0xFF2563EB),
         onTap: () => _showSoonMessage(context, 'Agregar un servicio'),
       ),

@@ -11,6 +11,9 @@ enum Sexo { todos, hembra, macho }
 class MascotaEstado {
   static const String enAdopcion = 'en_adopcion';
   static const String adoptado = 'adoptado';
+  static const String perdido = 'perdido';
+  static const String encontrado = 'encontrado';
+  static const String devuelto = 'devuelto';
   static const String borrado = 'borrado';
 }
 

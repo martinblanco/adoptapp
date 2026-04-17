@@ -71,7 +71,7 @@ class _MascotasGridGestionState extends State<MascotasGridGestion> {
                       crossAxisSpacing: 10,
                       childAspectRatio: MediaQuery.of(context).size.width /
                           MediaQuery.of(context).size.height *
-                          5,
+                          4.35,
                     ),
                     itemCount: _mascotas.length,
                     itemBuilder: (BuildContext context, int index) =>
@@ -79,7 +79,8 @@ class _MascotasGridGestionState extends State<MascotasGridGestion> {
                       mascota: _mascotas[index],
                       currentUserPosition: null,
                       showEditButton: !widget.showFavorites,
-                      showAdoptButton: !widget.showFavorites,
+                      showPrimaryActionButton: !widget.showFavorites,
+                      showDeleteButton: !widget.showFavorites,
                       onEdit: () async {
                         await Navigator.push(
                           context,
@@ -95,7 +96,7 @@ class _MascotasGridGestionState extends State<MascotasGridGestion> {
 
                         await _refresh();
                       },
-                      onAdopted: (_) async {
+                      onStatusChanged: (_) async {
                         await _refresh();
                       },
                     ),

@@ -5,6 +5,12 @@ import 'package:firebase_database/firebase_database.dart';
 class FirebaseMascotasService extends MascotasService {
   final _databaseReference = FirebaseDatabase.instance.ref();
 
+  bool _isVisibleStatus(String estado) {
+    return estado == MascotaEstado.enAdopcion ||
+        estado == MascotaEstado.perdido ||
+        estado == MascotaEstado.encontrado;
+  }
+
   Future<String> _updatePetStatus(String petId, String estado) async {
     await _databaseReference
         .child('mascotas/')
@@ -39,6 +45,11 @@ class FirebaseMascotasService extends MascotasService {
   }
 
   @override
+  Future<String> markPetAsReturned(String petId) async {
+    return _updatePetStatus(petId, MascotaEstado.devuelto);
+  }
+
+  @override
   Future<List<Mascota>> getAllPets() async {
     DataSnapshot dataSnapshot =
         await _databaseReference.child('mascotas/').get();
@@ -47,7 +58,7 @@ class FirebaseMascotasService extends MascotasService {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
         mascota.id = child.key ?? '';
-        if (mascota.estado == MascotaEstado.enAdopcion) {
+        if (_isVisibleStatus(mascota.estado)) {
           mascotas.add(mascota);
         }
       }
@@ -82,7 +93,7 @@ class FirebaseMascotasService extends MascotasService {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
         mascota.id = child.key ?? '';
-        if (mascota.user == uid && mascota.estado == MascotaEstado.enAdopcion) {
+        if (mascota.user == uid && _isVisibleStatus(mascota.estado)) {
           mascotas.add(mascota);
         }
       }

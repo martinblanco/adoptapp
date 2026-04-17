@@ -16,6 +16,8 @@ import 'package:logger/logger.dart';
 
 final logger = Logger();
 
+enum RegisterPetMode { adoption, lostFound }
+
 /// Modelo para atributos de mascota
 class _PetAttributes {
   bool cachorro = false;
@@ -31,9 +33,14 @@ class _PetAttributes {
 }
 
 class RegisterPet extends StatefulWidget {
-  const RegisterPet({Key? key, this.mascotaToEdit}) : super(key: key);
+  const RegisterPet({
+    Key? key,
+    this.mascotaToEdit,
+    this.mode = RegisterPetMode.adoption,
+  }) : super(key: key);
 
   final Mascota? mascotaToEdit;
+  final RegisterPetMode mode;
 
   @override
   State<RegisterPet> createState() => _RegisterPetState();
@@ -58,8 +65,12 @@ class _RegisterPetState extends State<RegisterPet> {
   Animal _selectedAnimal = Animal.perro;
   Sexo _selectedSexo = Sexo.hembra;
   Sizes _selectedSize = Sizes.medium;
+  String _selectedStatus = MascotaEstado.perdido;
 
   bool get _isEditing => widget.mascotaToEdit != null;
+  bool get _isLostFoundMode =>
+      widget.mode == RegisterPetMode.lostFound ||
+      _isLostFoundStatus(widget.mascotaToEdit?.estado);
 
   @override
   void initState() {
@@ -90,7 +101,39 @@ class _RegisterPetState extends State<RegisterPet> {
       _attr.castrado = mascota.isCastrado;
       _attr.papeles = mascota.isPapeles;
       _imageUrl = mascota.fotoPerfil;
+      _selectedStatus = _normalizeLostFoundStatus(mascota.estado);
     }
+  }
+
+  bool _isLostFoundStatus(String? status) {
+    return status == MascotaEstado.perdido ||
+        status == MascotaEstado.encontrado;
+  }
+
+  String _normalizeLostFoundStatus(String? status) {
+    if (status == MascotaEstado.encontrado) {
+      return MascotaEstado.encontrado;
+    }
+    return MascotaEstado.perdido;
+  }
+
+  String get _screenTitle {
+    if (_isLostFoundMode) {
+      return _isEditing ? 'Editar publicación' : 'Perdido / Encontrado';
+    }
+    return _isEditing ? 'Editar Mascota' : 'Poner en Adopción';
+  }
+
+  String get _submitLabel {
+    if (_isEditing) return 'Guardar cambios';
+    return _isLostFoundMode ? 'Publicar aviso' : 'Agregar Mascota';
+  }
+
+  String get _nameFieldLabel {
+    if (!_isLostFoundMode) return 'Nombre';
+    return _selectedStatus == MascotaEstado.encontrado
+        ? 'Descripción corta'
+        : 'Nombre';
   }
 
   Animal _parseAnimal(String value) {
@@ -129,8 +172,7 @@ class _RegisterPetState extends State<RegisterPet> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Editar Mascota' : 'Poner en Adopción',
-            style: const TextStyle(color: Colors.white)),
+        title: Text(_screenTitle, style: const TextStyle(color: Colors.white)),
         backgroundColor: Colors.orange,
       ),
       body: Container(
@@ -140,13 +182,14 @@ class _RegisterPetState extends State<RegisterPet> {
           child: ListView(
             children: [
               _buildImagePicker(),
-              _buildTextField('Nombre', _nombreCtrl),
+              if (_isLostFoundMode) _buildStatusCard(),
+              _buildTextField(_nameFieldLabel, _nombreCtrl),
               _buildInfoCard(),
-              _buildTextField('Edad', _edadCtrl),
+              if (!_isLostFoundMode) _buildTextField('Edad', _edadCtrl),
               _buildLocationCard(),
               _buildSizeCard(),
               _buildTextField('Descripción', _descripcionCtrl, maxLines: 4),
-              _buildAttributesCard(),
+              if (!_isLostFoundMode) _buildAttributesCard(),
               _buildSubmitButton(),
             ],
           ),
@@ -259,6 +302,33 @@ class _RegisterPetState extends State<RegisterPet> {
               )
             ],
           )
+        ],
+      );
+
+  Widget _buildStatusCard() => CombinedCard(
+        title: const Text('Tipo de aviso'),
+        contenido: [
+          Choice<String>(
+            segments: const [
+              ButtonSegment<String>(
+                value: MascotaEstado.perdido,
+                label: Text('Perdido'),
+                icon: Icon(Icons.search_off),
+              ),
+              ButtonSegment<String>(
+                value: MascotaEstado.encontrado,
+                label: Text('Encontrado'),
+                icon: Icon(Icons.pets),
+              ),
+            ],
+            initialSelection: {_selectedStatus},
+            onSelectionChanged: (v) {
+              setState(() {
+                _selectedStatus = v.first;
+              });
+            },
+            multiSelectionEnabled: false,
+          ),
         ],
       );
 
@@ -407,7 +477,7 @@ class _RegisterPetState extends State<RegisterPet> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2,
                       valueColor: AlwaysStoppedAnimation(Colors.white)))
-              : Text(_isEditing ? 'Guardar cambios' : 'Agregar Mascota'),
+              : Text(_submitLabel),
         ),
       );
 
@@ -487,6 +557,9 @@ class _RegisterPetState extends State<RegisterPet> {
       ownerId,
       _imageUrl,
     );
+    mascota.estado = _isLostFoundMode
+        ? _selectedStatus
+        : (widget.mascotaToEdit?.estado ?? MascotaEstado.enAdopcion);
 
     if (_isEditing) {
       mascota.id = widget.mascotaToEdit!.id;
@@ -507,6 +580,7 @@ class _RegisterPetState extends State<RegisterPet> {
       _animalCtrl.text = Animal.perro.name;
       _sexoCtrl.text = Sexo.hembra.name;
       _sizeCtrl.text = Sizes.medium.name;
+      _selectedStatus = MascotaEstado.perdido;
       _selectedAnimal = Animal.perro;
       _selectedSexo = Sexo.hembra;
       _selectedSize = Sizes.medium;
