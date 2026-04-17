@@ -1,9 +1,9 @@
 import 'package:adoptapp/providers/mascotas_provider.dart';
+import 'package:adoptapp/screens/publicacion_opciones_page.dart';
 import 'package:adoptapp/widgets/mascota_grid_widget.dart';
 import 'package:adoptapp/widgets/perfil_menu_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:adoptapp/screens/mascotas/mascota_register_page.dart';
 import 'package:provider/provider.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              const RegisterPet(),
+                              const PublicacionOpcionesPage(),
                         ),
                       );
                     },

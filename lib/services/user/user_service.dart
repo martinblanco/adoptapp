@@ -7,6 +7,16 @@ abstract class UserService {
 
   Future<Usuario> updateUser(Usuario editedUser);
 
+  Future<void> updateUserProfile(
+    String uid, {
+    required String userName,
+    required String description,
+    String? photoUrl,
+    List<RedSocial>? redes,
+    List<RedSocial>? donaciones,
+    bool? isRefugio,
+  });
+
   Future<String> deleteUser(String uid);
 
   Future<Set<String>> getFavoritePetIds(String uid);

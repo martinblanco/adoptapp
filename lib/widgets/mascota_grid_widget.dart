@@ -8,9 +8,9 @@ import 'package:adoptapp/entity/mascota.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MascotasGrid extends StatefulWidget {
-  List<Mascota> mascotas;
+  final List<Mascota> mascotas;
 
-  MascotasGrid({Key? key, required this.mascotas}) : super(key: key);
+  const MascotasGrid({Key? key, required this.mascotas}) : super(key: key);
 
   @override
   _MascotasGridState createState() => _MascotasGridState();
@@ -193,7 +193,7 @@ class _MascotasGridState extends State<MascotasGrid>
     if (!mounted) return;
 
     setState(() {
-      widget.mascotas = mascotas;
+      displayedMascotas = mascotas;
       _filtrarMascotas();
       _locationFuture = _loadCurrentLocation();
     });

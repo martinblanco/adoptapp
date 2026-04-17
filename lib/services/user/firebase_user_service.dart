@@ -12,7 +12,9 @@ class FirebaseUserService extends UserService {
     if (!dataSnapshot.exists) {
       throw Exception('Usuario no encontrado');
     }
-    return createUsuario(dataSnapshot.value as Map);
+    final usuario = createUsuario(dataSnapshot.value as Map);
+    usuario.id = uid;
+    return usuario;
   }
 
   @override
@@ -28,6 +30,41 @@ class FirebaseUserService extends UserService {
         .child(user.id)
         .update(user.toJson());
     return user;
+  }
+
+  @override
+  Future<void> updateUserProfile(
+    String uid, {
+    required String userName,
+    required String description,
+    String? photoUrl,
+    List<RedSocial>? redes,
+    List<RedSocial>? donaciones,
+    bool? isRefugio,
+  }) async {
+    final Map<String, dynamic> payload = {
+      'nombre': userName,
+      'descripcion': description,
+    };
+
+    if (photoUrl != null) {
+      payload['fotoPerfil'] = photoUrl;
+    }
+
+    if (redes != null) {
+      payload['redes'] = redes.map((red) => red.toJson()).toList();
+    }
+
+    if (donaciones != null) {
+      payload['donaciones'] =
+          donaciones.map((donacion) => donacion.toJson()).toList();
+    }
+
+    if (isRefugio != null) {
+      payload['isRefugio'] = isRefugio;
+    }
+
+    await _databaseReference.child('usuarios/$uid').update(payload);
   }
 
   @override

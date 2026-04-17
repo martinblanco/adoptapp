@@ -1,4 +1,3 @@
-import 'package:adoptapp/screens/profile_pege.dart';
 import 'package:adoptapp/strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -166,18 +165,24 @@ class AboutPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                IconTile(
-                    icon: FontAwesomeIcons.instagram,
-                    backColor: Colors.greenAccent,
-                    size: 80.0),
-                IconTile(
-                    icon: FontAwesomeIcons.facebook,
-                    backColor: Colors.greenAccent,
-                    size: 80.0),
-                IconTile(
-                    icon: FontAwesomeIcons.twitter,
-                    backColor: Colors.greenAccent,
-                    size: 80.0),
+                Icon(
+                  FontAwesomeIcons.facebook,
+                  color: Colors.blueAccent,
+                ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                Icon(
+                  FontAwesomeIcons.twitter,
+                  color: Colors.lightBlueAccent,
+                ),
+                SizedBox(
+                  width: 20.0,
+                ),
+                Icon(
+                  FontAwesomeIcons.instagram,
+                  color: Colors.purpleAccent,
+                )
               ],
             ),
           ),

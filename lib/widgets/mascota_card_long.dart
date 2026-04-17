@@ -40,7 +40,7 @@ class _MascotaBannerState extends State<MascotaBanner> {
 
     if (widget.mascota.id.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No se pudo eliminar esta mascota')),
+        const SnackBar(content: Text('No se pudo actualizar esta mascota')),
       );
       return;
     }
@@ -50,7 +50,7 @@ class _MascotaBannerState extends State<MascotaBanner> {
     });
 
     try {
-      await _mascotaService.deletePet(widget.mascota.id);
+      await _mascotaService.markPetAsAdopted(widget.mascota.id);
 
       if (fueEnLaApp) {
         await _mascotaService.incrementInAppAdoptionsCounter();

@@ -1,4 +1,5 @@
 import 'package:adoptapp/entity/mascota.dart';
+import 'package:adoptapp/entity/usuario.dart';
 import 'package:adoptapp/screens/profile_pege.dart';
 import 'package:adoptapp/services/services.dart';
 import 'package:adoptapp/services/user/user_service.dart';
@@ -30,12 +31,16 @@ class MascotaPage extends StatefulWidget {
 }
 
 class _MascotaPageState extends State<MascotaPage> {
+  static const String _pushChars =
+      '-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz';
+
   final PageController _pageController = PageController();
   final UserService _userService = services.get<UserService>();
   final GlobalKey _shareCardKey = GlobalKey();
   double currentPage = 0;
   bool _isLiked = false;
   bool _isFavoriteLoading = true;
+  Usuario? _ownerUser;
 
   bool get _hasLocation =>
       widget.mascota.latitud != null && widget.mascota.longitud != null;
@@ -47,6 +52,7 @@ class _MascotaPageState extends State<MascotaPage> {
   void initState() {
     super.initState();
     _loadFavoriteState();
+    _loadOwnerUser();
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page ?? 0;
@@ -114,6 +120,137 @@ class _MascotaPageState extends State<MascotaPage> {
         });
       }
     }
+  }
+
+  Future<void> _loadOwnerUser() async {
+    final String ownerUid = widget.mascota.user;
+    if (ownerUid.isEmpty) {
+      return;
+    }
+
+    try {
+      final Usuario ownerUser = await _userService.getUser(ownerUid);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _ownerUser = ownerUser;
+      });
+    } catch (_) {
+      // Keep current fallback UI (placeholder + uid) if owner profile fails.
+    }
+  }
+
+  Widget _buildOwnerAvatarImage() {
+    final String photoUrl = _ownerUser?.fotoPerfil.trim() ?? '';
+    if (photoUrl.isEmpty) {
+      return Image.asset(
+        'assets/images/avatar.jpg',
+        fit: BoxFit.cover,
+        width: 90,
+        height: 90,
+      );
+    }
+
+    return Image.network(
+      photoUrl,
+      fit: BoxFit.cover,
+      width: 90,
+      height: 90,
+      errorBuilder: (context, error, stackTrace) {
+        return Image.asset(
+          'assets/images/avatar.jpg',
+          fit: BoxFit.cover,
+          width: 90,
+          height: 90,
+        );
+      },
+    );
+  }
+
+  String _ownerDisplayName() {
+    final String name = _ownerUser?.userName.trim() ?? '';
+    return name.isNotEmpty ? name : widget.mascota.user;
+  }
+
+  RedSocial? _firstOwnerSocial() {
+    final List<RedSocial> redes = _ownerUser?.redes ?? <RedSocial>[];
+    if (redes.isEmpty) {
+      return null;
+    }
+    return redes.first;
+  }
+
+  RedSocial? _firstOwnerDonation() {
+    final List<RedSocial> donaciones = _ownerUser?.donaciones ?? <RedSocial>[];
+    if (donaciones.isEmpty) {
+      return null;
+    }
+    return donaciones.first;
+  }
+
+  String _socialLabel(RedSocial social) {
+    switch (social.tipo) {
+      case 'instagram':
+        return 'Instagram';
+      case 'facebook':
+        return 'Facebook';
+      default:
+        return 'X';
+    }
+  }
+
+  String _donationLabel(RedSocial donation) {
+    switch (donation.tipo) {
+      case 'alias':
+        return 'Alias';
+      case 'cbu':
+        return 'CBU';
+      case 'cafecito':
+        return 'Cafecito';
+      default:
+        return 'Donación';
+    }
+  }
+
+  DateTime? _extractDateFromPushId(String pushId) {
+    if (pushId.length < 8) {
+      return null;
+    }
+
+    int timestamp = 0;
+    for (int i = 0; i < 8; i++) {
+      final int charIndex = _pushChars.indexOf(pushId[i]);
+      if (charIndex == -1) {
+        return null;
+      }
+      timestamp = timestamp * 64 + charIndex;
+    }
+
+    return DateTime.fromMillisecondsSinceEpoch(timestamp);
+  }
+
+  String _addedSinceLabel() {
+    final DateTime? createdAt = _extractDateFromPushId(widget.mascota.id);
+    if (createdAt == null) {
+      return 'Agregado recientemente';
+    }
+
+    final DateTime now = DateTime.now();
+    final DateTime createdDate =
+        DateTime(createdAt.year, createdAt.month, createdAt.day);
+    final DateTime today = DateTime(now.year, now.month, now.day);
+    final int days = today.difference(createdDate).inDays;
+
+    if (days <= 0) {
+      return 'Agregado hoy';
+    }
+
+    if (days == 1) {
+      return 'Agregado hace 1 día';
+    }
+
+    return 'Agregado hace $days días';
   }
 
   Future<void> _toggleFavorite() async {
@@ -559,6 +696,15 @@ class _MascotaPageState extends State<MascotaPage> {
                                 fontSize: 24,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Text(
+                              _addedSinceLabel(),
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                         Row(
@@ -782,78 +928,124 @@ class _MascotaPageState extends State<MascotaPage> {
                   Padding(
                     padding: const EdgeInsets.only(
                         right: 16, left: 16, top: 16, bottom: 24),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    ProfilePage(uid: widget.mascota.user),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    'assets/images/avatar.jpg',
-                                    fit: BoxFit.cover,
-                                    width: 90,
-                                    height: 90,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 12,
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Subido por",
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 4,
-                                  ),
-                                  Text(
-                                    widget.mascota.user,
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.location_on,
-                                        size: 16,
-                                        color: Colors.orange,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        "Buenos aires, Argentina",
-                                        style: TextStyle(
-                                          color: Colors.grey[600],
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ProfilePage(uid: widget.mascota.user),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF7ED),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: const Color(0xFFFED7AA),
+                            width: 1,
                           ),
                         ),
-                      ],
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: 56,
+                              height: 56,
+                              child: CircleAvatar(
+                                child: ClipOval(
+                                  child: _buildOwnerAvatarImage(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Subido por',
+                                    style: TextStyle(
+                                      color: Color(0xFF9A3412),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    _ownerDisplayName(),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      color: Color(0xFF1F2937),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w700,
+                                      height: 1.1,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  if (_firstOwnerSocial() != null)
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.language,
+                                          size: 18,
+                                          color: Color(0xFF2563EB),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            '${_socialLabel(_firstOwnerSocial()!)}: @${_firstOwnerSocial()!.usuario}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Color(0xFF334155),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  if (_firstOwnerSocial() != null &&
+                                      _firstOwnerDonation() != null)
+                                    const SizedBox(height: 4),
+                                  if (_firstOwnerDonation() != null)
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.volunteer_activism,
+                                          size: 18,
+                                          color: Color(0xFFEA580C),
+                                        ),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(
+                                            '${_donationLabel(_firstOwnerDonation()!)}: ${_firstOwnerDonation()!.usuario}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Color(0xFF334155),
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ],

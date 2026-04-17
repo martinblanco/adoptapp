@@ -111,7 +111,8 @@ class _MascotaCardState extends State<MascotaCard> {
     final currentPosition = widget.currentUserPosition;
     final petLat = mascota.latitud;
     final petLng = mascota.longitud;
-
+    logger.d(
+        'Calculando distancia: userPos=($currentPosition), petPos=($petLat, $petLng)');
     if (currentPosition == null || petLat == null || petLng == null) {
       mascota.distancia = 0;
       return;

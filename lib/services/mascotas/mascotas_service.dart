@@ -7,6 +7,8 @@ abstract class MascotasService {
 
   Future<String> deletePet(String petId);
 
+  Future<String> markPetAsAdopted(String petId);
+
   Future<List<Mascota>> getAllPets();
 
   Future<Mascota?> getPetById(String petId);

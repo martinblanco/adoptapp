@@ -5,6 +5,14 @@ import 'package:firebase_database/firebase_database.dart';
 class FirebaseMascotasService extends MascotasService {
   final _databaseReference = FirebaseDatabase.instance.ref();
 
+  Future<String> _updatePetStatus(String petId, String estado) async {
+    await _databaseReference
+        .child('mascotas/')
+        .child(petId)
+        .update({'estado': estado});
+    return petId;
+  }
+
   @override
   Future<Mascota> addPet(Mascota newPet) async {
     await _databaseReference.child('mascotas/').push().set(newPet.toJson());
@@ -22,8 +30,12 @@ class FirebaseMascotasService extends MascotasService {
 
   @override
   Future<String> deletePet(String petId) async {
-    await _databaseReference.child('mascotas/').child(petId).remove();
-    return petId;
+    return _updatePetStatus(petId, MascotaEstado.borrado);
+  }
+
+  @override
+  Future<String> markPetAsAdopted(String petId) async {
+    return _updatePetStatus(petId, MascotaEstado.adoptado);
   }
 
   @override
@@ -35,7 +47,9 @@ class FirebaseMascotasService extends MascotasService {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
         mascota.id = child.key ?? '';
-        mascotas.add(mascota);
+        if (mascota.estado == MascotaEstado.enAdopcion) {
+          mascotas.add(mascota);
+        }
       }
     }
     return mascotas;
@@ -68,7 +82,7 @@ class FirebaseMascotasService extends MascotasService {
       for (DataSnapshot child in dataSnapshot.children) {
         Mascota mascota = createMascota(child.value);
         mascota.id = child.key ?? '';
-        if (mascota.user == uid) {
+        if (mascota.user == uid && mascota.estado == MascotaEstado.enAdopcion) {
           mascotas.add(mascota);
         }
       }

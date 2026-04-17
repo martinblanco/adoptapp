@@ -8,6 +8,12 @@ enum Animal { todos, perro, gato }
 
 enum Sexo { todos, hembra, macho }
 
+class MascotaEstado {
+  static const String enAdopcion = 'en_adopcion';
+  static const String adoptado = 'adoptado';
+  static const String borrado = 'borrado';
+}
+
 class Mascota {
   String id = "";
   String user;
@@ -19,6 +25,7 @@ class Mascota {
   String edad;
   String sexo;
   String size;
+  String estado = MascotaEstado.enAdopcion;
   bool isCachorro = false;
   bool isRaza = false;
   bool isTransito = false;
@@ -61,6 +68,7 @@ class Mascota {
       'cachorro': isCachorro,
       'sexo': sexo,
       'size': size,
+      'estado': estado,
       'descripcion': descripcion,
       'latitud': latitud,
       'longitud': longitud,
@@ -127,6 +135,7 @@ Mascota createMascota(record) {
     'cachorro': false,
     'sexo': '',
     'size': '',
+    'estado': MascotaEstado.enAdopcion,
     'descripcion': '',
     'latitud': null,
     'longitud': null,
@@ -158,6 +167,9 @@ Mascota createMascota(record) {
       attributes['transito'],
       attributes['usuario'],
       attributes['foto']);
+
+  mascota.estado =
+      (attributes['estado'] ?? MascotaEstado.enAdopcion).toString();
 
   return mascota;
 }
