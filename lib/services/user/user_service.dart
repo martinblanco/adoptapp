@@ -3,6 +3,8 @@ import 'package:adoptapp/entity/usuario.dart';
 abstract class UserService {
   Future<Usuario> getUser(String uid);
 
+  Future<List<Usuario>> getAllUsers();
+
   Future<Usuario> addUser(Usuario newUser);
 
   Future<Usuario> updateUser(Usuario editedUser);

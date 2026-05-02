@@ -24,6 +24,8 @@ class Usuario {
   String userName;
   String descripcion;
   String fotoPerfil;
+  double? latitud;
+  double? longitud;
   bool isRefugio = false;
   late List<Mascota> mascotas = [];
   List<RedSocial> redes;
@@ -35,6 +37,8 @@ class Usuario {
     this.isRefugio, {
     this.descripcion = '',
     this.fotoPerfil = '',
+    this.latitud,
+    this.longitud,
     List<RedSocial>? redes,
     List<RedSocial>? donaciones,
   })  : redes = redes ?? <RedSocial>[],
@@ -48,6 +52,8 @@ class Usuario {
       'mail': mail,
       'descripcion': descripcion,
       'fotoPerfil': fotoPerfil,
+      'latitud': latitud,
+      'longitud': longitud,
       'isRefugio': isRefugio,
       'mascotas': mascotas.toList(),
       'redes': redes.map((red) => red.toJson()).toList(),
@@ -62,6 +68,8 @@ Usuario createUsuario(record) {
     'mail': '',
     'descripcion': '',
     'fotoPerfil': '',
+    'latitud': null,
+    'longitud': null,
     'isRefugio': false,
     'mascotas': [],
     'redes': [],
@@ -85,15 +93,60 @@ Usuario createUsuario(record) {
   Usuario usuario = Usuario(
     attributes['mail'],
     attributes['nombre'],
-    attributes['isRefugio'],
+    _parseBool(attributes['isRefugio']),
     descripcion: attributes['descripcion'] ?? '',
     fotoPerfil: attributes['fotoPerfil'] ?? '',
+    latitud:
+        _parseNullableDouble(attributes['latitud'] ?? attributes['latitude']),
+    longitud:
+        _parseNullableDouble(attributes['longitud'] ?? attributes['longitude']),
     redes: redesParseadas.where((red) => !_isDonationType(red.tipo)).toList(),
     donaciones: donacionesParseadas,
   );
-  usuario.mascotas = List.from(attributes['mascotas']);
+  usuario.mascotas = _parseMascotas(attributes['mascotas']);
 
   return usuario;
+}
+
+bool _parseBool(dynamic rawValue) {
+  if (rawValue is bool) {
+    return rawValue;
+  }
+
+  if (rawValue is num) {
+    return rawValue != 0;
+  }
+
+  final String normalized = (rawValue ?? '').toString().trim().toLowerCase();
+  return normalized == 'true' || normalized == '1' || normalized == 'si';
+}
+
+List<Mascota> _parseMascotas(dynamic rawMascotas) {
+  if (rawMascotas is List) {
+    return List<Mascota>.from(rawMascotas);
+  }
+
+  return <Mascota>[];
+}
+
+double? _parseNullableDouble(dynamic rawValue) {
+  if (rawValue == null) {
+    return null;
+  }
+
+  if (rawValue is num) {
+    return rawValue.toDouble();
+  }
+
+  if (rawValue is String) {
+    final String normalized = rawValue.trim().replaceAll(',', '.');
+    if (normalized.isEmpty) {
+      return null;
+    }
+    return double.tryParse(normalized);
+  }
+
+  return null;
 }
 
 bool _isDonationType(String tipo) {

@@ -1,7 +1,9 @@
 import 'package:adoptapp/providers/mascotas_provider.dart';
+import 'package:adoptapp/providers/refugios_provider.dart';
 import 'package:adoptapp/screens/publicacion_opciones_page.dart';
 import 'package:adoptapp/widgets/mascota_grid_widget.dart';
 import 'package:adoptapp/widgets/perfil_menu_widget.dart';
+import 'package:adoptapp/widgets/refugios_grid_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -71,10 +73,18 @@ class _HomePageState extends State<HomePage> {
         ],
         automaticallyImplyLeading: false,
       ),
-      body: Consumer<MascotasNotifier>(
-        builder: (_, mascotasNotifier, __) => _selectedIndex != 2
-            ? const Center(child: Text('SOON'))
-            : _buildMascotasView(mascotasNotifier),
+      body: Consumer2<MascotasNotifier, RefugiosNotifier>(
+        builder: (_, mascotasNotifier, refugiosNotifier, __) {
+          if (_selectedIndex == 2) {
+            return _buildMascotasView(mascotasNotifier);
+          }
+
+          if (_selectedIndex == 4) {
+            return _buildRefugiosView(refugiosNotifier);
+          }
+
+          return const Center(child: Text('SOON'));
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
@@ -135,10 +145,39 @@ class _HomePageState extends State<HomePage> {
     return MascotasGrid(mascotas: mascotasNotifier.mascotas);
   }
 
+  Widget _buildRefugiosView(RefugiosNotifier refugiosNotifier) {
+    if (refugiosNotifier.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (refugiosNotifier.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Error: ${refugiosNotifier.error}'),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => refugiosNotifier.refresh(),
+              child: const Text('Reintentar'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return RefugiosGrid(refugios: refugiosNotifier.refugios);
+  }
+
   void _onItemTapped(int index) {
     if (index == 2 && _selectedIndex != 2) {
       context.read<MascotasNotifier>().refresh();
     }
+
+    if (index == 4 && _selectedIndex != 4) {
+      context.read<RefugiosNotifier>().refresh();
+    }
+
     setState(() => _selectedIndex = index);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:adoptapp/entity/usuario.dart';
 import 'package:adoptapp/services/user/user_service.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseUserService extends UserService {
   final _databaseReference = FirebaseDatabase.instance.ref();
@@ -15,6 +16,39 @@ class FirebaseUserService extends UserService {
     final usuario = createUsuario(dataSnapshot.value as Map);
     usuario.id = uid;
     return usuario;
+  }
+
+  @override
+  Future<List<Usuario>> getAllUsers() async {
+    final DataSnapshot dataSnapshot =
+        await _databaseReference.child('usuarios').get();
+
+    if (!dataSnapshot.exists || dataSnapshot.value == null) {
+      return <Usuario>[];
+    }
+
+    final dynamic rawValue = dataSnapshot.value;
+    if (rawValue is! Map) {
+      return <Usuario>[];
+    }
+
+    final Map<dynamic, dynamic> usuariosMap = rawValue;
+    final List<Usuario> usuarios = <Usuario>[];
+
+    usuariosMap.forEach((key, value) {
+      if (value is Map) {
+        try {
+          final Usuario usuario =
+              createUsuario(Map<dynamic, dynamic>.from(value));
+          usuario.id = key.toString();
+          usuarios.add(usuario);
+        } catch (e) {
+          debugPrint('Usuario omitido por formato invalido ($key): $e');
+        }
+      }
+    });
+
+    return usuarios;
   }
 
   @override

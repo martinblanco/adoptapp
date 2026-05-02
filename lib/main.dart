@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:adoptapp/providers/mascotas_provider.dart';
+import 'package:adoptapp/providers/refugios_provider.dart';
 import 'package:adoptapp/screens/home_page.dart';
 import 'package:adoptapp/screens/login/user_login_page.dart';
 import 'package:adoptapp/screens/mascotas/mascota_deep_link_page.dart';
@@ -35,6 +36,8 @@ class App extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(
             create: (_) => MascotasNotifier()..loadMascotas()),
+        ChangeNotifierProvider(
+            create: (_) => RefugiosNotifier()..loadRefugios()),
       ],
       child: MaterialApp.router(
         title: Strings.appTitle,
